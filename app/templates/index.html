@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ app_name }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="screen-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">VOLCENGINE RTC DIGITAL HUMAN</p>
+        <h1>丽斯未来酒店展厅数字人接待页</h1>
+        <p class="session-line" id="sessionText">RTC Session：初始化中</p>
+      </div>
+      <div class="topbar-chips">
+        <div class="status-chip" id="statusChip">Idle</div>
+        <div class="status-chip secondary" id="connectionChip">RTC 未连接</div>
+      </div>
+    </header>
+
+    <main class="hero">
+      <section class="deco-panel left-panel">
+        <div class="panel-card">
+          <h2>双链架构</h2>
+          <p>S2S 负责低时延自然对话，后端负责知识库、强规则与过渡语接管。</p>
+        </div>
+        <div class="panel-card compact">
+          <h2>当前状态</h2>
+          <p id="thinkingText">等待初始化 RTC、S2S 与自研 3D 舞台。</p>
+          <p class="secondary-line" id="pricingStateText">收益链待机中，等待调价或复盘指令。</p>
+        </div>
+        <div class="ring ring-one"></div>
+        <div class="hud-line"></div>
+      </section>
+
+      <section class="avatar-stage">
+        <div class="avatar-halo"></div>
+        <div class="avatar-shell">
+          <div class="avatar-header">
+            <span>SELF 3D AVATAR STAGE</span>
+            <span id="avatarStatus">等待挂载自研 3D 人物，火山远端流为备用</span>
+          </div>
+          <div id="avatarVideo" class="avatar-video">
+            <div id="selfAvatarMount" class="self-avatar-mount">
+              <div class="avatar-placeholder">
+                <div class="avatar-placeholder-face"></div>
+                <p>这里是你们自研 3D 人物的 Web 挂载容器</p>
+              </div>
+            </div>
+            <div id="rtcStreamMount" class="rtc-stream-mount">
+              <div class="stream-badge">RTC 备用视频层</div>
+            </div>
+            <div class="avatar-placeholder avatar-placeholder-note">
+              <div class="avatar-placeholder-face"></div>
+              <p>若后续启用火山官方数字人，远端视频流会覆盖到备用层</p>
+            </div>
+          </div>
+        </div>
+        <div class="pulse pulse-a"></div>
+        <div class="pulse pulse-b"></div>
+      </section>
+
+      <section class="deco-panel right-panel">
+        <div class="panel-card">
+          <h2>回调与指标</h2>
+          <p id="metricText">链路耗时：待机中</p>
+          <p id="callbackText">回调日志：等待字幕 / 状态 / 任务事件。</p>
+        </div>
+        <div class="panel-card compact">
+          <h2>链路所有权</h2>
+          <p id="knowledgeText">闲聊默认走 S2S，酒店知识与强规则问题优先走后端知识链。</p>
+        </div>
+        <div class="ring ring-two"></div>
+        <div class="hud-grid"></div>
+      </section>
+    </main>
+
+    <section class="conversation-strip">
+      <div class="subtitle-card">
+        <span class="label">用户字幕</span>
+        <p id="userSubtitleText">等待用户进入展厅区域。</p>
+      </div>
+      <div class="subtitle-card">
+        <span class="label">AI 字幕</span>
+        <p id="aiSubtitleText">系统待机中。</p>
+      </div>
+      <div class="response-card">
+        <span class="label">播报文本</span>
+        <p id="speakText">系统准备就绪，等待主动迎宾。</p>
+      </div>
+    </section>
+
+    <footer class="controls">
+      <div class="sample-actions">
+        <button id="micBtn">重新授权麦克风</button>
+        <button id="presenceBtn">触发迎宾</button>
+        <button id="interruptBtn">打断播报</button>
+        <button data-query="酒店在什么位置？">位置</button>
+        <button data-query="你们酒店有早餐吗？">早餐</button>
+        <button data-query="有没有一次性剃须刀？">剃须刀</button>
+        <button data-query="请介绍一下你自己">介绍</button>
+        <button data-query="现在来个调价策略">调价策略</button>
+        <button data-query="最近一次调价结果怎么样">最新结果</button>
+        <button data-query="发经营摘要">经营摘要</button>
+        <button data-query="发昨日策略复盘">昨日复盘</button>
+        <button data-query="按这个策略执行">确认执行</button>
+        <button data-query="取消这次调价执行">拒绝执行</button>
+      </div>
+      <div class="footnote" id="warningText">正在读取火山 RTC 启动配置。</div>
+    </footer>
+  </div>
+
+    <script type="module" src="/static/app.js?v=20260415-auto-greeting-1"></script>
+  </body>
+</html>

@@ -1,0 +1,3867 @@
+{
+  "meta": {
+    "manifest": "data/memory_session_manifest_lis_south_station.jsonl",
+    "search_url": "https://api-knowledgebase.mlp.cn-beijing.volces.com/api/memory/search",
+    "collection_name": "jiudianwenti",
+    "project_name": "default",
+    "sample_mode": "random",
+    "seed": 20260415,
+    "requested_limit": 100,
+    "actual_limit": 100,
+    "search_limit": 3
+  },
+  "summary": {
+    "total": 100,
+    "top1_exact_match": 96,
+    "top1_exact_match_rate": 96.0,
+    "topk_contains_exact": 99,
+    "topk_contains_exact_rate": 99.0,
+    "no_hit": 0,
+    "by_type": {
+      "direct": {
+        "total": 70,
+        "top1_exact_match": 67,
+        "topk_contains_exact": 69,
+        "no_hit": 0
+      },
+      "handoff": {
+        "total": 30,
+        "top1_exact_match": 29,
+        "topk_contains_exact": 30,
+        "no_hit": 0
+      }
+    },
+    "top1_misses": [
+      {
+        "row_number": 567,
+        "query": "停车场怎么收费？",
+        "expected_answer": "我们停车场是免费的，您出车前十分钟联系我们出车即可。",
+        "top1_answer": "酒店提供免费停车服务，设有地上停车场，推荐您从繁华大道辅路进入，您也可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+        "top1_score": 0.2979590892791748
+      },
+      {
+        "row_number": 751,
+        "query": "酒店抬头和税号发给我",
+        "expected_answer": "抬头：合肥喜胜酒店管理有限公司\n税号：91340111MA8Q5GK70B",
+        "top1_answer": "抬头：合肥喜胜酒店管理有限公司",
+        "top1_score": 0.471260666847229
+      },
+      {
+        "row_number": 657,
+        "query": "有不靠马路的房间吗？",
+        "expected_answer": "转接",
+        "top1_answer": "目前单数房间号都是靠近高架的，具体的房型是合柴、岭南、积木、艺林。您可以避开这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房自取。",
+        "top1_score": 0.33294910192489624
+      },
+      {
+        "row_number": 360,
+        "query": "有微波炉吗？",
+        "expected_answer": "酒店提供微波炉，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+        "top1_answer": "酒店提供微波炉供住客使用，具体位置在1020房间对面的洗衣房内。",
+        "top1_score": 0.31611716747283936
+      }
+    ]
+  },
+  "cases": [
+    {
+      "row_number": 343,
+      "query": "有多余的厕纸吗？",
+      "expected_answer": "酒店客房均配备卷纸，若另外需要，可前往1020房间对面的洗衣房自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3591228723526001,
+      "top1_session_id": "lis_south_station_faq_r0343_e5b570ef01",
+      "top1_question": "有多余的厕纸吗？",
+      "top1_answer": "酒店客房均配备卷纸，若另外需要，可前往1020房间对面的洗衣房自行取用。",
+      "hits": [
+        {
+          "score": 0.3591228723526001,
+          "session_id": "lis_south_station_faq_r0343_e5b570ef01",
+          "matched_question": "有多余的厕纸吗？",
+          "matched_answer": "酒店客房均配备卷纸，若另外需要，可前往1020房间对面的洗衣房自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问是否有多余的厕纸，丽斯未来酒店FAQ回复称酒店客房均配备卷纸，若另外需要，可前往1020房间对面的洗衣房自行取用。客人可能接下来会根据指引去洗衣房拿厕纸。"
+        },
+        {
+          "score": 0.3070685863494873,
+          "session_id": "lis_south_station_faq_r0345_146ec7f4ef",
+          "matched_question": "多余的卷纸在哪拿？",
+          "matched_answer": "酒店客房均配备卷纸，若另外需要，可前往1020房间对面的洗衣房自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问多余卷纸的获取地点，丽斯未来酒店FAQ回复称酒店客房均配备卷纸，若需额外的卷纸，可前往1020房间对面的洗衣房自行取用。客人可能会根据此信息去洗衣房拿取卷纸。"
+        },
+        {
+          "score": 0.306826651096344,
+          "session_id": "lis_south_station_faq_r0346_8b317c0950",
+          "matched_question": "有多余的抽纸吗？",
+          "matched_answer": "酒店客房均配备抽纸，若另外需要，可前往1020房间对面的洗衣房自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问是否有多余的抽纸，丽斯未来酒店FAQ回复酒店客房均配备抽纸，若另外需要，可前往1020房间对面的洗衣房自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 231,
+      "query": "我要提前退房",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.35683757066726685,
+      "top1_session_id": "lis_south_station_faq_r0231_42c5fe8361",
+      "top1_question": "我要提前退房",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.35683757066726685,
+          "session_id": "lis_south_station_faq_r0231_42c5fe8361",
+          "matched_question": "我要提前退房",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ提出要提前退房，酒店FAQ回复转接"
+        },
+        {
+          "score": 0.3386000394821167,
+          "session_id": "lis_south_station_faq_r0216_89119e16ae",
+          "matched_question": "我要提前退房，怎么办理",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ咨询提前退房的办理方式，酒店FAQ回复转接。客人表现出急切解决退房手续的情绪，推测客人可能有紧急事务需要提前离开酒店，后续可能会关注转接后能否顺利办理退房。"
+        },
+        {
+          "score": 0.31292521953582764,
+          "session_id": "lis_south_station_faq_r0126_3875647300",
+          "matched_question": "我要退房，请帮我操作一下",
+          "matched_answer": "如您是在退房日当天12点前退房，您可以打开酒店微信小程序--自由家安心宿，点击“预约退房”办理，也可以打开房门后直接离店。若您在12点之后退房，请联系门店管家18815693383，为您办理延时退房业务。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日13:11，酒店客人向丽斯未来酒店FAQ提出退房需求，丽斯未来酒店FAQ告知客人，若在退房日当天12点前退房，可打开酒店微信小程序--自由家安心宿，点击“预约退房”办理，也可打开房门后直接离店；若在12点之后退房，需联系门店管家18815693383办理延时退房业务。"
+        }
+      ]
+    },
+    {
+      "row_number": 472,
+      "query": "哪些房间靠小区，要安静点的",
+      "expected_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.47643065452575684,
+      "top1_session_id": "lis_south_station_faq_r0472_09d7f93945",
+      "top1_question": "哪些房间靠小区，要安静点的",
+      "top1_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+      "hits": [
+        {
+          "score": 0.47643065452575684,
+          "session_id": "lis_south_station_faq_r0472_09d7f93945",
+          "matched_question": "哪些房间靠小区，要安静点的",
+          "matched_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问哪些房间靠小区且安静，酒店FAQ回复双数房间号的比较安静，具体房型有麦田、绿洲、菱湖，还告知客人若有需要可前往1020对面的洗衣房自取降噪耳塞。"
+        },
+        {
+          "score": 0.3625640869140625,
+          "session_id": "lis_south_station_faq_r0471_a98e448090",
+          "matched_question": "我想住安静点的房间，该怎么办？",
+          "matched_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问想住安静点的房间该怎么办，丽斯未来酒店FAQ告知双数房间号比较安静，具体房型有麦田、绿洲、菱湖可供选择，还表示准备了降噪耳塞，客人可前往1020对面的洗衣房自取。"
+        },
+        {
+          "score": 0.36226391792297363,
+          "session_id": "lis_south_station_faq_r0474_3c3c6fafd9",
+          "matched_question": "哪些房间比较安静？",
+          "matched_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问哪些房间比较安静，丽斯未来酒店FAQ回复双数房间号的比较安静，具体房型有麦田、绿洲、菱湖，还告知客人若有需要可前往1020对面的洗衣房自取降噪耳塞。"
+        }
+      ]
+    },
+    {
+      "row_number": 153,
+      "query": "酒店有多余的牙刷吗？",
+      "expected_answer": "酒店提供一次性牙刷，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4190283417701721,
+      "top1_session_id": "lis_south_station_faq_r0153_2e83eb5e68",
+      "top1_question": "酒店有多余的牙刷吗？",
+      "top1_answer": "酒店提供一次性牙刷，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.4190283417701721,
+          "session_id": "lis_south_station_faq_r0153_2e83eb5e68",
+          "matched_question": "酒店有多余的牙刷吗？",
+          "matched_answer": "酒店提供一次性牙刷，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有多余的牙刷，丽斯未来酒店FAQ回复酒店提供一次性牙刷，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        },
+        {
+          "score": 0.3730463981628418,
+          "session_id": "lis_south_station_faq_r0156_4284fd4344",
+          "matched_question": "牙刷两个太少了，能不能多给两个",
+          "matched_answer": "酒店提供一次性牙刷，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间提供的两个牙刷数量太少，希望能多给两个。酒店FAQ回复称酒店提供一次性牙刷，放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        },
+        {
+          "score": 0.3724108934402466,
+          "session_id": "lis_south_station_faq_r0155_15f29b8870",
+          "matched_question": "牙刷不够用怎么办？",
+          "matched_answer": "酒店提供一次性牙刷，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问牙刷不够用怎么办，助手告知酒店提供一次性牙刷，放置在1020房间对面的洗衣房内，可自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 682,
+      "query": "你们有多少种房型？",
+      "expected_answer": "我们酒店有：积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，您可以根据需求进行预订哈。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3909619450569153,
+      "top1_session_id": "lis_south_station_faq_r0682_4909cb0c6b",
+      "top1_question": "你们有多少种房型？",
+      "top1_answer": "我们酒店有：积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，您可以根据需求进行预订哈。",
+      "hits": [
+        {
+          "score": 0.3909619450569153,
+          "session_id": "lis_south_station_faq_r0682_4909cb0c6b",
+          "matched_question": "你们有多少种房型？",
+          "matched_answer": "我们酒店有：积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，您可以根据需求进行预订哈。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店有多少种房型，丽斯未来酒店FAQ回复酒店有积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，并告知客人可根据需求进行预订。客人对房型种类表现出好奇，希望了解酒店的房型信息。"
+        },
+        {
+          "score": 0.3444758653640747,
+          "session_id": "lis_south_station_faq_r0681_4c8ab0e596",
+          "matched_question": "你们有哪些房型？",
+          "matched_answer": "我们酒店有：积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，您可以根据需求进行预订哈。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店有哪些房型，丽斯未来酒店FAQ回复酒店有积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，并建议客人根据需求进行预订。客人表现出好奇的情绪，想了解酒店房型信息，assistant及时进行了详细解答。推测客人可能有预订酒店房间的打算，后续可能会进一步询问房型的价格、设施等信息。"
+        },
+        {
+          "score": 0.34227287769317627,
+          "session_id": "lis_south_station_faq_r0684_70fa75bc53",
+          "matched_question": "介绍下你们家的房型",
+          "matched_answer": "我们酒店有：积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，您可以根据需求进行预订哈。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问该酒店的房型，酒店FAQ介绍了积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，并让客人根据需求预订。客人表现出好奇的情绪，酒店FAQ进行了专业解答。推测客人可能会根据介绍选择合适的房型进行预订。"
+        }
+      ]
+    },
+    {
+      "row_number": 53,
+      "query": "我怎么上楼？",
+      "expected_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.29558926820755005,
+      "top1_session_id": "lis_south_station_faq_r0053_45f0ac499b",
+      "top1_question": "我怎么上楼？",
+      "top1_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+      "hits": [
+        {
+          "score": 0.29558926820755005,
+          "session_id": "lis_south_station_faq_r0053_45f0ac499b",
+          "matched_question": "我怎么上楼？",
+          "matched_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问如何上楼，表现出好奇的情绪，丽斯未来酒店FAQ回复客人可从皇与后酒店大厅一楼电梯进入。客人可能在思考如何找到一楼电梯并前往自己要去的楼层。"
+        },
+        {
+          "score": 0.20577681064605713,
+          "session_id": "lis_south_station_faq_r0019_0390065b03",
+          "matched_question": "我到楼下了，怎么上去？",
+          "matched_answer": "酒店门口的朝向正对包河大道，与皇与后酒店共用一楼大厅，进入酒店大厅后乘坐大堂电梯上9和10楼即可",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人到达酒店楼下，询问如何上去，丽斯未来酒店FAQ告知酒店门口朝向包河大道，与皇与后酒店共用一楼大厅，进入酒店大厅后乘坐大堂电梯上9和10楼即可。"
+        },
+        {
+          "score": 0.17050588130950928,
+          "session_id": "lis_south_station_faq_r0101_c2ed14b852",
+          "matched_question": "外卖可以送上楼吗？",
+          "matched_answer": "酒店允许住客自行点外卖，并且外卖员可以将外卖送到您的房间门口哦！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问外卖能否送上楼，丽斯未来酒店FAQ回复酒店允许住客自行点外卖，且外卖员可以将外卖送到房间门口。客人可能在考虑点外卖，在得知可以送上楼后，会更倾向于选择点外卖。"
+        }
+      ]
+    },
+    {
+      "row_number": 378,
+      "query": "房间水漫出来了，有没有吸水房间",
+      "expected_answer": "酒店提供地巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3574591875076294,
+      "top1_session_id": "lis_south_station_faq_r0378_0e56def983",
+      "top1_question": "房间水漫出来了，有没有吸水房间",
+      "top1_answer": "酒店提供地巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.3574591875076294,
+          "session_id": "lis_south_station_faq_r0378_0e56def983",
+          "matched_question": "房间水漫出来了，有没有吸水房间",
+          "matched_answer": "酒店提供地巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间水漫出来了，并询问是否有吸水物品。酒店FAQ告知客人酒店提供地巾，放置在1020房间对面的洗衣房内，可自行取用。"
+        },
+        {
+          "score": 0.22775983810424805,
+          "session_id": "lis_south_station_faq_r0614_91cc460f05",
+          "matched_question": "房间里没有水了，要自己买吗？",
+          "matched_answer": "不需要的宝子，我们的洗衣房有配备多余的矿泉水，麻烦您去1020对面的洗衣房自取一下哈",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问房间没水是否要自己买，客服告知不需要，酒店洗衣房有多余矿泉水，让客人去1020对面的洗衣房自取。"
+        },
+        {
+          "score": 0.21451294422149658,
+          "session_id": "lis_south_station_faq_r0578_0b1ff5c161",
+          "matched_question": "房间没水了",
+          "matched_answer": "您好，麻烦您去1020对面的洗衣房自取一下哈",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间没水了，丽斯未来酒店FAQ让客人去1020对面的洗衣房自取"
+        }
+      ]
+    },
+    {
+      "row_number": 503,
+      "query": "有地下停车场吗？",
+      "expected_answer": "您好，我们酒店目前只提供地上停车场。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.2913297414779663,
+      "top1_session_id": "lis_south_station_faq_r0503_29783b37c3",
+      "top1_question": "有地下停车场吗？",
+      "top1_answer": "您好，我们酒店目前只提供地上停车场。",
+      "hits": [
+        {
+          "score": 0.2913297414779663,
+          "session_id": "lis_south_station_faq_r0503_29783b37c3",
+          "matched_question": "有地下停车场吗？",
+          "matched_answer": "您好，我们酒店目前只提供地上停车场。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有地下停车场，丽斯未来酒店FAQ回复目前只提供地上停车场。客人可能在考虑是否开车前往酒店，若需要停车可能会重新考虑出行方式。"
+        },
+        {
+          "score": 0.2754509449005127,
+          "session_id": "lis_south_station_faq_r0502_2a266742a5",
+          "matched_question": "停车场是地上还是地下",
+          "matched_answer": "您好，我们酒店目前只提供地上停车场。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店停车场是地上还是地下，丽斯未来酒店FAQ回复目前只提供地上停车场。客人表现出好奇的情绪，在得到答复后对话结束。推测客人可能接下来会考虑是否将车停在该酒店的地上停车场。"
+        },
+        {
+          "score": 0.27168893814086914,
+          "session_id": "lis_south_station_faq_r0504_bbe483a757",
+          "matched_question": "你们地上地下都可以停车吗？",
+          "matched_answer": "您好，我们酒店目前只提供地上停车场。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店地上地下是否都可以停车，丽斯未来酒店FAQ回复目前只提供地上停车场。客人可能正在考虑是否开车前往酒店，若开车前往，需了解停车情况。"
+        }
+      ]
+    },
+    {
+      "row_number": 595,
+      "query": "我退房了，东西落房间了，可以让跑腿去房间1拿下吗？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.5435323715209961,
+      "top1_session_id": "lis_south_station_faq_r0595_194874cef6",
+      "top1_question": "我退房了，东西落房间了，可以让跑腿去房间1拿下吗？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.5435323715209961,
+          "session_id": "lis_south_station_faq_r0595_194874cef6",
+          "matched_question": "我退房了，东西落房间了，可以让跑腿去房间1拿下吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人退房后发现东西落在房间1，向丽斯未来酒店FAQ提出让跑腿去房间1拿东西的请求，酒店FAQ回复转接。推测客人当前比较着急拿回落在房间的物品，可能会关注转接后事情的处理进度。"
+        },
+        {
+          "score": 0.4047515392303467,
+          "session_id": "lis_south_station_faq_r0594_f232294b1c",
+          "matched_question": "我已经离开酒店了，落了东西在房间，叫了跑腿去拿，麻烦给开下门。",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人告知已离开酒店，因落了东西在房间，叫了跑腿去拿，请求酒店帮忙开门，酒店客服回复转接。客人此时可能焦急等待拿回落下的物品，希望酒店能尽快协助跑腿开门拿到物品。"
+        },
+        {
+          "score": 0.3424806594848633,
+          "session_id": "lis_south_station_faq_r0665_e50f297b20",
+          "matched_question": "东西落房间了怎么办？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问东西落在房间该怎么办，酒店FAQ回复转接。客人处于好奇、寻求帮助的状态，酒店FAQ按流程操作进行转接。推测客人希望尽快解决找回落下物品的问题，后续可能会与转接的部门进一步沟通物品找回事宜。"
+        }
+      ]
+    },
+    {
+      "row_number": 306,
+      "query": "什么时候有防晒霜？",
+      "expected_answer": "酒店4至9月份提供防晒霜，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.29764389991760254,
+      "top1_session_id": "lis_south_station_faq_r0306_393a268b5f",
+      "top1_question": "什么时候有防晒霜？",
+      "top1_answer": "酒店4至9月份提供防晒霜，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.29764389991760254,
+          "session_id": "lis_south_station_faq_r0306_393a268b5f",
+          "matched_question": "什么时候有防晒霜？",
+          "matched_answer": "酒店4至9月份提供防晒霜，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问什么时候有防晒霜，丽斯未来酒店FAQ回复酒店4至9月份提供防晒霜，放置在1020房间对面的洗衣房内，可自行取用。"
+        },
+        {
+          "score": 0.26940882205963135,
+          "session_id": "lis_south_station_faq_r0305_bc009f13cf",
+          "matched_question": "有防晒霜吗？",
+          "matched_answer": "酒店4至9月份提供防晒霜，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有防晒霜，丽斯未来酒店FAQ回复酒店4至9月份提供防晒霜，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        },
+        {
+          "score": 0.267309308052063,
+          "session_id": "lis_south_station_faq_r0308_e6b3943e5e",
+          "matched_question": "现在有防晒霜吗？",
+          "matched_answer": "酒店4至9月份提供防晒霜，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问现在是否有防晒霜，丽斯未来酒店FAQ回复酒店4至9月份提供防晒霜，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 214,
+      "query": "晚上有一些特殊情况，住不了了，怎么退房",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.47320473194122314,
+      "top1_session_id": "lis_south_station_faq_r0214_1f4821a02b",
+      "top1_question": "晚上有一些特殊情况，住不了了，怎么退房",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.47320473194122314,
+          "session_id": "lis_south_station_faq_r0214_1f4821a02b",
+          "matched_question": "晚上有一些特殊情况，住不了了，怎么退房",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人因晚上有特殊情况无法入住，向丽斯未来酒店FAQ询问退房方式，客服转接处理。"
+        },
+        {
+          "score": 0.37411385774612427,
+          "session_id": "lis_south_station_faq_r0229_3d2b7ef5f2",
+          "matched_question": "我有事住不了那么久了，剩下的天数怎么退呀",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ表示有事无法住那么久，询问剩下天数如何退房，酒店FAQ回复转接。客人此时可能比较着急，希望能尽快解决退房问题。"
+        },
+        {
+          "score": 0.3692306876182556,
+          "session_id": "lis_south_station_faq_r0125_7161b2846d",
+          "matched_question": "我怎么退房？",
+          "matched_answer": "如您是在退房日当天12点前退房，您可以打开酒店微信小程序--自由家安心宿，点击“预约退房”办理，也可以打开房门后直接离店。若您在12点之后退房，请联系门店管家18815693383，为您办理延时退房业务。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问如何退房，丽斯未来酒店FAQ回复，若在退房日当天12点前退房，可打开酒店微信小程序--自由家安心宿，点击“预约退房”办理，也可打开房门后直接离店；若在12点之后退房，需联系门店管家18815693383办理延时退房业务。"
+        }
+      ]
+    },
+    {
+      "row_number": 629,
+      "query": "小爱同学为什么关不了氛围灯",
+      "expected_answer": "您可以呼叫“小爱同学”帮您关闭氛围灯。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4968990087509155,
+      "top1_session_id": "lis_south_station_faq_r0629_dc04e9b5ca",
+      "top1_question": "小爱同学为什么关不了氛围灯",
+      "top1_answer": "您可以呼叫“小爱同学”帮您关闭氛围灯。",
+      "hits": [
+        {
+          "score": 0.4968990087509155,
+          "session_id": "lis_south_station_faq_r0629_dc04e9b5ca",
+          "matched_question": "小爱同学为什么关不了氛围灯",
+          "matched_answer": "您可以呼叫“小爱同学”帮您关闭氛围灯。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈小爱同学无法关闭氛围灯，该FAQ建议客人呼叫“小爱同学”来关闭氛围灯。客人可能会尝试按照建议操作，若仍无法关闭，可能会再次寻求帮助。"
+        },
+        {
+          "score": 0.4756239652633667,
+          "session_id": "lis_south_station_faq_r0626_925e02e6d6",
+          "matched_question": "氛围灯关不了怎么回事？",
+          "matched_answer": "您可以呼叫“小爱同学”帮您关闭氛围灯。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈氛围灯关不了，询问原因，丽斯未来酒店FAQ建议客人呼叫“小爱同学”关闭氛围灯。客人提出问题时表现出疑惑的情绪，丽斯未来酒店FAQ则以专业的态度给出了解决方案。客人可能会尝试按照建议呼叫“小爱同学”来关闭氛围灯。"
+        },
+        {
+          "score": 0.4257994294166565,
+          "session_id": "lis_south_station_faq_r0627_584e67c9c8",
+          "matched_question": "氛围灯怎么关？",
+          "matched_answer": "您可以呼叫“小爱同学”帮您关闭氛围灯。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问氛围灯怎么关，丽斯未来酒店FAQ回复可以呼叫“小爱同学”帮其关闭氛围灯。客人可能对酒店设备操作不太熟悉，后续可能还会就其他设备操作问题进行询问。"
+        }
+      ]
+    },
+    {
+      "row_number": 517,
+      "query": "我要一个中间的房间，不要排首尾房。",
+      "expected_answer": "我们酒店901，902，920，923；1001，1002，1020是首尾房。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.5150657892227173,
+      "top1_session_id": "lis_south_station_faq_r0517_8fa253f86a",
+      "top1_question": "我要一个中间的房间，不要排首尾房。",
+      "top1_answer": "我们酒店901，902，920，923；1001，1002，1020是首尾房。",
+      "hits": [
+        {
+          "score": 0.5150657892227173,
+          "session_id": "lis_south_station_faq_r0517_8fa253f86a",
+          "matched_question": "我要一个中间的房间，不要排首尾房。",
+          "matched_answer": "我们酒店901，902，920，923；1001，1002，1020是首尾房。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ提出要一个中间的房间，不要首尾房，酒店FAQ告知客人901，902，920，923；1001，1002，1020是首尾房。"
+        },
+        {
+          "score": 0.37370431423187256,
+          "session_id": "lis_south_station_faq_r0515_eb8ef4c3e4",
+          "matched_question": "我不要首尾房？",
+          "matched_answer": "我们酒店901，902，920，923；1001，1002，1020是首尾房。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ表示不想要首尾房，随后酒店FAQ告知客人901、902、920、923；1001、1002、1020是首尾房。客人可能对首尾房存在某些顾虑，后续可能会继续关注非首尾房的选择情况。"
+        },
+        {
+          "score": 0.35322511196136475,
+          "session_id": "lis_south_station_faq_r0514_bff0d6cd00",
+          "matched_question": "哪些房间是首尾房？",
+          "matched_answer": "我们酒店901，902，920，923；1001，1002，1020是首尾房。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问哪些房间是首尾房，丽斯未来酒店FAQ回复901，902，920，923；1001，1002，1020是首尾房。"
+        }
+      ]
+    },
+    {
+      "row_number": 654,
+      "query": "请问有安静一点的房间吗？最好隔壁没人住",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4320148229598999,
+      "top1_session_id": "lis_south_station_faq_r0654_588ebad1c4",
+      "top1_question": "请问有安静一点的房间吗？最好隔壁没人住",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.4320148229598999,
+          "session_id": "lis_south_station_faq_r0654_588ebad1c4",
+          "matched_question": "请问有安静一点的房间吗？最好隔壁没人住",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问是否有安静一点且隔壁没人住的房间，酒店FAQ回复转接。客人提出需求时可能希望能在安静的环境中休息，酒店转接可能是为了进一步处理客人的需求。"
+        },
+        {
+          "score": 0.36350733041763306,
+          "session_id": "lis_south_station_faq_r0471_a98e448090",
+          "matched_question": "我想住安静点的房间，该怎么办？",
+          "matched_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问想住安静点的房间该怎么办，丽斯未来酒店FAQ告知双数房间号比较安静，具体房型有麦田、绿洲、菱湖可供选择，还表示准备了降噪耳塞，客人可前往1020对面的洗衣房自取。"
+        },
+        {
+          "score": 0.359897255897522,
+          "session_id": "lis_south_station_faq_r0472_09d7f93945",
+          "matched_question": "哪些房间靠小区，要安静点的",
+          "matched_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问哪些房间靠小区且安静，酒店FAQ回复双数房间号的比较安静，具体房型有麦田、绿洲、菱湖，还告知客人若有需要可前往1020对面的洗衣房自取降噪耳塞。"
+        }
+      ]
+    },
+    {
+      "row_number": 674,
+      "query": "我房间号是多少？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.31196844577789307,
+      "top1_session_id": "lis_south_station_faq_r0674_72f0214226",
+      "top1_question": "我房间号是多少？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.31196844577789307,
+          "session_id": "lis_south_station_faq_r0674_72f0214226",
+          "matched_question": "我房间号是多少？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问自己的房间号，丽斯未来酒店FAQ回复转接。客人表现出好奇的情绪，想了解自己的房间号，而丽斯未来酒店FAQ未直接给出答案，而是进行转接处理。推测客人后续可能等待转接后的服务人员告知房间号。"
+        },
+        {
+          "score": 0.2995690107345581,
+          "session_id": "lis_south_station_faq_r0673_ff6ca8f1b8",
+          "matched_question": "我怎么查看我的房间号",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问如何查看自己的房间号，丽斯未来酒店FAQ回复转接。客人表现出好奇的情绪，希望得到查看房间号的方法，而酒店FAQ采取了转接的处理方式。推测客人后续可能等待转接后的服务人员解答其疑问。"
+        },
+        {
+          "score": 0.2654196619987488,
+          "session_id": "lis_south_station_faq_r0676_45571d9556",
+          "matched_question": "你们家可以线上查看房间号吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问丽斯未来酒店是否可以线上查看房间号，酒店FAQ回复转接"
+        }
+      ]
+    },
+    {
+      "row_number": 49,
+      "query": "附近有什么好吃的",
+      "expected_answer": "酒店周边有丰富的餐饮选择，如贡街小吃街、罍街小吃街、骆岗小镇和淮河路步行街等。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3246450424194336,
+      "top1_session_id": "lis_south_station_faq_r0049_f7a80b5498",
+      "top1_question": "附近有什么好吃的",
+      "top1_answer": "酒店周边有丰富的餐饮选择，如贡街小吃街、罍街小吃街、骆岗小镇和淮河路步行街等。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+      "hits": [
+        {
+          "score": 0.3246450424194336,
+          "session_id": "lis_south_station_faq_r0049_f7a80b5498",
+          "matched_question": "附近有什么好吃的",
+          "matched_answer": "酒店周边有丰富的餐饮选择，如贡街小吃街、罍街小吃街、骆岗小镇和淮河路步行街等。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问附近有什么好吃的，丽斯未来酒店FAQ回复称酒店周边有贡街小吃街、罍街小吃街、骆岗小镇和淮河路步行街等餐饮选择，还特别推荐了步行可到达的“饭佳缘牛肉炒饭”。"
+        },
+        {
+          "score": 0.2823150157928467,
+          "session_id": "lis_south_station_faq_r0051_fdf54e2cc8",
+          "matched_question": "边上有什么吃的？",
+          "matched_answer": "酒店周边有丰富的餐饮选择，如贡街小吃街、罍街小吃街、骆岗小镇和淮河路步行街等。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问边上有什么吃的，丽斯未来酒店FAQ回复酒店周边有贡街小吃街、罍街小吃街、骆岗小镇和淮河路步行街等餐饮选择，还特别推荐了附近步行可到的“饭佳缘牛肉炒饭”。"
+        },
+        {
+          "score": 0.2771613597869873,
+          "session_id": "lis_south_station_faq_r0048_38b4b32763",
+          "matched_question": "酒店附近有哪些餐饮推荐？",
+          "matched_answer": "酒店周边有丰富的餐饮选择，如贡街小吃街、罍街小吃街、骆岗小镇和淮河路步行街等。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问酒店附近的餐饮推荐，丽斯未来酒店FAQ推荐了贡街小吃街、罍街小吃街、骆岗小镇、淮河路步行街等餐饮集中地，还特别推荐了步行可到的“饭佳缘牛肉炒饭”。"
+        }
+      ]
+    },
+    {
+      "row_number": 25,
+      "query": "你们酒店有停车场吗？",
+      "expected_answer": "酒店提供免费停车服务，设有地上停车场，推荐您从繁华大道辅路进入，您也可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.36285924911499023,
+      "top1_session_id": "lis_south_station_faq_r0025_ee37a7b645",
+      "top1_question": "你们酒店有停车场吗？",
+      "top1_answer": "酒店提供免费停车服务，设有地上停车场，推荐您从繁华大道辅路进入，您也可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+      "hits": [
+        {
+          "score": 0.36285924911499023,
+          "session_id": "lis_south_station_faq_r0025_ee37a7b645",
+          "matched_question": "你们酒店有停车场吗？",
+          "matched_answer": "酒店提供免费停车服务，设有地上停车场，推荐您从繁华大道辅路进入，您也可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有停车场，丽斯未来酒店FAQ回复酒店提供免费停车服务，设有地上停车场，推荐客人从繁华大道辅路进入，也可用腾讯地图搜索“九珑湾停车场入口”、百度地图搜索“九珑湾地上停车场入口”，更加精准方便。"
+        },
+        {
+          "score": 0.36285704374313354,
+          "session_id": "lis_south_station_faq_r0026_e14d0f1235",
+          "matched_question": "停车场有吗？",
+          "matched_answer": "酒店提供免费停车服务，设有地上停车场，推荐您从繁华大道辅路进入，您也可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有停车场，丽斯未来酒店FAQ回复酒店提供免费停车服务，设有地上停车场，推荐客人从繁华大道辅路进入，也可用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，这样更加精准方便。"
+        },
+        {
+          "score": 0.3475061058998108,
+          "session_id": "lis_south_station_faq_r0028_ed3fc9e0fc",
+          "matched_question": "停车场怎么走？",
+          "matched_answer": "酒店提供免费停车服务，设有地上停车场，推荐您从繁华大道辅路进入，您也可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问停车场的位置，丽斯未来酒店FAQ告知酒店提供免费停车服务，设有地上停车场，推荐从繁华大道辅路进入，也可以用腾讯地图搜索“九珑湾停车场入口”、百度地图搜索“九珑湾地上停车场入口”，这样更加精准方便。"
+        }
+      ]
+    },
+    {
+      "row_number": 291,
+      "query": "酒精湿巾在哪拿？",
+      "expected_answer": "酒店提供酒精湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.37662917375564575,
+      "top1_session_id": "lis_south_station_faq_r0291_4deee65307",
+      "top1_question": "酒精湿巾在哪拿？",
+      "top1_answer": "酒店提供酒精湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.37662917375564575,
+          "session_id": "lis_south_station_faq_r0291_4deee65307",
+          "matched_question": "酒精湿巾在哪拿？",
+          "matched_answer": "酒店提供酒精湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒精湿巾的获取位置，丽斯未来酒店FAQ告知酒精湿巾放置在1020房间对面的洗衣房内，客人可自行取用。客人表现出好奇的情绪，assistant以专业、耐心的态度进行了回复。推测客人可能会前往洗衣房拿取酒精湿巾。"
+        },
+        {
+          "score": 0.36198890209198,
+          "session_id": "lis_south_station_faq_r0289_dc23584758",
+          "matched_question": "有酒精湿巾吗",
+          "matched_answer": "酒店提供酒精湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有酒精湿巾，丽斯未来酒店FAQ回复酒店提供酒精湿巾，放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        },
+        {
+          "score": 0.34386777877807617,
+          "session_id": "lis_south_station_faq_r0292_00a8d4f526",
+          "matched_question": "酒店有没有消毒用品",
+          "matched_answer": "酒店提供酒精湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有消毒用品，丽斯未来酒店FAQ回复酒店提供酒精湿巾，放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 159,
+      "query": "我要换房间，怎么办？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3719143867492676,
+      "top1_session_id": "lis_south_station_faq_r0159_0f97c06a33",
+      "top1_question": "我要换房间，怎么办？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.3719143867492676,
+          "session_id": "lis_south_station_faq_r0159_0f97c06a33",
+          "matched_question": "我要换房间，怎么办？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问换房间的办法，丽斯未来酒店FAQ回复转接"
+        },
+        {
+          "score": 0.3324635624885559,
+          "session_id": "lis_south_station_faq_r0158_d453711cda",
+          "matched_question": "你好可以调换房间吗",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问是否可以调换房间，丽斯未来酒店FAQ回复转接。客人表现出疑惑和期待解决问题的情绪，希望能得到调换房间的许可。推测客人可能因当前房间存在某些问题，如设施故障、环境嘈杂等，才提出调换房间的请求，后续可能会等待转接后的进一步处理结果。"
+        },
+        {
+          "score": 0.3265115022659302,
+          "session_id": "lis_south_station_faq_r0163_ccf703c205",
+          "matched_question": "这个房间的格局我不喜欢，帮我换一个。",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈不喜欢当前房间的格局，要求换房，酒店FAQ回复转接。客人可能希望尽快换到符合自己心意的房间，同时可能会期待酒店在换房过程中提供便利和协助。"
+        }
+      ]
+    },
+    {
+      "row_number": 603,
+      "query": "退房后才能开发票吗？",
+      "expected_answer": "您可以在退房之后在自由家安心宿小程序在线提交申请。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.43231767416000366,
+      "top1_session_id": "lis_south_station_faq_r0603_5f1aafef6b",
+      "top1_question": "退房后才能开发票吗？",
+      "top1_answer": "您可以在退房之后在自由家安心宿小程序在线提交申请。",
+      "hits": [
+        {
+          "score": 0.43231767416000366,
+          "session_id": "lis_south_station_faq_r0603_5f1aafef6b",
+          "matched_question": "退房后才能开发票吗？",
+          "matched_answer": "您可以在退房之后在自由家安心宿小程序在线提交申请。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问是否退房后才能开发票，丽斯未来酒店FAQ回复客人可以在退房之后在自由家安心宿小程序在线提交申请。客人对开发票时间存在疑问，表现出好奇的情绪，酒店FAQ给予了明确的答复。推测客人接下来可能会在退房后按照指引在小程序上申请开发票。"
+        },
+        {
+          "score": 0.3748302459716797,
+          "session_id": "lis_south_station_faq_r0601_d43b69d1d5",
+          "matched_question": "入住期间可以开发票吗？",
+          "matched_answer": "您可以在退房之后在自由家安心宿小程序在线提交申请。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问入住期间是否可以开发票，丽斯未来酒店FAQ回复客人可在退房之后在自由家安心宿小程序在线提交申请。客人可能会在退房后按照此方式申请开发票。"
+        },
+        {
+          "score": 0.35091280937194824,
+          "session_id": "lis_south_station_faq_r0074_625b8c7fd2",
+          "matched_question": "开发票",
+          "matched_answer": "目前酒店是可以提供增值税电子普或专票的，请在退房后打开酒店微信小程序--自由家安心宿，在线申请发票。发票会在申请后1至3个工作日上传至小程序，请您自行下载认领。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ提出开发票的需求，酒店FAQ告知客人目前酒店可提供增值税电子普票或专票，需在退房后打开酒店微信小程序——自由家安心宿在线申请，发票会在申请后1至3个工作日上传至小程序，由客人自行下载认领。"
+        }
+      ]
+    },
+    {
+      "row_number": 172,
+      "query": "马桶冲水坏了",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.30928361415863037,
+      "top1_session_id": "lis_south_station_faq_r0172_d945eacb03",
+      "top1_question": "马桶冲水坏了",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.30928361415863037,
+          "session_id": "lis_south_station_faq_r0172_d945eacb03",
+          "matched_question": "马桶冲水坏了",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间马桶冲水坏了，酒店FAQ回复转接处理。客人反馈问题时情绪可能比较急切，希望问题能尽快解决。推测客人可能在等待处理结果，若长时间未得到解决可能会再次反馈或产生不满情绪。"
+        },
+        {
+          "score": 0.2661539316177368,
+          "session_id": "lis_south_station_faq_r0173_7ebe396efc",
+          "matched_question": "马桶冲不了水",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈马桶冲不了水，酒店FAQ表示转接处理。客人反馈问题时情绪可能较为困扰，希望问题能得到解决；酒店FAQ的反应是及时转接，推测会安排相关人员去处理马桶问题。"
+        },
+        {
+          "score": 0.2149234414100647,
+          "session_id": "lis_south_station_faq_r0176_2350118469",
+          "matched_question": "马桶没有水？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈马桶没有水，客服表示转接处理。客人反馈问题时情绪可能比较疑惑，对马桶没水的情况感到不解；客服则迅速做出转接的反应，展现出专业和高效。推测客人希望问题能得到尽快解决，后续可能会等待转接后的处理结果。"
+        }
+      ]
+    },
+    {
+      "row_number": 511,
+      "query": "停车场可以免费停多久。",
+      "expected_answer": "建议单次停留时间不超过48小时。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3528701066970825,
+      "top1_session_id": "lis_south_station_faq_r0511_7017bfb1b5",
+      "top1_question": "停车场可以免费停多久。",
+      "top1_answer": "建议单次停留时间不超过48小时。",
+      "hits": [
+        {
+          "score": 0.3528701066970825,
+          "session_id": "lis_south_station_faq_r0511_7017bfb1b5",
+          "matched_question": "停车场可以免费停多久。",
+          "matched_answer": "建议单次停留时间不超过48小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问停车场可以免费停多久，丽斯未来酒店FAQ回复建议单次停留时间不超过48小时。客人表现出好奇的情绪，助手给予了明确的答复。推测客人可能有停车需求，在了解停车规则后，可能会根据此信息决定是否将车停在该酒店停车场。"
+        },
+        {
+          "score": 0.31775474548339844,
+          "session_id": "lis_south_station_faq_r0510_79440d3a5a",
+          "matched_question": "停车场一次最长可以停多久？",
+          "matched_answer": "建议单次停留时间不超过48小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店停车场一次最长可以停多久，丽斯未来酒店FAQ回复建议单次停留时间不超过48小时。"
+        },
+        {
+          "score": 0.31424009799957275,
+          "session_id": "lis_south_station_faq_r0567_0093e41a20",
+          "matched_question": "停车场怎么收费？",
+          "matched_answer": "我们停车场是免费的，您出车前十分钟联系我们出车即可。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问停车场收费情况，丽斯未来酒店FAQ回复停车场免费，出车前十分钟联系即可出车。客人可能会根据此信息决定是否将车停在该酒店停车场。"
+        }
+      ]
+    },
+    {
+      "row_number": 736,
+      "query": "你们酒店有没有暗房？",
+      "expected_answer": "没有暗房哈，咱们酒店所有的房间都是有窗户的。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4056793451309204,
+      "top1_session_id": "lis_south_station_faq_r0736_c028e77534",
+      "top1_question": "你们酒店有没有暗房？",
+      "top1_answer": "没有暗房哈，咱们酒店所有的房间都是有窗户的。",
+      "hits": [
+        {
+          "score": 0.4056793451309204,
+          "session_id": "lis_south_station_faq_r0736_c028e77534",
+          "matched_question": "你们酒店有没有暗房？",
+          "matched_answer": "没有暗房哈，咱们酒店所有的房间都是有窗户的。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有暗房，丽斯未来酒店FAQ回复酒店所有房间都有窗户，没有暗房。客人可能在考虑入住房间的采光等问题。"
+        },
+        {
+          "score": 0.39046502113342285,
+          "session_id": "lis_south_station_faq_r0739_93e53169eb",
+          "matched_question": "所有房间都有窗户吗，有没有暗房？",
+          "matched_answer": "没有暗房哈，咱们酒店所有的房间都是有窗户的。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有暗房，所有房间是否都有窗户，丽斯未来酒店FAQ回复酒店没有暗房，所有房间都有窗户。客人可能在选择房间时比较在意采光情况，后续可能会根据这一信息来决定是否入住该酒店。"
+        },
+        {
+          "score": 0.37656956911087036,
+          "session_id": "lis_south_station_faq_r0738_f421388bb3",
+          "matched_question": "你家哪几种房型是暗房？",
+          "matched_answer": "没有暗房哈，咱们酒店所有的房间都是有窗户的。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店哪几种房型是暗房，丽斯未来酒店FAQ回复称酒店所有房间都有窗户，没有暗房。客人可能在选择房型时比较在意房间是否有窗户，后续可能会根据这个信息进一步询问其他房型相关问题。"
+        }
+      ]
+    },
+    {
+      "row_number": 41,
+      "query": "行李寄存在哪里？",
+      "expected_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3538316488265991,
+      "top1_session_id": "lis_south_station_faq_r0041_89da7ace47",
+      "top1_question": "行李寄存在哪里？",
+      "top1_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+      "hits": [
+        {
+          "score": 0.3538316488265991,
+          "session_id": "lis_south_station_faq_r0041_89da7ace47",
+          "matched_question": "行李寄存在哪里？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问行李寄存处，丽斯未来酒店FAQ告知酒店提供行李寄存服务，住客可在入住前或退房后免费寄存，需自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。客人询问时可能处于需要寄存行李的情境，后续可能会前往前台寄存行李。"
+        },
+        {
+          "score": 0.3491259217262268,
+          "session_id": "lis_south_station_faq_r0040_91a6bc9f49",
+          "matched_question": "哪里可以存行李？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问哪里可以存行李，丽斯未来酒店FAQ告知酒店提供行李寄存服务，住客可在入住前或退房后免费寄存，需自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。"
+        },
+        {
+          "score": 0.3326157331466675,
+          "session_id": "lis_south_station_faq_r0043_2bea174af7",
+          "matched_question": "退房后，行李放哪里？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问退房后行李存放位置，丽斯未来酒店FAQ回复酒店提供行李寄存服务，住客可在入住前或退房后免费寄存行李，需自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。"
+        }
+      ]
+    },
+    {
+      "row_number": 490,
+      "query": "门锁不上",
+      "expected_answer": "上抬门把手即可反锁。另外您也可以将边上的防盗链一同使用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3667628765106201,
+      "top1_session_id": "lis_south_station_faq_r0490_6cd9cb6568",
+      "top1_question": "门锁不上",
+      "top1_answer": "上抬门把手即可反锁。另外您也可以将边上的防盗链一同使用。",
+      "hits": [
+        {
+          "score": 0.3667628765106201,
+          "session_id": "lis_south_station_faq_r0490_6cd9cb6568",
+          "matched_question": "门锁不上",
+          "matched_answer": "上抬门把手即可反锁。另外您也可以将边上的防盗链一同使用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈门锁不上，酒店FAQ告知上抬门把手即可反锁，还可使用边上的防盗链。"
+        },
+        {
+          "score": 0.3117826581001282,
+          "session_id": "lis_south_station_faq_r0235_e74d87d28c",
+          "matched_question": "反锁不了了，怎么办？",
+          "matched_answer": "上抬门把手即可反锁。另外您也可以将边上的防盗链一同使用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈门锁反锁不了，询问解决办法。酒店FAQ告知上抬门把手即可反锁，还可使用边上的防盗链。"
+        },
+        {
+          "score": 0.30102217197418213,
+          "session_id": "lis_south_station_faq_r0492_f5a455edc0",
+          "matched_question": "门怎么反锁不了",
+          "matched_answer": "上抬门把手即可反锁。另外您也可以将边上的防盗链一同使用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间门无法反锁，酒店FAQ告知上抬门把手即可反锁，还可使用边上的防盗链。客人反馈时情绪可能有些疑惑，酒店FAQ以专业的态度进行了解答。推测客人接下来可能会尝试按照酒店FAQ的方法去反锁门。"
+        }
+      ]
+    },
+    {
+      "row_number": 567,
+      "query": "停车场怎么收费？",
+      "expected_answer": "我们停车场是免费的，您出车前十分钟联系我们出车即可。",
+      "case_type": "direct",
+      "top1_exact_match": false,
+      "topk_contains_exact": true,
+      "top1_score": 0.2979590892791748,
+      "top1_session_id": "lis_south_station_faq_r0446_40abf45f76",
+      "top1_question": "你们家停车场收不收费？",
+      "top1_answer": "酒店提供免费停车服务，设有地上停车场，推荐您从繁华大道辅路进入，您也可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+      "hits": [
+        {
+          "score": 0.2979590892791748,
+          "session_id": "lis_south_station_faq_r0446_40abf45f76",
+          "matched_question": "你们家停车场收不收费？",
+          "matched_answer": "酒店提供免费停车服务，设有地上停车场，推荐您从繁华大道辅路进入，您也可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店停车场是否收费，丽斯未来酒店FAQ回复酒店提供免费停车服务，设有地上停车场，推荐从繁华大道辅路进入，还可通过腾讯地图搜索‘九珑湾停车场入口’、百度地图搜索‘九珑湾地上停车场入口’以获得更精准的导航。"
+        },
+        {
+          "score": 0.2905133366584778,
+          "session_id": "lis_south_station_faq_r0567_0093e41a20",
+          "matched_question": "停车场怎么收费？",
+          "matched_answer": "我们停车场是免费的，您出车前十分钟联系我们出车即可。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问停车场收费情况，丽斯未来酒店FAQ回复停车场免费，出车前十分钟联系即可出车。客人可能会根据此信息决定是否将车停在该酒店停车场。"
+        },
+        {
+          "score": 0.28528428077697754,
+          "session_id": "lis_south_station_faq_r0444_4808300290",
+          "matched_question": "停车收费吗。",
+          "matched_answer": "酒店提供免费停车服务，设有地上停车场，推荐您从繁华大道辅路进入，您也可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店停车是否收费，丽斯未来酒店FAQ回复酒店提供免费停车服务，设有地上停车场，并推荐从繁华大道辅路进入，还告知可以用腾讯地图搜索“九珑湾停车场入口”、百度地图搜索“九珑湾地上停车场入口”以更精准方便地到达。"
+        }
+      ]
+    },
+    {
+      "row_number": 95,
+      "query": "无线网密码是什么？",
+      "expected_answer": "我们酒店的Wi-Fi账号：Alilys Wi-Fi密码是：yzbh8888",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.34618842601776123,
+      "top1_session_id": "lis_south_station_faq_r0095_50d13073dd",
+      "top1_question": "无线网密码是什么？",
+      "top1_answer": "我们酒店的Wi-Fi账号：Alilys Wi-Fi密码是：yzbh8888",
+      "hits": [
+        {
+          "score": 0.34618842601776123,
+          "session_id": "lis_south_station_faq_r0095_50d13073dd",
+          "matched_question": "无线网密码是什么？",
+          "matched_answer": "我们酒店的Wi-Fi账号：Alilys Wi-Fi密码是：yzbh8888",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店无线网密码，丽斯未来酒店FAQ告知Wi-Fi账号是Alilys，密码是yzbh8888。客人可能会使用该密码连接酒店Wi-Fi以满足上网需求。"
+        },
+        {
+          "score": 0.3308049440383911,
+          "session_id": "lis_south_station_faq_r0093_bee438c69d",
+          "matched_question": "无线网是哪个？",
+          "matched_answer": "我们酒店的Wi-Fi账号：Alilys Wi-Fi密码是：yzbh8888",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问无线网是哪个，丽斯未来酒店FAQ告知酒店的Wi-Fi账号是Alilys，密码是yzbh8888。客人可能想连接酒店无线网，后续可能会尝试使用该账号密码进行连接。"
+        },
+        {
+          "score": 0.2833594083786011,
+          "session_id": "lis_south_station_faq_r0094_635d6d48ce",
+          "matched_question": "怎么联网？",
+          "matched_answer": "我们酒店的Wi-Fi账号：Alilys Wi-Fi密码是：yzbh8888",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问如何联网，丽斯未来酒店FAQ告知酒店Wi-Fi账号为Alilys，密码是yzbh8888。客人可能会根据提供的信息进行联网操作。"
+        }
+      ]
+    },
+    {
+      "row_number": 252,
+      "query": "能帮我叫阿姨过来打扫一下房间吗？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4660818576812744,
+      "top1_session_id": "lis_south_station_faq_r0252_b4a82217a1",
+      "top1_question": "能帮我叫阿姨过来打扫一下房间吗？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.4660818576812744,
+          "session_id": "lis_south_station_faq_r0252_b4a82217a1",
+          "matched_question": "能帮我叫阿姨过来打扫一下房间吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ提出叫阿姨来打扫房间的请求，酒店FAQ回复转接。客人提出请求时可能希望房间能尽快得到清洁，处于期待房间整洁的状态；酒店FAQ转接的反应表明会处理客人的请求。"
+        },
+        {
+          "score": 0.4416518211364746,
+          "session_id": "lis_south_station_faq_r0251_fe17105388",
+          "matched_question": "我现在要打扫一下房间，请帮我叫一下阿姨",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ提出现在要打扫房间，请求帮忙叫一下阿姨，酒店FAQ回复转接。推测客人接下来会等待阿姨来打扫房间。"
+        },
+        {
+          "score": 0.3410608768463135,
+          "session_id": "lis_south_station_faq_r0250_c4cafdc651",
+          "matched_question": "打扫一下房间",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ提出打扫房间的请求，酒店FAQ回复转接。"
+        }
+      ]
+    },
+    {
+      "row_number": 289,
+      "query": "有酒精湿巾吗",
+      "expected_answer": "酒店提供酒精湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3551520109176636,
+      "top1_session_id": "lis_south_station_faq_r0289_dc23584758",
+      "top1_question": "有酒精湿巾吗",
+      "top1_answer": "酒店提供酒精湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.3551520109176636,
+          "session_id": "lis_south_station_faq_r0289_dc23584758",
+          "matched_question": "有酒精湿巾吗",
+          "matched_answer": "酒店提供酒精湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有酒精湿巾，丽斯未来酒店FAQ回复酒店提供酒精湿巾，放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        },
+        {
+          "score": 0.3253878355026245,
+          "session_id": "lis_south_station_faq_r0290_3629f80cc9",
+          "matched_question": "酒店提供酒精湿巾吗？",
+          "matched_answer": "酒店提供酒精湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否提供酒精湿巾，丽斯未来酒店FAQ回复酒店提供酒精湿巾，放置在1020房间对面的洗衣房内，客人可按需自行取用。客人表现出好奇的情绪，assistant正常回应。推测客人可能后续会去洗衣房取用酒精湿巾。"
+        },
+        {
+          "score": 0.31807708740234375,
+          "session_id": "lis_south_station_faq_r0292_00a8d4f526",
+          "matched_question": "酒店有没有消毒用品",
+          "matched_answer": "酒店提供酒精湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有消毒用品，丽斯未来酒店FAQ回复酒店提供酒精湿巾，放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 262,
+      "query": "冰箱怎么用？",
+      "expected_answer": "这边辛苦您自己插一下哈",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.31335562467575073,
+      "top1_session_id": "lis_south_station_faq_r0262_c269d8cb1e",
+      "top1_question": "冰箱怎么用？",
+      "top1_answer": "这边辛苦您自己插一下哈",
+      "hits": [
+        {
+          "score": 0.31335562467575073,
+          "session_id": "lis_south_station_faq_r0262_c269d8cb1e",
+          "matched_question": "冰箱怎么用？",
+          "matched_answer": "这边辛苦您自己插一下哈",
+          "memory_type": "event_v1",
+          "summary": "在2026年4月15日周三下午13:11，酒店客人询问冰箱怎么用，丽斯未来酒店FAQ回复让其自己插一下。客人表现出好奇的情绪，关注点在于冰箱的使用方法，而丽斯未来酒店FAQ给予了直接的操作提示。推测客人接下来可能会尝试自己插冰箱来使用。"
+        },
+        {
+          "score": 0.24469709396362305,
+          "session_id": "lis_south_station_faq_r0261_fb0a5def68",
+          "matched_question": "冰箱不制冷，怎么办？",
+          "matched_answer": "这边辛苦您自己插一下哈",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈冰箱不制冷，询问解决办法，丽斯未来酒店FAQ让客人自己插一下冰箱。"
+        },
+        {
+          "score": 0.2409459352493286,
+          "session_id": "lis_south_station_faq_r0187_6abe8753b3",
+          "matched_question": "房间里面有冰箱吗？",
+          "matched_answer": "我们酒店只有艺林、合柴、岭南和积木四个房型配有冰箱。若您有特殊需求，可以选择此类房型。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问房间里是否有冰箱，丽斯未来酒店FAQ回复称只有艺林、合柴、岭南和积木四个房型配有冰箱，若客人有特殊需求，可以选择此类房型。客人可能在考虑是否选择有冰箱的房型。"
+        }
+      ]
+    },
+    {
+      "row_number": 504,
+      "query": "你们地上地下都可以停车吗？",
+      "expected_answer": "您好，我们酒店目前只提供地上停车场。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.35698699951171875,
+      "top1_session_id": "lis_south_station_faq_r0504_bbe483a757",
+      "top1_question": "你们地上地下都可以停车吗？",
+      "top1_answer": "您好，我们酒店目前只提供地上停车场。",
+      "hits": [
+        {
+          "score": 0.35698699951171875,
+          "session_id": "lis_south_station_faq_r0504_bbe483a757",
+          "matched_question": "你们地上地下都可以停车吗？",
+          "matched_answer": "您好，我们酒店目前只提供地上停车场。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店地上地下是否都可以停车，丽斯未来酒店FAQ回复目前只提供地上停车场。客人可能正在考虑是否开车前往酒店，若开车前往，需了解停车情况。"
+        },
+        {
+          "score": 0.3281280994415283,
+          "session_id": "lis_south_station_faq_r0502_2a266742a5",
+          "matched_question": "停车场是地上还是地下",
+          "matched_answer": "您好，我们酒店目前只提供地上停车场。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店停车场是地上还是地下，丽斯未来酒店FAQ回复目前只提供地上停车场。客人表现出好奇的情绪，在得到答复后对话结束。推测客人可能接下来会考虑是否将车停在该酒店的地上停车场。"
+        },
+        {
+          "score": 0.322334885597229,
+          "session_id": "lis_south_station_faq_r0503_29783b37c3",
+          "matched_question": "有地下停车场吗？",
+          "matched_answer": "您好，我们酒店目前只提供地上停车场。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有地下停车场，丽斯未来酒店FAQ回复目前只提供地上停车场。客人可能在考虑是否开车前往酒店，若需要停车可能会重新考虑出行方式。"
+        }
+      ]
+    },
+    {
+      "row_number": 325,
+      "query": "有针线包吗？",
+      "expected_answer": "酒店提供针线包，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3319994807243347,
+      "top1_session_id": "lis_south_station_faq_r0325_99d892e382",
+      "top1_question": "有针线包吗？",
+      "top1_answer": "酒店提供针线包，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.3319994807243347,
+          "session_id": "lis_south_station_faq_r0325_99d892e382",
+          "matched_question": "有针线包吗？",
+          "matched_answer": "酒店提供针线包，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问是否有针线包，丽斯未来酒店FAQ回复酒店提供针线包，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        },
+        {
+          "score": 0.3134457468986511,
+          "session_id": "lis_south_station_faq_r0326_4e060a2373",
+          "matched_question": "我想缝一下衣服，有没有针线？",
+          "matched_answer": "酒店提供针线包，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问是否有针线用于缝衣服，酒店FAQ告知酒店提供针线包，放置在1020房间对面的洗衣房内，可自行取用。"
+        },
+        {
+          "score": 0.2915007472038269,
+          "session_id": "lis_south_station_faq_r0328_ac0a281ae4",
+          "matched_question": "可以帮忙缝一下衣服吗？",
+          "matched_answer": "酒店提供针线包，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ提出帮忙缝衣服的请求，酒店FAQ告知客人酒店提供针线包，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 428,
+      "query": "我想钟点房续成全天房可以吗？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4497929811477661,
+      "top1_session_id": "lis_south_station_faq_r0428_c42d1dc08f",
+      "top1_question": "我想钟点房续成全天房可以吗？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.4497929811477661,
+          "session_id": "lis_south_station_faq_r0428_c42d1dc08f",
+          "matched_question": "我想钟点房续成全天房可以吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问能否将钟点房续成全天房，丽斯未来酒店FAQ回复转接"
+        },
+        {
+          "score": 0.4198944568634033,
+          "session_id": "lis_south_station_faq_r0427_31779d67be",
+          "matched_question": "我可以把钟点房改成全天房可以吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问是否可以将钟点房改成全天房，丽斯未来酒店FAQ回复转接。客人可能希望继续与相关人员沟通以解决房间更改的问题。"
+        },
+        {
+          "score": 0.3746814727783203,
+          "session_id": "lis_south_station_faq_r0430_3650aad6ed",
+          "matched_question": "我钟点房想换全天的",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ提出将钟点房换成全天房的需求，酒店FAQ回复转接。客人表现出需求急切的情绪，酒店则迅速响应进行转接处理。推测客人可能是因为行程变化等原因需要更换房间类型，后续可能会等待转接后的进一步处理结果。"
+        }
+      ]
+    },
+    {
+      "row_number": 532,
+      "query": "酒店位置在哪？",
+      "expected_answer": "您好，丽斯未来酒店（合肥高铁南站店）位于包河区包河大道与繁华大道交汇处南100米路东。如果您需要导航，推荐使用高德地图或微信地图，搜索“皇与后国际大酒店（合肥高铁南站店）”即可找到我们。五号线包河苑站C出口向西步行400米左右也能到达哦。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3083864450454712,
+      "top1_session_id": "lis_south_station_faq_r0532_0e44ac3ffa",
+      "top1_question": "酒店位置在哪？",
+      "top1_answer": "您好，丽斯未来酒店（合肥高铁南站店）位于包河区包河大道与繁华大道交汇处南100米路东。如果您需要导航，推荐使用高德地图或微信地图，搜索“皇与后国际大酒店（合肥高铁南站店）”即可找到我们。五号线包河苑站C出口向西步行400米左右也能到达哦。",
+      "hits": [
+        {
+          "score": 0.3083864450454712,
+          "session_id": "lis_south_station_faq_r0532_0e44ac3ffa",
+          "matched_question": "酒店位置在哪？",
+          "matched_answer": "您好，丽斯未来酒店（合肥高铁南站店）位于包河区包河大道与繁华大道交汇处南100米路东。如果您需要导航，推荐使用高德地图或微信地图，搜索“皇与后国际大酒店（合肥高铁南站店）”即可找到我们。五号线包河苑站C出口向西步行400米左右也能到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店位置，丽斯未来酒店FAQ回复酒店位于包河区包河大道与繁华大道交汇处南100米路东，可使用高德地图或微信地图搜索“皇与后国际大酒店（合肥高铁南站店）”导航，也可从五号线包河苑站C出口向西步行400米左右到达。"
+        },
+        {
+          "score": 0.3082066774368286,
+          "session_id": "lis_south_station_faq_r0005_24e4efd1b2",
+          "matched_question": "酒店的具体位置是哪里？",
+          "matched_answer": "您好，丽斯未来酒店（合肥高铁南站店）位于包河区包河大道与繁华大道交汇处南100米路东。如果您需要导航，推荐使用高德地图或微信地图，搜索“皇与后国际大酒店（合肥高铁南站店）”即可找到我们。五号线包河苑站C出口向西步行400米左右也能到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店的具体位置，丽斯未来酒店FAQ回复酒店位于包河区包河大道与繁华大道交汇处南100米路东，可使用高德地图或微信地图搜索“皇与后国际大酒店（合肥高铁南站店）”导航，也可从五号线包河苑站C出口向西步行400米左右到达。"
+        },
+        {
+          "score": 0.297785222530365,
+          "session_id": "lis_south_station_faq_r0002_8ce55dcbfa",
+          "matched_question": "酒店在什么位置？",
+          "matched_answer": "您好，丽斯未来酒店（合肥高铁南站店）位于包河区包河大道与繁华大道交汇处南100米路东。如果您需要导航，推荐使用高德地图或微信地图，搜索“皇与后国际大酒店（合肥高铁南站店）”即可找到我们。五号线包河苑站C出口向西步行400米左右也能到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店位置，丽斯未来酒店FAQ告知酒店位于包河区包河大道与繁华大道交汇处南100米路东，可通过高德地图或微信地图搜索“皇与后国际大酒店（合肥高铁南站店）”导航前往，也可从五号线包河苑站C出口向西步行400米左右到达。"
+        }
+      ]
+    },
+    {
+      "row_number": 676,
+      "query": "你们家可以线上查看房间号吗？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4376646876335144,
+      "top1_session_id": "lis_south_station_faq_r0676_45571d9556",
+      "top1_question": "你们家可以线上查看房间号吗？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.4376646876335144,
+          "session_id": "lis_south_station_faq_r0676_45571d9556",
+          "matched_question": "你们家可以线上查看房间号吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问丽斯未来酒店是否可以线上查看房间号，酒店FAQ回复转接"
+        },
+        {
+          "score": 0.33488112688064575,
+          "session_id": "lis_south_station_faq_r0673_ff6ca8f1b8",
+          "matched_question": "我怎么查看我的房间号",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问如何查看自己的房间号，丽斯未来酒店FAQ回复转接。客人表现出好奇的情绪，希望得到查看房间号的方法，而酒店FAQ采取了转接的处理方式。推测客人后续可能等待转接后的服务人员解答其疑问。"
+        },
+        {
+          "score": 0.27452194690704346,
+          "session_id": "lis_south_station_faq_r0674_72f0214226",
+          "matched_question": "我房间号是多少？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问自己的房间号，丽斯未来酒店FAQ回复转接。客人表现出好奇的情绪，想了解自己的房间号，而丽斯未来酒店FAQ未直接给出答案，而是进行转接处理。推测客人后续可能等待转接后的服务人员告知房间号。"
+        }
+      ]
+    },
+    {
+      "row_number": 499,
+      "query": "车停在哪里？",
+      "expected_answer": "推荐您从繁华大道辅路进入，或者您可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.28128111362457275,
+      "top1_session_id": "lis_south_station_faq_r0499_862bfdc26c",
+      "top1_question": "车停在哪里？",
+      "top1_answer": "推荐您从繁华大道辅路进入，或者您可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+      "hits": [
+        {
+          "score": 0.28128111362457275,
+          "session_id": "lis_south_station_faq_r0499_862bfdc26c",
+          "matched_question": "车停在哪里？",
+          "matched_answer": "推荐您从繁华大道辅路进入，或者您可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问车停在哪里，丽斯未来酒店FAQ推荐客人从繁华大道辅路进入，还建议使用腾讯地图搜索“九珑湾停车场入口”、百度地图搜索“九珑湾地上停车场入口”，认为这样更精准方便。客人可能会根据建议选择合适的方式前往停车场停车。"
+        },
+        {
+          "score": 0.2344496250152588,
+          "session_id": "lis_south_station_faq_r0027_1d9bc22c79",
+          "matched_question": "免费停车，停哪里？",
+          "matched_answer": "酒店提供免费停车服务，设有地上停车场，推荐您从繁华大道辅路进入，您也可以用腾讯地图搜索“九珑湾停车场入口”，百度地图搜索“九珑湾地上停车场入口”，更加精准方便哦！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问免费停车的位置，丽斯未来酒店FAQ回复酒店提供免费停车服务，有地上停车场，推荐客人从繁华大道辅路进入，还可通过腾讯地图搜索‘九珑湾停车场入口’、百度地图搜索‘九珑湾地上停车场入口’来精准导航。"
+        },
+        {
+          "score": 0.20212805271148682,
+          "session_id": "lis_south_station_faq_r0502_2a266742a5",
+          "matched_question": "停车场是地上还是地下",
+          "matched_answer": "您好，我们酒店目前只提供地上停车场。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店停车场是地上还是地下，丽斯未来酒店FAQ回复目前只提供地上停车场。客人表现出好奇的情绪，在得到答复后对话结束。推测客人可能接下来会考虑是否将车停在该酒店的地上停车场。"
+        }
+      ]
+    },
+    {
+      "row_number": 43,
+      "query": "退房后，行李放哪里？",
+      "expected_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4283123016357422,
+      "top1_session_id": "lis_south_station_faq_r0043_2bea174af7",
+      "top1_question": "退房后，行李放哪里？",
+      "top1_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+      "hits": [
+        {
+          "score": 0.4283123016357422,
+          "session_id": "lis_south_station_faq_r0043_2bea174af7",
+          "matched_question": "退房后，行李放哪里？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问退房后行李存放位置，丽斯未来酒店FAQ回复酒店提供行李寄存服务，住客可在入住前或退房后免费寄存行李，需自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。"
+        },
+        {
+          "score": 0.35334038734436035,
+          "session_id": "lis_south_station_faq_r0040_91a6bc9f49",
+          "matched_question": "哪里可以存行李？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问哪里可以存行李，丽斯未来酒店FAQ告知酒店提供行李寄存服务，住客可在入住前或退房后免费寄存，需自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。"
+        },
+        {
+          "score": 0.33811962604522705,
+          "session_id": "lis_south_station_faq_r0042_2bd9bbfa3e",
+          "matched_question": "提前到店，行李放哪？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人因提前到店，询问行李存放处，丽斯未来酒店FAQ告知酒店提供行李寄存服务，住客可在入住前或退房后免费寄存，需自行前往1楼丽斯酒店前台处的寄存柜，按提示完成寄存，寄存柜免费时间为24小时。"
+        }
+      ]
+    },
+    {
+      "row_number": 477,
+      "query": "那间房比较安静？",
+      "expected_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3827019929885864,
+      "top1_session_id": "lis_south_station_faq_r0477_8cdbc6eb71",
+      "top1_question": "那间房比较安静？",
+      "top1_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+      "hits": [
+        {
+          "score": 0.3827019929885864,
+          "session_id": "lis_south_station_faq_r0477_8cdbc6eb71",
+          "matched_question": "那间房比较安静？",
+          "matched_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问哪间房比较安静，丽斯未来酒店FAQ回复双数房间号的比较安静，具体房型有麦田、绿洲、菱湖，还告知客人如有需要可前往1020对面的洗衣房自取降噪耳塞。客人可能会根据回复选择安静的房间入住。"
+        },
+        {
+          "score": 0.3608410358428955,
+          "session_id": "lis_south_station_faq_r0469_8ac4b52356",
+          "matched_question": "哪些房型比较安静",
+          "matched_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问哪些房型比较安静，丽斯未来酒店FAQ回应称双数房间号的房间比较安静，具体房型为麦田、绿洲、菱湖，还表示酒店准备了降噪耳塞，客人可前往1020对面的洗衣房自取。"
+        },
+        {
+          "score": 0.3558165431022644,
+          "session_id": "lis_south_station_faq_r0474_3c3c6fafd9",
+          "matched_question": "哪些房间比较安静？",
+          "matched_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问哪些房间比较安静，丽斯未来酒店FAQ回复双数房间号的比较安静，具体房型有麦田、绿洲、菱湖，还告知客人若有需要可前往1020对面的洗衣房自取降噪耳塞。"
+        }
+      ]
+    },
+    {
+      "row_number": 300,
+      "query": "我磕破了皮，怎么办",
+      "expected_answer": "酒店提供创可贴，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3339512348175049,
+      "top1_session_id": "lis_south_station_faq_r0300_23c871e8a5",
+      "top1_question": "我磕破了皮，怎么办",
+      "top1_answer": "酒店提供创可贴，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.3339512348175049,
+          "session_id": "lis_south_station_faq_r0300_23c871e8a5",
+          "matched_question": "我磕破了皮，怎么办",
+          "matched_answer": "酒店提供创可贴，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈自己磕破了皮，询问怎么办，酒店FAQ告知客人酒店提供创可贴，放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        },
+        {
+          "score": 0.17198628187179565,
+          "session_id": "lis_south_station_faq_r0085_be0d0a93b7",
+          "matched_question": "我受伤了，怎么办？",
+          "matched_answer": "酒店暂不提供紧急医疗服务，如有需要，请拨打120或前往附近医院（如合肥市第三人民医院-上海路院区）。如需帮助，可联系24小时客服电话！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ表示自己受伤并询问怎么办，丽斯未来酒店FAQ告知酒店暂不提供紧急医疗服务，建议客人拨打120或前往附近的合肥市第三人民医院 - 上海路院区，还表示如需帮助可联系24小时客服电话。客人可能在思考是否拨打120或前往指定医院，也可能会联系客服进一步咨询。"
+        },
+        {
+          "score": 0.15185058116912842,
+          "session_id": "lis_south_station_faq_r0297_19caa068ec",
+          "matched_question": "有创口贴吗",
+          "matched_answer": "酒店提供创可贴，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有创口贴，丽斯未来酒店FAQ回复酒店提供创可贴，放置在1020房间对面的洗衣房内，可自行取用。客人可能因受伤或预计会受伤而有获取创口贴的需求，后续可能会去洗衣房拿创口贴。"
+        }
+      ]
+    },
+    {
+      "row_number": 236,
+      "query": "房间里面有没有防盗链？",
+      "expected_answer": "上抬门把手即可反锁。另外您也可以将边上的防盗链一同使用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4125326871871948,
+      "top1_session_id": "lis_south_station_faq_r0236_54bb544314",
+      "top1_question": "房间里面有没有防盗链？",
+      "top1_answer": "上抬门把手即可反锁。另外您也可以将边上的防盗链一同使用。",
+      "hits": [
+        {
+          "score": 0.4125326871871948,
+          "session_id": "lis_south_station_faq_r0236_54bb544314",
+          "matched_question": "房间里面有没有防盗链？",
+          "matched_answer": "上抬门把手即可反锁。另外您也可以将边上的防盗链一同使用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问房间内是否有防盗链，丽斯未来酒店FAQ回复称上抬门把手即可反锁，还可使用边上的防盗链。客人的询问体现出其对房间安全方面的关注，推测客人可能比较注重个人隐私和财物安全。"
+        },
+        {
+          "score": 0.30276942253112793,
+          "session_id": "lis_south_station_faq_r0237_228eddb091",
+          "matched_question": "房间门能反锁吗？",
+          "matched_answer": "上抬门把手即可反锁。另外您也可以将边上的防盗链一同使用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问房间门能否反锁，丽斯未来酒店FAQ回复上抬门把手即可反锁，还可使用边上的防盗链。客人询问时表现出对房间安全的关注和好奇，assistant则以专业和耐心的态度进行了解答。推测客人后续可能会按照指导进行反锁操作以确保房间安全。"
+        },
+        {
+          "score": 0.29570257663726807,
+          "session_id": "lis_south_station_faq_r0493_4552116eb2",
+          "matched_question": "门好像坏了",
+          "matched_answer": "上抬门把手即可反锁。另外您也可以将边上的防盗链一同使用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间门好像坏了，丽斯未来酒店FAQ告知客人上抬门把手即可反锁，还可以将边上的防盗链一同使用。"
+        }
+      ]
+    },
+    {
+      "row_number": 630,
+      "query": "续住必须原平台下单吗？",
+      "expected_answer": "其他平台也可以的哈，如果您想原房续住需要选择与现在所住的房间同一房型下单。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.5140811204910278,
+      "top1_session_id": "lis_south_station_faq_r0630_c1f2be612d",
+      "top1_question": "续住必须原平台下单吗？",
+      "top1_answer": "其他平台也可以的哈，如果您想原房续住需要选择与现在所住的房间同一房型下单。",
+      "hits": [
+        {
+          "score": 0.5140811204910278,
+          "session_id": "lis_south_station_faq_r0630_c1f2be612d",
+          "matched_question": "续住必须原平台下单吗？",
+          "matched_answer": "其他平台也可以的哈，如果您想原房续住需要选择与现在所住的房间同一房型下单。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问续住是否必须在原平台下单，丽斯未来酒店FAQ回复其他平台也可以，若想原房续住需选择与现住房间同一房型下单。客人可能在考虑续住方式，后续可能会根据回复选择合适的平台下单续住。"
+        },
+        {
+          "score": 0.4843491315841675,
+          "session_id": "lis_south_station_faq_r0631_7129425c22",
+          "matched_question": "续住可以在别的平台下单吗？",
+          "matched_answer": "其他平台也可以的哈，如果您想原房续住需要选择与现在所住的房间同一房型下单。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问是否可以在别的平台续住，丽斯未来酒店FAQ回复其他平台也可以，但如果想原房续住需要选择与现在所住的房间同一房型下单。"
+        },
+        {
+          "score": 0.46898776292800903,
+          "session_id": "lis_south_station_faq_r0633_ecf20677b7",
+          "matched_question": "原来的房间在携程订的，续住在美团下吗？",
+          "matched_answer": "其他平台也可以的哈，如果您想原房续住需要选择与现在所住的房间同一房型下单。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问原来房间在携程订的，续住是否可以在美团下单，丽斯未来酒店FAQ回复其他平台也可以，若想原房续住需选择与现住房间同一房型下单。客人可能在思考不同平台续住的差异以及是否选择美团续住。"
+        }
+      ]
+    },
+    {
+      "row_number": 572,
+      "query": "房间好吵",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3231511116027832,
+      "top1_session_id": "lis_south_station_faq_r0572_98483c9cd0",
+      "top1_question": "房间好吵",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.3231511116027832,
+          "session_id": "lis_south_station_faq_r0572_98483c9cd0",
+          "matched_question": "房间好吵",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间很吵，酒店FAQ表示转接处理。客人反馈时情绪烦躁，酒店FAQ反应迅速转接处理。推测客人可能希望尽快解决噪音问题，酒店可能会安排人员去客人房间了解情况并解决噪音问题。"
+        },
+        {
+          "score": 0.31918495893478394,
+          "session_id": "lis_south_station_faq_r0542_f273e8fe45",
+          "matched_question": "房间太吵了，我要换个安静的。",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间太吵，要求换个安静的房间，酒店FAQ回复转接。客人可能对当前房间的噪音情况感到不满，期望能尽快换到安静的房间；酒店方面则需要尽快处理转接事宜，以满足客人的需求。"
+        },
+        {
+          "score": 0.31801074743270874,
+          "session_id": "lis_south_station_faq_r0424_a83f4e9e88",
+          "matched_question": "房间太吵了，睡不着",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间太吵，睡不着，酒店FAQ回复转接。客人情绪烦躁，对住宿环境不满；酒店FAQ迅速响应，转接处理问题。推测客人希望尽快解决噪音问题，能安静休息；酒店可能会安排隔音更好的房间或采取降噪措施。"
+        }
+      ]
+    },
+    {
+      "row_number": 42,
+      "query": "提前到店，行李放哪？",
+      "expected_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.43299174308776855,
+      "top1_session_id": "lis_south_station_faq_r0042_2bd9bbfa3e",
+      "top1_question": "提前到店，行李放哪？",
+      "top1_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+      "hits": [
+        {
+          "score": 0.43299174308776855,
+          "session_id": "lis_south_station_faq_r0042_2bd9bbfa3e",
+          "matched_question": "提前到店，行李放哪？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人因提前到店，询问行李存放处，丽斯未来酒店FAQ告知酒店提供行李寄存服务，住客可在入住前或退房后免费寄存，需自行前往1楼丽斯酒店前台处的寄存柜，按提示完成寄存，寄存柜免费时间为24小时。"
+        },
+        {
+          "score": 0.339694619178772,
+          "session_id": "lis_south_station_faq_r0043_2bea174af7",
+          "matched_question": "退房后，行李放哪里？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问退房后行李存放位置，丽斯未来酒店FAQ回复酒店提供行李寄存服务，住客可在入住前或退房后免费寄存行李，需自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。"
+        },
+        {
+          "score": 0.3376449942588806,
+          "session_id": "lis_south_station_faq_r0040_91a6bc9f49",
+          "matched_question": "哪里可以存行李？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问哪里可以存行李，丽斯未来酒店FAQ告知酒店提供行李寄存服务，住客可在入住前或退房后免费寄存，需自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。"
+        }
+      ]
+    },
+    {
+      "row_number": 650,
+      "query": "如何打开房间空调？",
+      "expected_answer": "您可以通过呼叫“小爱同学”打开空调，也可以使用墙上的控制面板手动操作。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.38919711112976074,
+      "top1_session_id": "lis_south_station_faq_r0650_e1534f7bf8",
+      "top1_question": "如何打开房间空调？",
+      "top1_answer": "您可以通过呼叫“小爱同学”打开空调，也可以使用墙上的控制面板手动操作。",
+      "hits": [
+        {
+          "score": 0.38919711112976074,
+          "session_id": "lis_south_station_faq_r0650_e1534f7bf8",
+          "matched_question": "如何打开房间空调？",
+          "matched_answer": "您可以通过呼叫“小爱同学”打开空调，也可以使用墙上的控制面板手动操作。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问如何打开房间空调，助手告知可以通过呼叫“小爱同学”打开空调，也可以使用墙上的控制面板手动操作。客人可能后续会按照助手提供的方法去尝试打开空调。"
+        },
+        {
+          "score": 0.3535030484199524,
+          "session_id": "lis_south_station_faq_r0652_6863361556",
+          "matched_question": "空调怎么开不了？",
+          "matched_answer": "您可以通过呼叫“小爱同学”打开空调，也可以使用墙上的控制面板手动操作。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间空调开不了，询问解决办法，酒店FAQ告知客人可以通过呼叫“小爱同学”打开空调，也可以使用墙上的控制面板手动操作。客人在询问时表现出疑惑的情绪，酒店FAQ以专业、耐心的态度进行了解答。推测客人接下来可能会按照酒店FAQ提供的方法尝试打开空调。"
+        },
+        {
+          "score": 0.3373057246208191,
+          "session_id": "lis_south_station_faq_r0653_69fae87392",
+          "matched_question": "空调怎么使用",
+          "matched_answer": "您可以通过呼叫“小爱同学”打开空调，也可以使用墙上的控制面板手动操作。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问空调如何使用，丽斯未来酒店FAQ回复可以通过呼叫“小爱同学”打开空调，也可以使用墙上的控制面板手动操作。客人可能会按照提供的方法去尝试开启空调。"
+        }
+      ]
+    },
+    {
+      "row_number": 391,
+      "query": "多余的被子在哪拿？",
+      "expected_answer": "酒店提供备用被子，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3854977488517761,
+      "top1_session_id": "lis_south_station_faq_r0391_c49db6116f",
+      "top1_question": "多余的被子在哪拿？",
+      "top1_answer": "酒店提供备用被子，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.3854977488517761,
+          "session_id": "lis_south_station_faq_r0391_c49db6116f",
+          "matched_question": "多余的被子在哪拿？",
+          "matched_answer": "酒店提供备用被子，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问多余的被子在哪拿，丽斯未来酒店FAQ告知客人酒店备用被子放置在1020房间对面的洗衣房内，客人可根据自身需要自行取用。"
+        },
+        {
+          "score": 0.34000587463378906,
+          "session_id": "lis_south_station_faq_r0388_fcfbc7157d",
+          "matched_question": "有多余的被子吗？",
+          "matched_answer": "酒店提供备用被子，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问是否有多余的被子，丽斯未来酒店FAQ回复酒店提供备用被子，放置在1020房间对面的洗衣房内，客人可自行取用。客人可能会根据回复去洗衣房拿取备用被子。"
+        },
+        {
+          "score": 0.307009220123291,
+          "session_id": "lis_south_station_faq_r0397_2cb2de807d",
+          "matched_question": "多余的被套在哪拿？",
+          "matched_answer": "抱歉，酒店暂时不提供多余的被套。若您有特殊问题，请联系24小时客服18815693383。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问多余的被套在哪拿，丽斯未来酒店FAQ回复酒店暂时不提供多余的被套，并告知若有特殊问题可联系24小时客服18815693383。"
+        }
+      ]
+    },
+    {
+      "row_number": 127,
+      "query": "退房怎么办？",
+      "expected_answer": "如您是在退房日当天12点前退房，您可以打开酒店微信小程序--自由家安心宿，点击“预约退房”办理，也可以打开房门后直接离店。若您在12点之后退房，请联系门店管家18815693383，为您办理延时退房业务。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3610347509384155,
+      "top1_session_id": "lis_south_station_faq_r0127_8539ea9730",
+      "top1_question": "退房怎么办？",
+      "top1_answer": "如您是在退房日当天12点前退房，您可以打开酒店微信小程序--自由家安心宿，点击“预约退房”办理，也可以打开房门后直接离店。若您在12点之后退房，请联系门店管家18815693383，为您办理延时退房业务。",
+      "hits": [
+        {
+          "score": 0.3610347509384155,
+          "session_id": "lis_south_station_faq_r0127_8539ea9730",
+          "matched_question": "退房怎么办？",
+          "matched_answer": "如您是在退房日当天12点前退房，您可以打开酒店微信小程序--自由家安心宿，点击“预约退房”办理，也可以打开房门后直接离店。若您在12点之后退房，请联系门店管家18815693383，为您办理延时退房业务。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问退房怎么办，丽斯未来酒店FAQ回复，若在退房日当天12点前退房，可打开酒店微信小程序自由家安心宿，点击“预约退房”办理，也可打开房门后直接离店；若在12点之后退房，需联系门店管家18815693383办理延时退房业务。"
+        },
+        {
+          "score": 0.3357071876525879,
+          "session_id": "lis_south_station_faq_r0125_7161b2846d",
+          "matched_question": "我怎么退房？",
+          "matched_answer": "如您是在退房日当天12点前退房，您可以打开酒店微信小程序--自由家安心宿，点击“预约退房”办理，也可以打开房门后直接离店。若您在12点之后退房，请联系门店管家18815693383，为您办理延时退房业务。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问如何退房，丽斯未来酒店FAQ回复，若在退房日当天12点前退房，可打开酒店微信小程序--自由家安心宿，点击“预约退房”办理，也可打开房门后直接离店；若在12点之后退房，需联系门店管家18815693383办理延时退房业务。"
+        },
+        {
+          "score": 0.3333171010017395,
+          "session_id": "lis_south_station_faq_r0124_6768f63234",
+          "matched_question": "如何办理退房？",
+          "matched_answer": "如您是在退房日当天12点前退房，您可以打开酒店微信小程序--自由家安心宿，点击“预约退房”办理，也可以打开房门后直接离店。若您在12点之后退房，请联系门店管家18815693383，为您办理延时退房业务。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问如何办理退房，丽斯未来酒店FAQ告知若在退房日当天12点前退房，可打开酒店微信小程序--自由家安心宿，点击“预约退房”办理，也可打开房门后直接离店；若在12点之后退房，需联系门店管家18815693383办理延时退房业务。"
+        }
+      ]
+    },
+    {
+      "row_number": 64,
+      "query": "酒店提供行李搬运服务吗？",
+      "expected_answer": "很抱歉，酒店为非24小时前台的智能化运作模式，酒店暂不提供行李搬运服务。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3912721872329712,
+      "top1_session_id": "lis_south_station_faq_r0066_1d6629428f",
+      "top1_question": "我行李多，能帮我一下吗？",
+      "top1_answer": "很抱歉，酒店为非24小时前台的智能化运作模式，酒店暂不提供行李搬运服务。",
+      "hits": [
+        {
+          "score": 0.3912721872329712,
+          "session_id": "lis_south_station_faq_r0066_1d6629428f",
+          "matched_question": "我行李多，能帮我一下吗？",
+          "matched_answer": "很抱歉，酒店为非24小时前台的智能化运作模式，酒店暂不提供行李搬运服务。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人因行李多，请求酒店帮忙搬运，丽斯未来酒店FAQ回复酒店为非24小时前台的智能化运作模式，暂不提供行李搬运服务。"
+        },
+        {
+          "score": 0.37986868619918823,
+          "session_id": "lis_south_station_faq_r0064_ea0b72c28f",
+          "matched_question": "酒店提供行李搬运服务吗？",
+          "matched_answer": "很抱歉，酒店为非24小时前台的智能化运作模式，酒店暂不提供行李搬运服务。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否提供行李搬运服务，丽斯未来酒店FAQ回复称酒店为非24小时前台的智能化运作模式，暂不提供该服务。客人对酒店服务存在需求，可能会因无法获得行李搬运服务而感到不便，后续可能会自行解决行李搬运问题。"
+        },
+        {
+          "score": 0.3775947690010071,
+          "session_id": "lis_south_station_faq_r0065_4a9dadecb2",
+          "matched_question": "能帮我搬一下行李吗？",
+          "matched_answer": "很抱歉，酒店为非24小时前台的智能化运作模式，酒店暂不提供行李搬运服务。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ请求帮忙搬运行李，酒店FAQ回复酒店为非24小时前台的智能化运作模式，暂不提供行李搬运服务。客人在请求时可能处于着急或需要帮助的状态，在得到否定回复后可能会感到有些失望。"
+        }
+      ]
+    },
+    {
+      "row_number": 535,
+      "query": "空调一点效果没有",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3111187815666199,
+      "top1_session_id": "lis_south_station_faq_r0535_c931a7e028",
+      "top1_question": "空调一点效果没有",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.3111187815666199,
+          "session_id": "lis_south_station_faq_r0535_c931a7e028",
+          "matched_question": "空调一点效果没有",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日星期三下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间空调一点效果没有，酒店FAQ回复转接"
+        },
+        {
+          "score": 0.24028217792510986,
+          "session_id": "lis_south_station_faq_r0168_be31c2782f",
+          "matched_question": "空调不出冷风",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈所住房间空调不出冷风，酒店FAQ表示转接处理。客人反馈问题时情绪可能比较急切，推测客人希望尽快解决空调问题，能在凉爽的环境中休息。"
+        },
+        {
+          "score": 0.2356576919555664,
+          "session_id": "lis_south_station_faq_r0202_7ea90fed2a",
+          "matched_question": "不是让和保洁说了不要关我空调吗？怎么回来又是关了的？",
+          "matched_answer": "我们的房间是配备人感系统的，检测到房间内半个小时无人会自动断电。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人不满地向丽斯未来酒店FAQ反馈，自己曾告知保洁不要关空调，但回来发现空调仍是关闭状态。酒店FAQ解释称房间配备人感系统，检测到房间内半小时无人会自动断电。客人可能会思考能否调整人感系统设置以避免空调自动关闭，或者考虑再次向酒店提出保留空调开启的要求。"
+        }
+      ]
+    },
+    {
+      "row_number": 154,
+      "query": "可以给我送一个牙刷吗？",
+      "expected_answer": "酒店提供一次性牙刷，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3538026809692383,
+      "top1_session_id": "lis_south_station_faq_r0154_089e78fdc5",
+      "top1_question": "可以给我送一个牙刷吗？",
+      "top1_answer": "酒店提供一次性牙刷，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.3538026809692383,
+          "session_id": "lis_south_station_faq_r0154_089e78fdc5",
+          "matched_question": "可以给我送一个牙刷吗？",
+          "matched_answer": "酒店提供一次性牙刷，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ请求送一个牙刷，丽斯未来酒店FAQ告知酒店提供一次性牙刷，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        },
+        {
+          "score": 0.29835474491119385,
+          "session_id": "lis_south_station_faq_r0153_2e83eb5e68",
+          "matched_question": "酒店有多余的牙刷吗？",
+          "matched_answer": "酒店提供一次性牙刷，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有多余的牙刷，丽斯未来酒店FAQ回复酒店提供一次性牙刷，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        },
+        {
+          "score": 0.2886906862258911,
+          "session_id": "lis_south_station_faq_r0155_15f29b8870",
+          "matched_question": "牙刷不够用怎么办？",
+          "matched_answer": "酒店提供一次性牙刷，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问牙刷不够用怎么办，助手告知酒店提供一次性牙刷，放置在1020房间对面的洗衣房内，可自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 554,
+      "query": "我有两间房，另一间房办不了入住",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4291166067123413,
+      "top1_session_id": "lis_south_station_faq_r0554_6cb02d3114",
+      "top1_question": "我有两间房，另一间房办不了入住",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.4291166067123413,
+          "session_id": "lis_south_station_faq_r0554_6cb02d3114",
+          "matched_question": "我有两间房，另一间房办不了入住",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈自己有两间房，但另一间房无法办理入住，酒店FAQ回复转接。客人反馈时情绪未知，酒店FAQ按流程进行转接处理，推测客人可能希望尽快解决另一间房的入住问题，后续会等待转接后的解决方案。"
+        },
+        {
+          "score": 0.334323525428772,
+          "session_id": "lis_south_station_faq_r0553_00eae1152a",
+          "matched_question": "我订了两间房，另一个房间如何办理入住",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ咨询已预订的另一间房如何办理入住，酒店FAQ回复转接。客人表现出疑惑的情绪，酒店FAQ做出转接的反应。推测客人接下来可能等待转接后的工作人员为其解答办理入住的问题。"
+        },
+        {
+          "score": 0.2647521495819092,
+          "session_id": "lis_south_station_faq_r0556_f32a9db6b1",
+          "matched_question": "我另一个房间怎么办入住？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问另一个房间如何办理入住，丽斯未来酒店FAQ回复转接。客人表现出疑惑，希望得到办理入住的方法；丽斯未来酒店FAQ以转接的方式回应。推测客人后续会等待转接后的服务人员进一步协助办理入住。"
+        }
+      ]
+    },
+    {
+      "row_number": 454,
+      "query": "车现在出去，要怎么操作？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.39830267429351807,
+      "top1_session_id": "lis_south_station_faq_r0454_cdaa32166b",
+      "top1_question": "车现在出去，要怎么操作？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.39830267429351807,
+          "session_id": "lis_south_station_faq_r0454_cdaa32166b",
+          "matched_question": "车现在出去，要怎么操作？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问车现在出去要怎么操作，丽斯未来酒店FAQ回复转接。客人可能对车辆外出操作感到疑惑，正在寻求帮助；而丽斯未来酒店FAQ转接可能是为了让更专业的人员解答客人问题。"
+        },
+        {
+          "score": 0.30896610021591187,
+          "session_id": "lis_south_station_faq_r0447_43bcba9c35",
+          "matched_question": "车怎么出去？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问车怎么出去，丽斯未来酒店FAQ回复转接"
+        },
+        {
+          "score": 0.2632220387458801,
+          "session_id": "lis_south_station_faq_r0449_f3df5e1dc1",
+          "matched_question": "我车出去找谁？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问车出去该找谁，丽斯未来酒店FAQ回复转接"
+        }
+      ]
+    },
+    {
+      "row_number": 226,
+      "query": "房间味道很臭",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3642725944519043,
+      "top1_session_id": "lis_south_station_faq_r0226_9d90e6c7ec",
+      "top1_question": "房间味道很臭",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.3642725944519043,
+          "session_id": "lis_south_station_faq_r0226_9d90e6c7ec",
+          "matched_question": "房间味道很臭",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间味道很臭，酒店FAQ回复转接"
+        },
+        {
+          "score": 0.30197739601135254,
+          "session_id": "lis_south_station_faq_r0228_6a1a7e31b0",
+          "matched_question": "房间有股腥臭的味道",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间有股腥臭的味道，酒店FAQ回复转接"
+        },
+        {
+          "score": 0.29597532749176025,
+          "session_id": "lis_south_station_faq_r0576_65643f693f",
+          "matched_question": "这个房间味道为什么这么大？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "在2026年4月15日周三下午13:11，酒店客人反馈房间味道大，丽斯未来酒店FAQ表示转接处理。客人对房间味道大感到不满，以询问的方式表达了自己的情绪，而酒店FAQ则迅速做出转接回应。推测客人希望酒店能尽快解决房间味道大的问题，后续可能会等待酒店给出解决方案。"
+        }
+      ]
+    },
+    {
+      "row_number": 259,
+      "query": "冰箱好像没插电",
+      "expected_answer": "这边辛苦您自己插一下哈",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3623160719871521,
+      "top1_session_id": "lis_south_station_faq_r0259_4b755b12ab",
+      "top1_question": "冰箱好像没插电",
+      "top1_answer": "这边辛苦您自己插一下哈",
+      "hits": [
+        {
+          "score": 0.3623160719871521,
+          "session_id": "lis_south_station_faq_r0259_4b755b12ab",
+          "matched_question": "冰箱好像没插电",
+          "matched_answer": "这边辛苦您自己插一下哈",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日星期三下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间冰箱好像没插电，丽斯未来酒店FAQ让客人自己插一下。"
+        },
+        {
+          "score": 0.3308953046798706,
+          "session_id": "lis_south_station_faq_r0260_e5390b57b1",
+          "matched_question": "冰箱没电，是不是坏了",
+          "matched_answer": "这边辛苦您自己插一下哈",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈冰箱没电，怀疑冰箱损坏，酒店FAQ让客人自己插一下电。客人反馈问题时可能带有疑惑的情绪，而酒店FAQ以较为常规的方式回应。推测客人可能会按照酒店FAQ的建议去插电，若插电后冰箱仍有问题，可能会再次反馈。"
+        },
+        {
+          "score": 0.2987093925476074,
+          "session_id": "lis_south_station_faq_r0261_fb0a5def68",
+          "matched_question": "冰箱不制冷，怎么办？",
+          "matched_answer": "这边辛苦您自己插一下哈",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈冰箱不制冷，询问解决办法，丽斯未来酒店FAQ让客人自己插一下冰箱。"
+        }
+      ]
+    },
+    {
+      "row_number": 309,
+      "query": "酒店有防晒用品吗？",
+      "expected_answer": "酒店4至9月份提供防晒霜，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.40256428718566895,
+      "top1_session_id": "lis_south_station_faq_r0309_9f4a42ae90",
+      "top1_question": "酒店有防晒用品吗？",
+      "top1_answer": "酒店4至9月份提供防晒霜，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.40256428718566895,
+          "session_id": "lis_south_station_faq_r0309_9f4a42ae90",
+          "matched_question": "酒店有防晒用品吗？",
+          "matched_answer": "酒店4至9月份提供防晒霜，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有防晒用品，丽斯未来酒店FAQ回复称酒店4至9月份提供防晒霜，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        },
+        {
+          "score": 0.3605623245239258,
+          "session_id": "lis_south_station_faq_r0305_bc009f13cf",
+          "matched_question": "有防晒霜吗？",
+          "matched_answer": "酒店4至9月份提供防晒霜，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有防晒霜，丽斯未来酒店FAQ回复酒店4至9月份提供防晒霜，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        },
+        {
+          "score": 0.3546752333641052,
+          "session_id": "lis_south_station_faq_r0306_393a268b5f",
+          "matched_question": "什么时候有防晒霜？",
+          "matched_answer": "酒店4至9月份提供防晒霜，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问什么时候有防晒霜，丽斯未来酒店FAQ回复酒店4至9月份提供防晒霜，放置在1020房间对面的洗衣房内，可自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 625,
+      "query": "管家在哪？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.2929883599281311,
+      "top1_session_id": "lis_south_station_faq_r0625_8810cd375b",
+      "top1_question": "管家在哪？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.2929883599281311,
+          "session_id": "lis_south_station_faq_r0625_8810cd375b",
+          "matched_question": "管家在哪？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问管家在哪，丽斯未来酒店FAQ回复转接"
+        },
+        {
+          "score": 0.2425607442855835,
+          "session_id": "lis_south_station_faq_r0623_6a2c6aff1d",
+          "matched_question": "怎么找管家？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问如何找管家，丽斯未来酒店FAQ回复转接"
+        },
+        {
+          "score": 0.23800450563430786,
+          "session_id": "lis_south_station_faq_r0624_28daebc3a8",
+          "matched_question": "有管家吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问是否有管家，丽斯未来酒店FAQ回复转接。客人表现出好奇的情绪，assistant迅速做出转接的反应。推测客人可能希望管家为其提供酒店相关服务或解决问题。"
+        }
+      ]
+    },
+    {
+      "row_number": 384,
+      "query": "浴巾脏了，给我送一个新的过来",
+      "expected_answer": "酒店提供浴巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4289438724517822,
+      "top1_session_id": "lis_south_station_faq_r0384_928d919b90",
+      "top1_question": "浴巾脏了，给我送一个新的过来",
+      "top1_answer": "酒店提供浴巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.4289438724517822,
+          "session_id": "lis_south_station_faq_r0384_928d919b90",
+          "matched_question": "浴巾脏了，给我送一个新的过来",
+          "matched_answer": "酒店提供浴巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈浴巾脏了，要求送一个新的浴巾过来。酒店FAQ告知客人酒店提供浴巾，放置在1020房间对面的洗衣房内，可自行取用。"
+        },
+        {
+          "score": 0.3161652088165283,
+          "session_id": "lis_south_station_faq_r0377_0c7a9fb3df",
+          "matched_question": "可以给我送一个新的地巾过来吗？",
+          "matched_answer": "酒店提供地巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ提出送一个新地巾的请求，酒店FAQ告知客人地巾放置在1020房间对面的洗衣房内，可自行取用。"
+        },
+        {
+          "score": 0.3145698308944702,
+          "session_id": "lis_south_station_faq_r0376_743554352a",
+          "matched_question": "地巾脏了，在哪拿新的？",
+          "matched_answer": "酒店提供地巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问脏地巾更换处，得到回复称新地巾放置在1020房间对面的洗衣房内，可自行取用。客人可能会前往洗衣房拿取新地巾。"
+        }
+      ]
+    },
+    {
+      "row_number": 24,
+      "query": "可以加早餐吗？",
+      "expected_answer": "很抱歉，我们酒店暂不提供早餐，但周边有丰富的美食选择，建议您可以用外卖APP或者乘车前往附近的“包河万象汇”等商场。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3312782049179077,
+      "top1_session_id": "lis_south_station_faq_r0024_5ee1d038ed",
+      "top1_question": "可以加早餐吗？",
+      "top1_answer": "很抱歉，我们酒店暂不提供早餐，但周边有丰富的美食选择，建议您可以用外卖APP或者乘车前往附近的“包河万象汇”等商场。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+      "hits": [
+        {
+          "score": 0.3312782049179077,
+          "session_id": "lis_south_station_faq_r0024_5ee1d038ed",
+          "matched_question": "可以加早餐吗？",
+          "matched_answer": "很抱歉，我们酒店暂不提供早餐，但周边有丰富的美食选择，建议您可以用外卖APP或者乘车前往附近的“包河万象汇”等商场。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问是否可以加早餐，丽斯未来酒店FAQ表示酒店暂不提供早餐，建议客人用外卖APP或乘车前往附近的“包河万象汇”等商场，还特别推荐了酒店附近步行可达的“饭佳缘牛肉炒饭”。"
+        },
+        {
+          "score": 0.23877018690109253,
+          "session_id": "lis_south_station_faq_r0021_6caaeecadb",
+          "matched_question": "你们酒店有早餐吗？",
+          "matched_answer": "很抱歉，我们酒店暂不提供早餐，但周边有丰富的美食选择，建议您可以用外卖APP或者乘车前往附近的“包河万象汇”等商场。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有早餐，丽斯未来酒店FAQ回复酒店暂不提供早餐，建议客人使用外卖APP或乘车前往附近的“包河万象汇”等商场就餐，还特别推荐了酒店附近步行可到达的“饭佳缘牛肉炒饭”。"
+        },
+        {
+          "score": 0.23591125011444092,
+          "session_id": "lis_south_station_faq_r0023_57996ecd58",
+          "matched_question": "在哪里用早餐？",
+          "matched_answer": "很抱歉，我们酒店暂不提供早餐，但周边有丰富的美食选择，建议您可以用外卖APP或者乘车前往附近的“包河万象汇”等商场。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问早餐用餐地点，丽斯未来酒店FAQ回复酒店暂不提供早餐，建议客人使用外卖APP或乘车前往附近的包河万象汇等商场用餐，还特别推荐了步行可到的饭佳缘牛肉炒饭。"
+        }
+      ]
+    },
+    {
+      "row_number": 55,
+      "query": "你们酒店有独立电梯吗？",
+      "expected_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.38789665699005127,
+      "top1_session_id": "lis_south_station_faq_r0055_b8cf1a113b",
+      "top1_question": "你们酒店有独立电梯吗？",
+      "top1_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+      "hits": [
+        {
+          "score": 0.38789665699005127,
+          "session_id": "lis_south_station_faq_r0055_b8cf1a113b",
+          "matched_question": "你们酒店有独立电梯吗？",
+          "matched_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有独立电梯，丽斯未来酒店FAQ回复酒店有电梯，可从皇与后酒店大厅一楼电梯进入。客人可能在考虑酒店的便利性和隐私性，后续可能会进一步询问电梯的使用规则或其他相关问题。"
+        },
+        {
+          "score": 0.320865273475647,
+          "session_id": "lis_south_station_faq_r0052_3f55417804",
+          "matched_question": "酒店有电梯吗？",
+          "matched_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有电梯，丽斯未来酒店FAQ回复酒店有电梯，可从皇与后酒店大厅一楼电梯进入。客人可能在考虑是否方便携带行李或有行动不便的情况，后续可能会根据此信息决定是否入住该酒店。"
+        },
+        {
+          "score": 0.27852725982666016,
+          "session_id": "lis_south_station_faq_r0054_bd38ead6ad",
+          "matched_question": "电梯在什么地方？",
+          "matched_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问电梯的位置，丽斯未来酒店FAQ告知客人可从皇与后酒店大厅一楼电梯进入。客人表现出好奇，想了解电梯位置，丽斯未来酒店FAQ及时给予了明确答复。推测客人可能准备乘坐电梯前往酒店的其他楼层。"
+        }
+      ]
+    },
+    {
+      "row_number": 711,
+      "query": "我订错房型了，想换成一个房型",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.41983914375305176,
+      "top1_session_id": "lis_south_station_faq_r0711_1c6988ede5",
+      "top1_question": "我订错房型了，想换成一个房型",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.41983914375305176,
+          "session_id": "lis_south_station_faq_r0711_1c6988ede5",
+          "matched_question": "我订错房型了，想换成一个房型",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈订错房型，想要更换房型，丽斯未来酒店FAQ表示转接处理。"
+        },
+        {
+          "score": 0.4066058397293091,
+          "session_id": "lis_south_station_faq_r0713_7baa5dfc98",
+          "matched_question": "房型订错了，怎么换？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ咨询房型订错后如何更换，客服回复转接。客人可能感到着急和困惑，希望尽快解决房型更换问题。"
+        },
+        {
+          "score": 0.343395471572876,
+          "session_id": "lis_south_station_faq_r0464_d99680d8bd",
+          "matched_question": "我订错房间了，可以换房吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ表示自己订错房间，询问是否可以换房，酒店FAQ回复转接。推测客人希望尽快解决换房问题，后续可能会等待转接后的进一步处理结果。"
+        }
+      ]
+    },
+    {
+      "row_number": 116,
+      "query": "一次性拖鞋用完了，有多余的吗？",
+      "expected_answer": "酒店房间内均配备一次性拖鞋，若您有额外需求，可前往1020对面洗衣房领取。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.45927655696868896,
+      "top1_session_id": "lis_south_station_faq_r0116_b940cb7f12",
+      "top1_question": "一次性拖鞋用完了，有多余的吗？",
+      "top1_answer": "酒店房间内均配备一次性拖鞋，若您有额外需求，可前往1020对面洗衣房领取。",
+      "hits": [
+        {
+          "score": 0.45927655696868896,
+          "session_id": "lis_south_station_faq_r0116_b940cb7f12",
+          "matched_question": "一次性拖鞋用完了，有多余的吗？",
+          "matched_answer": "酒店房间内均配备一次性拖鞋，若您有额外需求，可前往1020对面洗衣房领取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问一次性拖鞋是否有多余的，称自己的已用完。酒店FAQ回复称酒店房间内均配备一次性拖鞋，若客人有额外需求，可前往1020对面洗衣房领取。客人可能会前往洗衣房领取拖鞋。"
+        },
+        {
+          "score": 0.39306652545928955,
+          "session_id": "lis_south_station_faq_r0115_86db20907a",
+          "matched_question": "房间里有一次性拖鞋吗？",
+          "matched_answer": "酒店房间内均配备一次性拖鞋，若您有额外需求，可前往1020对面洗衣房领取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问房间里是否有一次性拖鞋，丽斯未来酒店FAQ回复酒店房间内均配备一次性拖鞋，若有额外需求，可前往1020对面洗衣房领取。客人对酒店房间物品配备情况表示好奇，得到了明确的答复。推测客人之后可能会根据自身需求决定是否去洗衣房领取额外的一次性拖鞋。"
+        },
+        {
+          "score": 0.3889138698577881,
+          "session_id": "lis_south_station_faq_r0118_0617beed43",
+          "matched_question": "可以送一双一次性拖鞋吗？",
+          "matched_answer": "酒店房间内均配备一次性拖鞋，若您有额外需求，可前往1020对面洗衣房领取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ提出送一双一次性拖鞋的请求，酒店FAQ回复称房间内均配备一次性拖鞋，若有额外需求可前往1020对面洗衣房领取。"
+        }
+      ]
+    },
+    {
+      "row_number": 295,
+      "query": "碘伏棉签在哪拿？",
+      "expected_answer": "酒店提供碘伏棉签，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4148980379104614,
+      "top1_session_id": "lis_south_station_faq_r0295_9a680992f0",
+      "top1_question": "碘伏棉签在哪拿？",
+      "top1_answer": "酒店提供碘伏棉签，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.4148980379104614,
+          "session_id": "lis_south_station_faq_r0295_9a680992f0",
+          "matched_question": "碘伏棉签在哪拿？",
+          "matched_answer": "酒店提供碘伏棉签，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问碘伏棉签在哪拿，丽斯未来酒店FAQ回复称酒店提供碘伏棉签，放置在1020房间对面的洗衣房内，可自行取用。"
+        },
+        {
+          "score": 0.39041978120803833,
+          "session_id": "lis_south_station_faq_r0293_5c6b592704",
+          "matched_question": "有碘伏棉签吗",
+          "matched_answer": "酒店提供碘伏棉签，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有碘伏棉签，丽斯未来酒店FAQ回复酒店提供碘伏棉签，放置在1020房间对面的洗衣房内，可自行取用。客人可能会前往洗衣房取用碘伏棉签。"
+        },
+        {
+          "score": 0.38018155097961426,
+          "session_id": "lis_south_station_faq_r0296_a4c93838f9",
+          "matched_question": "酒店有没有碘伏",
+          "matched_answer": "酒店提供碘伏棉签，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有碘伏，丽斯未来酒店FAQ回复酒店提供碘伏棉签，放置在1020房间对面的洗衣房内，可自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 547,
+      "query": "我不会投屏",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3808326721191406,
+      "top1_session_id": "lis_south_station_faq_r0184_8d469e6615",
+      "top1_question": "我不会投屏，怎么弄",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.3808326721191406,
+          "session_id": "lis_south_station_faq_r0184_8d469e6615",
+          "matched_question": "我不会投屏，怎么弄",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ表示自己不会投屏并询问如何操作，酒店FAQ回复转接。客人对投屏操作感到困惑，可能期待转接后得到有效的解决方案。"
+        },
+        {
+          "score": 0.3592323660850525,
+          "session_id": "lis_south_station_faq_r0547_b2cd879ff6",
+          "matched_question": "我不会投屏",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈自己不会投屏，酒店FAQ回复转接。客人在反馈问题时可能感到困扰，希望得到解决方案；酒店FAQ转接的反应表明会进一步帮助客人解决问题，客人可能会等待转接后的服务人员来协助解决投屏问题。"
+        },
+        {
+          "score": 0.3135882019996643,
+          "session_id": "lis_south_station_faq_r0612_c95af77704",
+          "matched_question": "投不了屏怎么办？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问投屏失败的解决办法，酒店FAQ回复转接。客人表现出疑惑的情绪，酒店FAQ采取转接的处理方式。推测客人可能希望转接后能快速解决投屏问题，继续使用投屏功能。"
+        }
+      ]
+    },
+    {
+      "row_number": 143,
+      "query": "我有东西落在房间了，请帮我发快递寄过来。",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4727526903152466,
+      "top1_session_id": "lis_south_station_faq_r0143_b538507638",
+      "top1_question": "我有东西落在房间了，请帮我发快递寄过来。",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.4727526903152466,
+          "session_id": "lis_south_station_faq_r0143_b538507638",
+          "matched_question": "我有东西落在房间了，请帮我发快递寄过来。",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人称有东西落在房间，请求酒店帮忙发快递寄过来，酒店FAQ回复转接。推测酒店客人此刻比较着急拿回落在房间的物品，希望能尽快收到快递；酒店可能会安排相关人员处理该客人的快递寄送请求。"
+        },
+        {
+          "score": 0.35112249851226807,
+          "session_id": "lis_south_station_faq_r0663_d8c5426ea5",
+          "matched_question": "我东西落在房间里了，麻烦帮我收一下，我待会去拿",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈自己有东西落在房间里，请求帮忙收拾，待一会儿去拿，酒店FAQ回复转接。客人表现出急切拿回物品的心情，酒店则迅速响应转接处理。推测客人会尽快前往房间取回物品，酒店也会安排人员帮忙收拾。"
+        },
+        {
+          "score": 0.34378814697265625,
+          "session_id": "lis_south_station_faq_r0595_194874cef6",
+          "matched_question": "我退房了，东西落房间了，可以让跑腿去房间1拿下吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人退房后发现东西落在房间1，向丽斯未来酒店FAQ提出让跑腿去房间1拿东西的请求，酒店FAQ回复转接。推测客人当前比较着急拿回落在房间的物品，可能会关注转接后事情的处理进度。"
+        }
+      ]
+    },
+    {
+      "row_number": 726,
+      "query": "酒店有卖东西的吗？",
+      "expected_answer": "不好意思，酒店没有哈，下楼右转再右转有个美宜佳24小时便利店，您可以去那边购买",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3904404640197754,
+      "top1_session_id": "lis_south_station_faq_r0726_ceadab5e2d",
+      "top1_question": "酒店有卖东西的吗？",
+      "top1_answer": "不好意思，酒店没有哈，下楼右转再右转有个美宜佳24小时便利店，您可以去那边购买",
+      "hits": [
+        {
+          "score": 0.3904404640197754,
+          "session_id": "lis_south_station_faq_r0726_ceadab5e2d",
+          "matched_question": "酒店有卖东西的吗？",
+          "matched_answer": "不好意思，酒店没有哈，下楼右转再右转有个美宜佳24小时便利店，您可以去那边购买",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有卖东西的，丽斯未来酒店FAQ回复酒店没有，建议客人下楼右转再右转去美宜佳24小时便利店购买。"
+        },
+        {
+          "score": 0.2960743308067322,
+          "session_id": "lis_south_station_faq_r0724_fcd76370fa",
+          "matched_question": "酒店有没有售卖柜？",
+          "matched_answer": "不好意思，酒店没有哈，下楼右转再右转有个美宜佳24小时便利店，您可以去那边购买",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有售卖柜，丽斯未来酒店FAQ回复酒店没有售卖柜，并告知下楼右转再右转有个美宜佳24小时便利店可前往购买。"
+        },
+        {
+          "score": 0.2840585708618164,
+          "session_id": "lis_south_station_faq_r0727_b0df648959",
+          "matched_question": "酒店在哪买东西？",
+          "matched_answer": "不好意思，酒店没有哈，下楼右转再右转有个美宜佳24小时便利店，您可以去那边购买",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店内购物地点，丽斯未来酒店FAQ告知酒店内没有购物处，建议客人下楼右转再右转到美宜佳24小时便利店购买物品。客人表现出好奇的情绪，assistant及时给予了明确的回复。推测客人后续可能会前往该便利店购物。"
+        }
+      ]
+    },
+    {
+      "row_number": 39,
+      "query": "可以寄存行李吗？",
+      "expected_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3965545892715454,
+      "top1_session_id": "lis_south_station_faq_r0039_c778de5dfd",
+      "top1_question": "可以寄存行李吗？",
+      "top1_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+      "hits": [
+        {
+          "score": 0.3965545892715454,
+          "session_id": "lis_south_station_faq_r0039_c778de5dfd",
+          "matched_question": "可以寄存行李吗？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问是否可以寄存行李，丽斯未来酒店FAQ回复酒店提供行李寄存服务，住客可在入住前或退房后免费寄存，需自行前往1楼丽斯酒店前台处的寄存柜根据提示完成寄存，寄存柜免费时间为24小时。"
+        },
+        {
+          "score": 0.3888818621635437,
+          "session_id": "lis_south_station_faq_r0040_91a6bc9f49",
+          "matched_question": "哪里可以存行李？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问哪里可以存行李，丽斯未来酒店FAQ告知酒店提供行李寄存服务，住客可在入住前或退房后免费寄存，需自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。"
+        },
+        {
+          "score": 0.3750145435333252,
+          "session_id": "lis_south_station_faq_r0038_edb0e92301",
+          "matched_question": "酒店有行李寄存服务吗？",
+          "matched_answer": "我们酒店提供行李寄存服务，住客可以在入住前或退房后免费寄存行李。如需寄存请自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有行李寄存服务，丽斯未来酒店FAQ回复酒店提供该服务，住客可在入住前或退房后免费寄存行李，需自行前往1楼丽斯酒店前台处的寄存柜，根据提示完成寄存，寄存柜免费时间为24小时。"
+        }
+      ]
+    },
+    {
+      "row_number": 282,
+      "query": "卸妆湿巾在哪拿？",
+      "expected_answer": "酒店提供卸妆湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.39437294006347656,
+      "top1_session_id": "lis_south_station_faq_r0282_ba61211a0d",
+      "top1_question": "卸妆湿巾在哪拿？",
+      "top1_answer": "酒店提供卸妆湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.39437294006347656,
+          "session_id": "lis_south_station_faq_r0282_ba61211a0d",
+          "matched_question": "卸妆湿巾在哪拿？",
+          "matched_answer": "酒店提供卸妆湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问卸妆湿巾的获取位置，丽斯未来酒店FAQ告知卸妆湿巾放置在1020房间对面的洗衣房内，可自行取用。客人询问时表现出好奇，助手进行了清晰解答。推测客人可能会前往洗衣房拿取卸妆湿巾。"
+        },
+        {
+          "score": 0.3832467794418335,
+          "session_id": "lis_south_station_faq_r0280_9627c9e1ca",
+          "matched_question": "有卸妆湿巾吗",
+          "matched_answer": "酒店提供卸妆湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问是否有卸妆湿巾，丽斯未来酒店FAQ回复酒店提供卸妆湿巾，放置在1020房间对面的洗衣房内，可自行取用。"
+        },
+        {
+          "score": 0.38234198093414307,
+          "session_id": "lis_south_station_faq_r0281_557e7c4665",
+          "matched_question": "酒店提供卸妆湿巾吗？",
+          "matched_answer": "酒店提供卸妆湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否提供卸妆湿巾，丽斯未来酒店FAQ回复酒店提供卸妆湿巾，放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 2,
+      "query": "酒店在什么位置？",
+      "expected_answer": "您好，丽斯未来酒店（合肥高铁南站店）位于包河区包河大道与繁华大道交汇处南100米路东。如果您需要导航，推荐使用高德地图或微信地图，搜索“皇与后国际大酒店（合肥高铁南站店）”即可找到我们。五号线包河苑站C出口向西步行400米左右也能到达哦。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.2974199056625366,
+      "top1_session_id": "lis_south_station_faq_r0005_24e4efd1b2",
+      "top1_question": "酒店的具体位置是哪里？",
+      "top1_answer": "您好，丽斯未来酒店（合肥高铁南站店）位于包河区包河大道与繁华大道交汇处南100米路东。如果您需要导航，推荐使用高德地图或微信地图，搜索“皇与后国际大酒店（合肥高铁南站店）”即可找到我们。五号线包河苑站C出口向西步行400米左右也能到达哦。",
+      "hits": [
+        {
+          "score": 0.2974199056625366,
+          "session_id": "lis_south_station_faq_r0005_24e4efd1b2",
+          "matched_question": "酒店的具体位置是哪里？",
+          "matched_answer": "您好，丽斯未来酒店（合肥高铁南站店）位于包河区包河大道与繁华大道交汇处南100米路东。如果您需要导航，推荐使用高德地图或微信地图，搜索“皇与后国际大酒店（合肥高铁南站店）”即可找到我们。五号线包河苑站C出口向西步行400米左右也能到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店的具体位置，丽斯未来酒店FAQ回复酒店位于包河区包河大道与繁华大道交汇处南100米路东，可使用高德地图或微信地图搜索“皇与后国际大酒店（合肥高铁南站店）”导航，也可从五号线包河苑站C出口向西步行400米左右到达。"
+        },
+        {
+          "score": 0.28873133659362793,
+          "session_id": "lis_south_station_faq_r0002_8ce55dcbfa",
+          "matched_question": "酒店在什么位置？",
+          "matched_answer": "您好，丽斯未来酒店（合肥高铁南站店）位于包河区包河大道与繁华大道交汇处南100米路东。如果您需要导航，推荐使用高德地图或微信地图，搜索“皇与后国际大酒店（合肥高铁南站店）”即可找到我们。五号线包河苑站C出口向西步行400米左右也能到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店位置，丽斯未来酒店FAQ告知酒店位于包河区包河大道与繁华大道交汇处南100米路东，可通过高德地图或微信地图搜索“皇与后国际大酒店（合肥高铁南站店）”导航前往，也可从五号线包河苑站C出口向西步行400米左右到达。"
+        },
+        {
+          "score": 0.28861725330352783,
+          "session_id": "lis_south_station_faq_r0532_0e44ac3ffa",
+          "matched_question": "酒店位置在哪？",
+          "matched_answer": "您好，丽斯未来酒店（合肥高铁南站店）位于包河区包河大道与繁华大道交汇处南100米路东。如果您需要导航，推荐使用高德地图或微信地图，搜索“皇与后国际大酒店（合肥高铁南站店）”即可找到我们。五号线包河苑站C出口向西步行400米左右也能到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店位置，丽斯未来酒店FAQ回复酒店位于包河区包河大道与繁华大道交汇处南100米路东，可使用高德地图或微信地图搜索“皇与后国际大酒店（合肥高铁南站店）”导航，也可从五号线包河苑站C出口向西步行400米左右到达。"
+        }
+      ]
+    },
+    {
+      "row_number": 608,
+      "query": "下午会打扫吗？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3152715563774109,
+      "top1_session_id": "lis_south_station_faq_r0608_6e511241a7",
+      "top1_question": "下午会打扫吗？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.3152715563774109,
+          "session_id": "lis_south_station_faq_r0608_6e511241a7",
+          "matched_question": "下午会打扫吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问下午是否会打扫，丽斯未来酒店FAQ回复转接。客人表现出好奇的情绪，对房间打扫情况有所关注，后续可能会等待转接后的答复。"
+        },
+        {
+          "score": 0.2471083402633667,
+          "session_id": "lis_south_station_faq_r0253_9000de9bfb",
+          "matched_question": "房间什么时候能来打扫",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问房间何时打扫，丽斯未来酒店FAQ回复转接。客人可能在期待转接后能得到房间打扫时间的准确答复，而酒店方面可能会安排相关人员与客人沟通具体的打扫时间。"
+        },
+        {
+          "score": 0.24028897285461426,
+          "session_id": "lis_south_station_faq_r0609_a65c5a6349",
+          "matched_question": "我续住，现在可以过来打扫房间吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ表示要续住，并询问现在能否过来打扫房间，酒店FAQ回复转接。客人提出续住和打扫房间的请求，可能希望尽快完成房间打扫以继续入住。"
+        }
+      ]
+    },
+    {
+      "row_number": 751,
+      "query": "酒店抬头和税号发给我",
+      "expected_answer": "抬头：合肥喜胜酒店管理有限公司\n税号：91340111MA8Q5GK70B",
+      "case_type": "direct",
+      "top1_exact_match": false,
+      "topk_contains_exact": false,
+      "top1_score": 0.471260666847229,
+      "top1_session_id": "lis_south_station_faq_r0751_3b62979d76",
+      "top1_question": "酒店抬头和税号发给我",
+      "top1_answer": "抬头：合肥喜胜酒店管理有限公司",
+      "hits": [
+        {
+          "score": 0.471260666847229,
+          "session_id": "lis_south_station_faq_r0751_3b62979d76",
+          "matched_question": "酒店抬头和税号发给我",
+          "matched_answer": "抬头：合肥喜胜酒店管理有限公司",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ索要酒店抬头和税号，丽斯未来酒店FAQ回复抬头为合肥喜胜酒店管理有限公司，税号为91340111MA8Q5GK70B。"
+        },
+        {
+          "score": 0.4440762996673584,
+          "session_id": "lis_south_station_faq_r0749_754ea7c313",
+          "matched_question": "你们家的发票抬头是什么？",
+          "matched_answer": "抬头：合肥喜胜酒店管理有限公司",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店的发票抬头，丽斯未来酒店FAQ回复抬头为合肥喜胜酒店管理有限公司，税号为91340111MA8Q5GK70B。"
+        },
+        {
+          "score": 0.413973867893219,
+          "session_id": "lis_south_station_faq_r0750_2ba0947941",
+          "matched_question": "你们发票名称是什么？",
+          "matched_answer": "抬头：合肥喜胜酒店管理有限公司",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店发票名称，丽斯未来酒店FAQ回复发票抬头为合肥喜胜酒店管理有限公司，税号为91340111MA8Q5GK70B。"
+        }
+      ]
+    },
+    {
+      "row_number": 86,
+      "query": "附近有医院吗？",
+      "expected_answer": "酒店暂不提供紧急医疗服务，如有需要，请拨打120或前往附近医院（如合肥市第三人民医院-上海路院区）。如需帮助，可联系24小时客服电话！",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.26759588718414307,
+      "top1_session_id": "lis_south_station_faq_r0086_6f5d6a87ce",
+      "top1_question": "附近有医院吗？",
+      "top1_answer": "酒店暂不提供紧急医疗服务，如有需要，请拨打120或前往附近医院（如合肥市第三人民医院-上海路院区）。如需帮助，可联系24小时客服电话！",
+      "hits": [
+        {
+          "score": 0.26759588718414307,
+          "session_id": "lis_south_station_faq_r0086_6f5d6a87ce",
+          "matched_question": "附近有医院吗？",
+          "matched_answer": "酒店暂不提供紧急医疗服务，如有需要，请拨打120或前往附近医院（如合肥市第三人民医院-上海路院区）。如需帮助，可联系24小时客服电话！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问附近是否有医院，丽斯未来酒店FAQ回复酒店暂不提供紧急医疗服务，建议拨打120或前往附近的合肥市第三人民医院 - 上海路院区，还告知如需帮助可联系24小时客服电话。推测客人可能身体不适，有就医需求。"
+        },
+        {
+          "score": 0.22512972354888916,
+          "session_id": "lis_south_station_faq_r0087_35f749ca27",
+          "matched_question": "附近有诊所吗？",
+          "matched_answer": "酒店暂不提供紧急医疗服务，如有需要，请拨打120或前往附近医院（如合肥市第三人民医院-上海路院区）。如需帮助，可联系24小时客服电话！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问附近是否有诊所，丽斯未来酒店FAQ回复称酒店暂不提供紧急医疗服务，建议拨打120或前往附近医院（如合肥市第三人民医院 - 上海路院区），还表示如需帮助可联系24小时客服电话。客人可能身体不适，需要医疗帮助，后续有可能会拨打120或联系客服。"
+        },
+        {
+          "score": 0.22145164012908936,
+          "session_id": "lis_south_station_faq_r0083_1fc58bf338",
+          "matched_question": "酒店有紧急医疗服务吗？",
+          "matched_answer": "酒店暂不提供紧急医疗服务，如有需要，请拨打120或前往附近医院（如合肥市第三人民医院-上海路院区）。如需帮助，可联系24小时客服电话！",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有紧急医疗服务，丽斯未来酒店FAQ回复酒店暂不提供该服务，建议客人拨打120或前往附近的合肥市第三人民医院 - 上海路院区，还告知客人如需帮助可联系24小时客服电话。"
+        }
+      ]
+    },
+    {
+      "row_number": 330,
+      "query": "压缩毛巾在哪拿？",
+      "expected_answer": "酒店提供压缩毛巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.39768677949905396,
+      "top1_session_id": "lis_south_station_faq_r0330_37d04176c6",
+      "top1_question": "压缩毛巾在哪拿？",
+      "top1_answer": "酒店提供压缩毛巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.39768677949905396,
+          "session_id": "lis_south_station_faq_r0330_37d04176c6",
+          "matched_question": "压缩毛巾在哪拿？",
+          "matched_answer": "酒店提供压缩毛巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问压缩毛巾的拿取位置，丽斯未来酒店FAQ告知压缩毛巾放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        },
+        {
+          "score": 0.3677710294723511,
+          "session_id": "lis_south_station_faq_r0329_b57e24019c",
+          "matched_question": "有压缩毛巾吗？",
+          "matched_answer": "酒店提供压缩毛巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有压缩毛巾，丽斯未来酒店FAQ回复酒店提供压缩毛巾，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        },
+        {
+          "score": 0.3450341820716858,
+          "session_id": "lis_south_station_faq_r0331_0494957b21",
+          "matched_question": "有没有一次性毛巾？",
+          "matched_answer": "酒店提供压缩毛巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有一次性毛巾，丽斯未来酒店FAQ回复酒店提供压缩毛巾，放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 321,
+      "query": "护发素哪里拿？",
+      "expected_answer": "酒店提供护发素，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3800569772720337,
+      "top1_session_id": "lis_south_station_faq_r0321_8792217e92",
+      "top1_question": "护发素哪里拿？",
+      "top1_answer": "酒店提供护发素，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.3800569772720337,
+          "session_id": "lis_south_station_faq_r0321_8792217e92",
+          "matched_question": "护发素哪里拿？",
+          "matched_answer": "酒店提供护发素，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问护发素的获取位置，丽斯未来酒店FAQ告知护发素放置在1020房间对面的洗衣房内，可自行取用。客人表现出好奇的情绪，询问关于护发素的信息，助手进行了清晰明确的回应。推测客人后续可能会前往洗衣房取用护发素。"
+        },
+        {
+          "score": 0.3528437614440918,
+          "session_id": "lis_south_station_faq_r0320_8a80838e49",
+          "matched_question": "有护发素吗？",
+          "matched_answer": "酒店提供护发素，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有护发素，丽斯未来酒店FAQ回复酒店提供护发素，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        },
+        {
+          "score": 0.3488658666610718,
+          "session_id": "lis_south_station_faq_r0322_5373997470",
+          "matched_question": "有护发用品吗？",
+          "matched_answer": "酒店提供护发素，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有护发用品，丽斯未来酒店FAQ回复酒店提供护发素，放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 136,
+      "query": "延迟退房怎么收费？",
+      "expected_answer": "我们的标准退房时间为退房日当天12点。如需延迟退房请联系客服18815693383，客服会根据当日房态情况给您尽量安排。延时费为全日房20元每小时，钟点房为30元每小时。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4580271244049072,
+      "top1_session_id": "lis_south_station_faq_r0136_0c299a3838",
+      "top1_question": "延迟退房怎么收费？",
+      "top1_answer": "我们的标准退房时间为退房日当天12点。如需延迟退房请联系客服18815693383，客服会根据当日房态情况给您尽量安排。延时费为全日房20元每小时，钟点房为30元每小时。",
+      "hits": [
+        {
+          "score": 0.4580271244049072,
+          "session_id": "lis_south_station_faq_r0136_0c299a3838",
+          "matched_question": "延迟退房怎么收费？",
+          "matched_answer": "我们的标准退房时间为退房日当天12点。如需延迟退房请联系客服18815693383，客服会根据当日房态情况给您尽量安排。延时费为全日房20元每小时，钟点房为30元每小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问延迟退房的收费情况，丽斯未来酒店FAQ回复标准退房时间为退房日当天12点，如需延迟退房需联系客服18815693383，客服会根据当日房态情况尽量安排，延时费为全日房20元每小时，钟点房为30元每小时。"
+        },
+        {
+          "score": 0.43956542015075684,
+          "session_id": "lis_south_station_faq_r0138_26aa546e25",
+          "matched_question": "延迟退房要收取费用嘛？",
+          "matched_answer": "我们的标准退房时间为退房日当天12点。如需延迟退房请联系客服18815693383，客服会根据当日房态情况给您尽量安排。延时费为全日房20元每小时，钟点房为30元每小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问延迟退房是否收费，丽斯未来酒店FAQ回复标准退房时间为退房日当天12点，如需延迟退房可联系客服18815693383，客服会根据当日房态尽量安排，延时费为全日房20元每小时，钟点房为30元每小时。"
+        },
+        {
+          "score": 0.4377310276031494,
+          "session_id": "lis_south_station_faq_r0140_dec3e1ead7",
+          "matched_question": "钟点房延时怎么收费？",
+          "matched_answer": "我们的标准退房时间为退房日当天12点。如需延迟退房请联系客服18815693383，客服会根据当日房态情况给您尽量安排。延时费为全日房20元每小时，钟点房为30元每小时。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问钟点房延时怎么收费，丽斯未来酒店FAQ回复标准退房时间为退房日当天12点，如需延迟退房需联系客服18815693383，客服会根据当日房态情况尽量安排，延时费全日房为20元每小时，钟点房为30元每小时。"
+        }
+      ]
+    },
+    {
+      "row_number": 734,
+      "query": "我想住离电梯远一点的房间",
+      "expected_answer": "我们靠近电梯的房间是：910、912、1010、1012 。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.43371379375457764,
+      "top1_session_id": "lis_south_station_faq_r0734_ef7d091429",
+      "top1_question": "我想住离电梯远一点的房间",
+      "top1_answer": "我们靠近电梯的房间是：910、912、1010、1012 。",
+      "hits": [
+        {
+          "score": 0.43371379375457764,
+          "session_id": "lis_south_station_faq_r0734_ef7d091429",
+          "matched_question": "我想住离电梯远一点的房间",
+          "matched_answer": "我们靠近电梯的房间是：910、912、1010、1012 。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ表示想住离电梯远一点的房间，酒店FAQ告知靠近电梯的房间是910、912、1010、1012 。"
+        },
+        {
+          "score": 0.3191802501678467,
+          "session_id": "lis_south_station_faq_r0733_21c48e9990",
+          "matched_question": "有离电梯近一点的房间吗？",
+          "matched_answer": "我们靠近电梯的房间是：910、912、1010、1012 。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问是否有离电梯近一点的房间，丽斯未来酒店FAQ回复靠近电梯的房间是910、912、1010、1012。客人表现出对靠近电梯房间的需求，状态较为急切；酒店FAQ及时提供了相关信息，态度友好专业。推测客人可能更倾向于选择这些靠近电梯的房间。"
+        },
+        {
+          "score": 0.3014744520187378,
+          "session_id": "lis_south_station_faq_r0732_67da8e4f3b",
+          "matched_question": "哪些房间是靠近电梯的？",
+          "matched_answer": "我们靠近电梯的房间是：910、912、1010、1012 。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问哪些房间靠近电梯，丽斯未来酒店FAQ回复靠近电梯的房间是910、912、1010、1012。"
+        }
+      ]
+    },
+    {
+      "row_number": 54,
+      "query": "电梯在什么地方？",
+      "expected_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.2660229802131653,
+      "top1_session_id": "lis_south_station_faq_r0054_bd38ead6ad",
+      "top1_question": "电梯在什么地方？",
+      "top1_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+      "hits": [
+        {
+          "score": 0.2660229802131653,
+          "session_id": "lis_south_station_faq_r0054_bd38ead6ad",
+          "matched_question": "电梯在什么地方？",
+          "matched_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问电梯的位置，丽斯未来酒店FAQ告知客人可从皇与后酒店大厅一楼电梯进入。客人表现出好奇，想了解电梯位置，丽斯未来酒店FAQ及时给予了明确答复。推测客人可能准备乘坐电梯前往酒店的其他楼层。"
+        },
+        {
+          "score": 0.22390615940093994,
+          "session_id": "lis_south_station_faq_r0052_3f55417804",
+          "matched_question": "酒店有电梯吗？",
+          "matched_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有电梯，丽斯未来酒店FAQ回复酒店有电梯，可从皇与后酒店大厅一楼电梯进入。客人可能在考虑是否方便携带行李或有行动不便的情况，后续可能会根据此信息决定是否入住该酒店。"
+        },
+        {
+          "score": 0.21118009090423584,
+          "session_id": "lis_south_station_faq_r0053_45f0ac499b",
+          "matched_question": "我怎么上楼？",
+          "matched_answer": "酒店有电梯，您可以直接从皇与后酒店大厅一楼电梯进入。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问如何上楼，表现出好奇的情绪，丽斯未来酒店FAQ回复客人可从皇与后酒店大厅一楼电梯进入。客人可能在思考如何找到一楼电梯并前往自己要去的楼层。"
+        }
+      ]
+    },
+    {
+      "row_number": 744,
+      "query": "茶几房有吗？",
+      "expected_answer": "我们岭南 、合柴、积木三种房型是配备茶几的。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.36862289905548096,
+      "top1_session_id": "lis_south_station_faq_r0744_7a65312ccc",
+      "top1_question": "茶几房有吗？",
+      "top1_answer": "我们岭南 、合柴、积木三种房型是配备茶几的。",
+      "hits": [
+        {
+          "score": 0.36862289905548096,
+          "session_id": "lis_south_station_faq_r0744_7a65312ccc",
+          "matched_question": "茶几房有吗？",
+          "matched_answer": "我们岭南 、合柴、积木三种房型是配备茶几的。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有茶几房，丽斯未来酒店FAQ回复岭南、合柴、积木三种房型配备茶几。"
+        },
+        {
+          "score": 0.3459421396255493,
+          "session_id": "lis_south_station_faq_r0741_e63a64a724",
+          "matched_question": "哪些房间有茶几？",
+          "matched_answer": "我们岭南 、合柴、积木三种房型是配备茶几的。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问哪些房间有茶几，丽斯未来酒店FAQ回复岭南、合柴、积木三种房型配备茶几。客人可能正在考虑预订带茶几的房间。"
+        },
+        {
+          "score": 0.3386872410774231,
+          "session_id": "lis_south_station_faq_r0743_2991b0f343",
+          "matched_question": "你们家有没有带茶几的房间？",
+          "matched_answer": "我们岭南 、合柴、积木三种房型是配备茶几的。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有带茶几的房间，丽斯未来酒店FAQ回复岭南、合柴、积木三种房型配备茶几。客人可能正在考虑预订带茶几的房间。"
+        }
+      ]
+    },
+    {
+      "row_number": 657,
+      "query": "有不靠马路的房间吗？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": false,
+      "topk_contains_exact": true,
+      "top1_score": 0.33294910192489624,
+      "top1_session_id": "lis_south_station_faq_r0468_a2cff2a2e6",
+      "top1_question": "哪些房间不靠马路",
+      "top1_answer": "目前单数房间号都是靠近高架的，具体的房型是合柴、岭南、积木、艺林。您可以避开这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房自取。",
+      "hits": [
+        {
+          "score": 0.33294910192489624,
+          "session_id": "lis_south_station_faq_r0468_a2cff2a2e6",
+          "matched_question": "哪些房间不靠马路",
+          "matched_answer": "目前单数房间号都是靠近高架的，具体的房型是合柴、岭南、积木、艺林。您可以避开这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问哪些房间不靠马路，丽斯未来酒店FAQ回复单数房间号靠近高架，具体房型为合柴、岭南、积木、艺林，建议客人避开这些房间或房型，还告知客人如有需要可前往1020对面的洗衣房自取降噪耳塞。"
+        },
+        {
+          "score": 0.31378841400146484,
+          "session_id": "lis_south_station_faq_r0657_527462d5b6",
+          "matched_question": "有不靠马路的房间吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问是否有不靠马路的房间，酒店FAQ回复转接"
+        },
+        {
+          "score": 0.2901216745376587,
+          "session_id": "lis_south_station_faq_r0472_09d7f93945",
+          "matched_question": "哪些房间靠小区，要安静点的",
+          "matched_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问哪些房间靠小区且安静，酒店FAQ回复双数房间号的比较安静，具体房型有麦田、绿洲、菱湖，还告知客人若有需要可前往1020对面的洗衣房自取降噪耳塞。"
+        }
+      ]
+    },
+    {
+      "row_number": 563,
+      "query": "房间里没有拖鞋了",
+      "expected_answer": "如需额外拖鞋，可前往1020对面洗衣房领取。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4154495596885681,
+      "top1_session_id": "lis_south_station_faq_r0563_322f431528",
+      "top1_question": "房间里没有拖鞋了",
+      "top1_answer": "如需额外拖鞋，可前往1020对面洗衣房领取。",
+      "hits": [
+        {
+          "score": 0.4154495596885681,
+          "session_id": "lis_south_station_faq_r0563_322f431528",
+          "matched_question": "房间里没有拖鞋了",
+          "matched_answer": "如需额外拖鞋，可前往1020对面洗衣房领取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间里没有拖鞋了，酒店FAQ告知客人如需额外拖鞋，可前往1020对面洗衣房领取。"
+        },
+        {
+          "score": 0.3770214319229126,
+          "session_id": "lis_south_station_faq_r0254_8070334731",
+          "matched_question": "房间里没有浴室用的拖鞋吗",
+          "matched_answer": "您好，出于卫生考虑，避免真菌感染，酒店是不配备凉拖的哈。房间里面有地巾，您可以铺在地上使用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问房间里是否有浴室用的拖鞋，丽斯未来酒店FAQ回复称出于卫生考虑，避免真菌感染，酒店不配备凉拖，房间里有地巾可铺在地上使用。客人可能对酒店未配备浴室拖鞋感到疑惑，后续可能会考虑是否使用地巾替代拖鞋。"
+        },
+        {
+          "score": 0.35431039333343506,
+          "session_id": "lis_south_station_faq_r0256_3464bd1066",
+          "matched_question": "有塑料拖鞋吗？",
+          "matched_answer": "您好，出于卫生考虑，避免真菌感染，酒店是不配备凉拖的哈。房间里面有地巾，您可以铺在地上使用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有塑料拖鞋，丽斯未来酒店FAQ回复称出于卫生考虑，避免真菌感染，酒店不配备凉拖，房间里有地巾可铺在地上使用。"
+        }
+      ]
+    },
+    {
+      "row_number": 360,
+      "query": "有微波炉吗？",
+      "expected_answer": "酒店提供微波炉，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": false,
+      "topk_contains_exact": true,
+      "top1_score": 0.31611716747283936,
+      "top1_session_id": "lis_south_station_faq_r0089_0af0471e22",
+      "top1_question": "酒店有微波炉吗？",
+      "top1_answer": "酒店提供微波炉供住客使用，具体位置在1020房间对面的洗衣房内。",
+      "hits": [
+        {
+          "score": 0.31611716747283936,
+          "session_id": "lis_south_station_faq_r0089_0af0471e22",
+          "matched_question": "酒店有微波炉吗？",
+          "matched_answer": "酒店提供微波炉供住客使用，具体位置在1020房间对面的洗衣房内。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有微波炉，丽斯未来酒店FAQ回复酒店提供微波炉供住客使用，位置在1020房间对面的洗衣房内。"
+        },
+        {
+          "score": 0.30670714378356934,
+          "session_id": "lis_south_station_faq_r0361_b1387d7dd4",
+          "matched_question": "我要加热，有微波炉吗？",
+          "matched_answer": "酒店提供微波炉，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问是否有微波炉用于加热，丽斯未来酒店FAQ告知酒店提供微波炉，放置在1020房间对面的洗衣房内，客人可自行取用。"
+        },
+        {
+          "score": 0.30558323860168457,
+          "session_id": "lis_south_station_faq_r0360_be4e067d6b",
+          "matched_question": "有微波炉吗？",
+          "matched_answer": "酒店提供微波炉，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有微波炉，丽斯未来酒店FAQ回复酒店提供微波炉，放置在1020房间对面的洗衣房内，可自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 594,
+      "query": "我已经离开酒店了，落了东西在房间，叫了跑腿去拿，麻烦给开下门。",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.546001136302948,
+      "top1_session_id": "lis_south_station_faq_r0594_f232294b1c",
+      "top1_question": "我已经离开酒店了，落了东西在房间，叫了跑腿去拿，麻烦给开下门。",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.546001136302948,
+          "session_id": "lis_south_station_faq_r0594_f232294b1c",
+          "matched_question": "我已经离开酒店了，落了东西在房间，叫了跑腿去拿，麻烦给开下门。",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人告知已离开酒店，因落了东西在房间，叫了跑腿去拿，请求酒店帮忙开门，酒店客服回复转接。客人此时可能焦急等待拿回落下的物品，希望酒店能尽快协助跑腿开门拿到物品。"
+        },
+        {
+          "score": 0.4391438364982605,
+          "session_id": "lis_south_station_faq_r0595_194874cef6",
+          "matched_question": "我退房了，东西落房间了，可以让跑腿去房间1拿下吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人退房后发现东西落在房间1，向丽斯未来酒店FAQ提出让跑腿去房间1拿东西的请求，酒店FAQ回复转接。推测客人当前比较着急拿回落在房间的物品，可能会关注转接后事情的处理进度。"
+        },
+        {
+          "score": 0.3759632110595703,
+          "session_id": "lis_south_station_faq_r0665_e50f297b20",
+          "matched_question": "东西落房间了怎么办？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问东西落在房间该怎么办，酒店FAQ回复转接。客人处于好奇、寻求帮助的状态，酒店FAQ按流程操作进行转接。推测客人希望尽快解决找回落下物品的问题，后续可能会与转接的部门进一步沟通物品找回事宜。"
+        }
+      ]
+    },
+    {
+      "row_number": 319,
+      "query": "附近有咖啡店吗？",
+      "expected_answer": "酒店提供速溶咖啡，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3178141117095947,
+      "top1_session_id": "lis_south_station_faq_r0319_c987d16f71",
+      "top1_question": "附近有咖啡店吗？",
+      "top1_answer": "酒店提供速溶咖啡，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.3178141117095947,
+          "session_id": "lis_south_station_faq_r0319_c987d16f71",
+          "matched_question": "附近有咖啡店吗？",
+          "matched_answer": "酒店提供速溶咖啡，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问附近是否有咖啡店，丽斯未来酒店FAQ回复酒店提供速溶咖啡，放置在1020房间对面的洗衣房内，客人可自行取用。推测客人可能想要喝咖啡，后续可能会去洗衣房取用咖啡。"
+        },
+        {
+          "score": 0.25240957736968994,
+          "session_id": "lis_south_station_faq_r0315_f5ceaaa8a3",
+          "matched_question": "有咖啡吗？",
+          "matched_answer": "酒店提供速溶咖啡，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有咖啡，丽斯未来酒店FAQ回复酒店提供速溶咖啡，放置在1020房间对面的洗衣房内，客人可自行取用。客人可能会前往洗衣房取用咖啡。"
+        },
+        {
+          "score": 0.23823004961013794,
+          "session_id": "lis_south_station_faq_r0318_a1ed8699f4",
+          "matched_question": "咖啡在哪拿？",
+          "matched_answer": "酒店提供速溶咖啡，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问咖啡在哪拿，丽斯未来酒店FAQ回复酒店提供速溶咖啡，放置在1020房间对面的洗衣房内，可自行取用。客人可能会前往洗衣房拿咖啡。"
+        }
+      ]
+    },
+    {
+      "row_number": 735,
+      "query": "我的房间靠近电梯吗？",
+      "expected_answer": "我们靠近电梯的房间是：910、912、1010、1012 。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.38624608516693115,
+      "top1_session_id": "lis_south_station_faq_r0732_67da8e4f3b",
+      "top1_question": "哪些房间是靠近电梯的？",
+      "top1_answer": "我们靠近电梯的房间是：910、912、1010、1012 。",
+      "hits": [
+        {
+          "score": 0.38624608516693115,
+          "session_id": "lis_south_station_faq_r0732_67da8e4f3b",
+          "matched_question": "哪些房间是靠近电梯的？",
+          "matched_answer": "我们靠近电梯的房间是：910、912、1010、1012 。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问哪些房间靠近电梯，丽斯未来酒店FAQ回复靠近电梯的房间是910、912、1010、1012。"
+        },
+        {
+          "score": 0.3785865902900696,
+          "session_id": "lis_south_station_faq_r0735_d89df80b2a",
+          "matched_question": "我的房间靠近电梯吗？",
+          "matched_answer": "我们靠近电梯的房间是：910、912、1010、1012 。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问自己的房间是否靠近电梯，丽斯未来酒店FAQ回复靠近电梯的房间是910、912、1010、1012"
+        },
+        {
+          "score": 0.3595304489135742,
+          "session_id": "lis_south_station_faq_r0733_21c48e9990",
+          "matched_question": "有离电梯近一点的房间吗？",
+          "matched_answer": "我们靠近电梯的房间是：910、912、1010、1012 。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问是否有离电梯近一点的房间，丽斯未来酒店FAQ回复靠近电梯的房间是910、912、1010、1012。客人表现出对靠近电梯房间的需求，状态较为急切；酒店FAQ及时提供了相关信息，态度友好专业。推测客人可能更倾向于选择这些靠近电梯的房间。"
+        }
+      ]
+    },
+    {
+      "row_number": 220,
+      "query": "遥控器控制不了",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.33659130334854126,
+      "top1_session_id": "lis_south_station_faq_r0220_bf850b6832",
+      "top1_question": "遥控器控制不了",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.33659130334854126,
+          "session_id": "lis_south_station_faq_r0220_bf850b6832",
+          "matched_question": "遥控器控制不了",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈遥控器控制不了，丽斯未来酒店FAQ回复转接。客人可能有些困扰和着急，期望问题能尽快解决；丽斯未来酒店FAQ迅速做出转接的反应，试图解决客人的问题。"
+        },
+        {
+          "score": 0.24639391899108887,
+          "session_id": "lis_south_station_faq_r0221_8b08d9df28",
+          "matched_question": "遥控器是不是坏了？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问遥控器是否坏了，丽斯未来酒店FAQ回复转接。客人可能对遥控器的可用性感到担忧，推测客人希望尽快解决遥控器问题；而酒店方转接可能是要让专业人员处理，接下来应关注后续是否有人跟进维修遥控器。"
+        },
+        {
+          "score": 0.23709988594055176,
+          "session_id": "lis_south_station_faq_r0219_00af090bc1",
+          "matched_question": "遥控器怎么没有反映？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈遥控器没有反应，酒店FAQ回复转接。客人反馈问题时表现出疑惑的情绪，酒店FAQ迅速做出转接处理。推测客人希望能尽快解决遥控器无反应的问题，后续可能会等待转接后的解决方案。"
+        }
+      ]
+    },
+    {
+      "row_number": 416,
+      "query": "你们前台在哪？",
+      "expected_answer": "我们是非24小时前台的智能化运作模式，请问有什么帮您？",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.29355543851852417,
+      "top1_session_id": "lis_south_station_faq_r0416_7f6580a611",
+      "top1_question": "你们前台在哪？",
+      "top1_answer": "我们是非24小时前台的智能化运作模式，请问有什么帮您？",
+      "hits": [
+        {
+          "score": 0.29355543851852417,
+          "session_id": "lis_south_station_faq_r0416_7f6580a611",
+          "matched_question": "你们前台在哪？",
+          "matched_answer": "我们是非24小时前台的智能化运作模式，请问有什么帮您？",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问前台位置，丽斯未来酒店FAQ回复是非24小时前台的智能化运作模式，并询问客人需求。客人询问时表现出好奇的情绪，助手以专业、礼貌的态度进行了回应。推测客人可能是初到酒店，有办理入住等相关需求。"
+        },
+        {
+          "score": 0.2764550447463989,
+          "session_id": "lis_south_station_faq_r0417_84bdc43576",
+          "matched_question": "为什么找不到前台？",
+          "matched_answer": "我们是非24小时前台的智能化运作模式，请问有什么帮您？",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问为何找不到前台，表现出好奇的情绪。丽斯未来酒店FAQ回复称酒店采用非24小时前台的智能化运作模式，并询问客人有什么需要帮助的。推测客人可能希望了解在这种模式下如何办理入住等相关事宜。"
+        },
+        {
+          "score": 0.265774130821228,
+          "session_id": "lis_south_station_faq_r0415_6ea336159b",
+          "matched_question": "你们有没有前台？",
+          "matched_answer": "我们是非24小时前台的智能化运作模式，请问有什么帮您？",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有前台，丽斯未来酒店FAQ回复酒店采用非24小时前台的智能化运作模式，并询问客人有什么需要帮助"
+        }
+      ]
+    },
+    {
+      "row_number": 297,
+      "query": "有创口贴吗",
+      "expected_answer": "酒店提供创可贴，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3308219909667969,
+      "top1_session_id": "lis_south_station_faq_r0297_19caa068ec",
+      "top1_question": "有创口贴吗",
+      "top1_answer": "酒店提供创可贴，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.3308219909667969,
+          "session_id": "lis_south_station_faq_r0297_19caa068ec",
+          "matched_question": "有创口贴吗",
+          "matched_answer": "酒店提供创可贴，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有创口贴，丽斯未来酒店FAQ回复酒店提供创可贴，放置在1020房间对面的洗衣房内，可自行取用。客人可能因受伤或预计会受伤而有获取创口贴的需求，后续可能会去洗衣房拿创口贴。"
+        },
+        {
+          "score": 0.27704739570617676,
+          "session_id": "lis_south_station_faq_r0298_e658caf220",
+          "matched_question": "酒店提供创可贴吗？",
+          "matched_answer": "酒店提供创可贴，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否提供创可贴，丽斯未来酒店FAQ回复酒店提供创可贴，放置在1020房间对面的洗衣房内，可自行取用。"
+        },
+        {
+          "score": 0.2613019347190857,
+          "session_id": "lis_south_station_faq_r0299_29089364e1",
+          "matched_question": "创可贴在哪拿？",
+          "matched_answer": "酒店提供创可贴，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问创可贴的获取位置，丽斯未来酒店FAQ告知创可贴放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 694,
+      "query": "可以改退房时间吗？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3878211975097656,
+      "top1_session_id": "lis_south_station_faq_r0694_7c9c138c04",
+      "top1_question": "可以改退房时间吗？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.3878211975097656,
+          "session_id": "lis_south_station_faq_r0694_7c9c138c04",
+          "matched_question": "可以改退房时间吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问是否可以更改退房时间，酒店FAQ回复转接。客人可能在思考转接后能否顺利解决更改退房时间的问题，后续可能会等待转接后的进一步沟通。"
+        },
+        {
+          "score": 0.3702632188796997,
+          "session_id": "lis_south_station_faq_r0696_aa23239cd7",
+          "matched_question": "预约错了退房时间，怎么改？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ咨询预约错了退房时间该如何修改，酒店FAQ回复转接。客人此时可能比较着急，希望尽快解决退房时间修改的问题。"
+        },
+        {
+          "score": 0.3291071653366089,
+          "session_id": "lis_south_station_faq_r0697_aacd64fe1c",
+          "matched_question": "退房时间预约错了，可以重新预约吗？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问退房时间预约错了能否重新预约，酒店FAQ回复转接。客人可能希望重新预约退房时间，后续可能会等待转接后的处理结果。"
+        }
+      ]
+    },
+    {
+      "row_number": 385,
+      "query": "有没有大毛巾",
+      "expected_answer": "酒店提供浴巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.2792436480522156,
+      "top1_session_id": "lis_south_station_faq_r0385_7f5f9b143a",
+      "top1_question": "有没有大毛巾",
+      "top1_answer": "酒店提供浴巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.2792436480522156,
+          "session_id": "lis_south_station_faq_r0385_7f5f9b143a",
+          "matched_question": "有没有大毛巾",
+          "matched_answer": "酒店提供浴巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问是否有大毛巾，丽斯未来酒店FAQ回应称酒店提供浴巾，放置在1020房间对面的洗衣房内，可自行取用。客人表现出关切，想解决毛巾需求，酒店及时提供了解决方案。推测客人后续可能会前往洗衣房取用浴巾。"
+        },
+        {
+          "score": 0.25224101543426514,
+          "session_id": "lis_south_station_faq_r0331_0494957b21",
+          "matched_question": "有没有一次性毛巾？",
+          "matched_answer": "酒店提供压缩毛巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有一次性毛巾，丽斯未来酒店FAQ回复酒店提供压缩毛巾，放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        },
+        {
+          "score": 0.24596506357192993,
+          "session_id": "lis_south_station_faq_r0387_9a598061fc",
+          "matched_question": "有没有洗澡毛巾？",
+          "matched_answer": "酒店提供浴巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问是否有洗澡毛巾，丽斯未来酒店FAQ回复酒店提供浴巾，放置在1020房间对面的洗衣房内，可自行取用。客人表现出好奇的情绪，希望获取洗澡毛巾的相关信息，而丽斯未来酒店FAQ则以专业、耐心的态度进行了详细解答。推测客人接下来可能会前往洗衣房取用浴巾。"
+        }
+      ]
+    },
+    {
+      "row_number": 283,
+      "query": "我忘记带卸妆水了，酒店有吗",
+      "expected_answer": "酒店提供卸妆湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4521174430847168,
+      "top1_session_id": "lis_south_station_faq_r0283_ff84751781",
+      "top1_question": "我忘记带卸妆水了，酒店有吗",
+      "top1_answer": "酒店提供卸妆湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+      "hits": [
+        {
+          "score": 0.4521174430847168,
+          "session_id": "lis_south_station_faq_r0283_ff84751781",
+          "matched_question": "我忘记带卸妆水了，酒店有吗",
+          "matched_answer": "酒店提供卸妆湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问酒店是否有卸妆水，称自己忘记带了。酒店FAQ回复酒店提供卸妆湿巾，放置在1020房间对面的洗衣房内，客人可按需自行取用。客人询问时表现出焦急和无奈，酒店FAQ的回复让客人安心。推测客人可能会前往洗衣房取用卸妆湿巾。"
+        },
+        {
+          "score": 0.35103029012680054,
+          "session_id": "lis_south_station_faq_r0281_557e7c4665",
+          "matched_question": "酒店提供卸妆湿巾吗？",
+          "matched_answer": "酒店提供卸妆湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否提供卸妆湿巾，丽斯未来酒店FAQ回复酒店提供卸妆湿巾，放置在1020房间对面的洗衣房内，客人可按需自行取用。"
+        },
+        {
+          "score": 0.34997618198394775,
+          "session_id": "lis_south_station_faq_r0280_9627c9e1ca",
+          "matched_question": "有卸妆湿巾吗",
+          "matched_answer": "酒店提供卸妆湿巾，该物品放置在1020房间对面的洗衣房内。您可以根据自身需要自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问是否有卸妆湿巾，丽斯未来酒店FAQ回复酒店提供卸妆湿巾，放置在1020房间对面的洗衣房内，可自行取用。"
+        }
+      ]
+    },
+    {
+      "row_number": 677,
+      "query": "淋浴间有水渍",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.33934807777404785,
+      "top1_session_id": "lis_south_station_faq_r0677_27b32705c2",
+      "top1_question": "淋浴间有水渍",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.33934807777404785,
+          "session_id": "lis_south_station_faq_r0677_27b32705c2",
+          "matched_question": "淋浴间有水渍",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈淋浴间有水渍，酒店FAQ转接处理"
+        },
+        {
+          "score": 0.22771000862121582,
+          "session_id": "lis_south_station_faq_r0680_79a77df773",
+          "matched_question": "淋浴间下水堵了",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈淋浴间下水堵了，酒店FAQ表示转接处理。客人反馈问题时情绪可能有些困扰，希望问题能尽快解决，而酒店FAQ表现出积极处理的态度"
+        },
+        {
+          "score": 0.21788239479064941,
+          "session_id": "lis_south_station_faq_r0678_cb4c2322ea",
+          "matched_question": "淋浴间门好脏",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "在2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈淋浴间门好脏，酒店FAQ回复转接"
+        }
+      ]
+    },
+    {
+      "row_number": 442,
+      "query": "房间怎么有很大的水声？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3405719995498657,
+      "top1_session_id": "lis_south_station_faq_r0442_454dc2acff",
+      "top1_question": "房间怎么有很大的水声？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.3405719995498657,
+          "session_id": "lis_south_station_faq_r0442_454dc2acff",
+          "matched_question": "房间怎么有很大的水声？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间有很大的水声，酒店FAQ回复转接"
+        },
+        {
+          "score": 0.27305078506469727,
+          "session_id": "lis_south_station_faq_r0440_896477b3c5",
+          "matched_question": "房间滴滴答答有水声。",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间有滴滴答答的水声，酒店FAQ回复转接。"
+        },
+        {
+          "score": 0.26561880111694336,
+          "session_id": "lis_south_station_faq_r0439_738c5885c3",
+          "matched_question": "房间有滴水的声音？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间有滴水声，酒店FAQ回复转接。客人反馈问题时表现出疑惑的情绪，酒店FAQ迅速响应并转接处理。推测客人希望尽快解决房间滴水的问题，后续可能会等待酒店的处理结果并根据情况再次反馈。"
+        }
+      ]
+    },
+    {
+      "row_number": 727,
+      "query": "酒店在哪买东西？",
+      "expected_answer": "不好意思，酒店没有哈，下楼右转再右转有个美宜佳24小时便利店，您可以去那边购买",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3409944772720337,
+      "top1_session_id": "lis_south_station_faq_r0727_b0df648959",
+      "top1_question": "酒店在哪买东西？",
+      "top1_answer": "不好意思，酒店没有哈，下楼右转再右转有个美宜佳24小时便利店，您可以去那边购买",
+      "hits": [
+        {
+          "score": 0.3409944772720337,
+          "session_id": "lis_south_station_faq_r0727_b0df648959",
+          "matched_question": "酒店在哪买东西？",
+          "matched_answer": "不好意思，酒店没有哈，下楼右转再右转有个美宜佳24小时便利店，您可以去那边购买",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店内购物地点，丽斯未来酒店FAQ告知酒店内没有购物处，建议客人下楼右转再右转到美宜佳24小时便利店购买物品。客人表现出好奇的情绪，assistant及时给予了明确的回复。推测客人后续可能会前往该便利店购物。"
+        },
+        {
+          "score": 0.33908581733703613,
+          "session_id": "lis_south_station_faq_r0726_ceadab5e2d",
+          "matched_question": "酒店有卖东西的吗？",
+          "matched_answer": "不好意思，酒店没有哈，下楼右转再右转有个美宜佳24小时便利店，您可以去那边购买",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店是否有卖东西的，丽斯未来酒店FAQ回复酒店没有，建议客人下楼右转再右转去美宜佳24小时便利店购买。"
+        },
+        {
+          "score": 0.2984597682952881,
+          "session_id": "lis_south_station_faq_r0725_e2e2d14e61",
+          "matched_question": "酒店能买到零食吗？",
+          "matched_answer": "不好意思，酒店没有哈，下楼右转再右转有个美宜佳24小时便利店，您可以去那边购买",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店能否买到零食，丽斯未来酒店FAQ回复酒店没有，告知下楼右转再右转有个美宜佳24小时便利店可去购买。客人可能会根据此信息前往便利店购买零食。"
+        }
+      ]
+    },
+    {
+      "row_number": 23,
+      "query": "在哪里用早餐？",
+      "expected_answer": "很抱歉，我们酒店暂不提供早餐，但周边有丰富的美食选择，建议您可以用外卖APP或者乘车前往附近的“包河万象汇”等商场。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.27777814865112305,
+      "top1_session_id": "lis_south_station_faq_r0023_57996ecd58",
+      "top1_question": "在哪里用早餐？",
+      "top1_answer": "很抱歉，我们酒店暂不提供早餐，但周边有丰富的美食选择，建议您可以用外卖APP或者乘车前往附近的“包河万象汇”等商场。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+      "hits": [
+        {
+          "score": 0.27777814865112305,
+          "session_id": "lis_south_station_faq_r0023_57996ecd58",
+          "matched_question": "在哪里用早餐？",
+          "matched_answer": "很抱歉，我们酒店暂不提供早餐，但周边有丰富的美食选择，建议您可以用外卖APP或者乘车前往附近的“包河万象汇”等商场。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问早餐用餐地点，丽斯未来酒店FAQ回复酒店暂不提供早餐，建议客人使用外卖APP或乘车前往附近的包河万象汇等商场用餐，还特别推荐了步行可到的饭佳缘牛肉炒饭。"
+        },
+        {
+          "score": 0.2373412847518921,
+          "session_id": "lis_south_station_faq_r0021_6caaeecadb",
+          "matched_question": "你们酒店有早餐吗？",
+          "matched_answer": "很抱歉，我们酒店暂不提供早餐，但周边有丰富的美食选择，建议您可以用外卖APP或者乘车前往附近的“包河万象汇”等商场。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有早餐，丽斯未来酒店FAQ回复酒店暂不提供早餐，建议客人使用外卖APP或乘车前往附近的“包河万象汇”等商场就餐，还特别推荐了酒店附近步行可到达的“饭佳缘牛肉炒饭”。"
+        },
+        {
+          "score": 0.2331678867340088,
+          "session_id": "lis_south_station_faq_r0024_5ee1d038ed",
+          "matched_question": "可以加早餐吗？",
+          "matched_answer": "很抱歉，我们酒店暂不提供早餐，但周边有丰富的美食选择，建议您可以用外卖APP或者乘车前往附近的“包河万象汇”等商场。另外酒店附近的“饭佳缘牛肉炒饭”尤其推荐，步行即可到达哦。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问是否可以加早餐，丽斯未来酒店FAQ表示酒店暂不提供早餐，建议客人用外卖APP或乘车前往附近的“包河万象汇”等商场，还特别推荐了酒店附近步行可达的“饭佳缘牛肉炒饭”。"
+        }
+      ]
+    },
+    {
+      "row_number": 684,
+      "query": "介绍下你们家的房型",
+      "expected_answer": "我们酒店有：积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，您可以根据需求进行预订哈。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.34163618087768555,
+      "top1_session_id": "lis_south_station_faq_r0684_70fa75bc53",
+      "top1_question": "介绍下你们家的房型",
+      "top1_answer": "我们酒店有：积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，您可以根据需求进行预订哈。",
+      "hits": [
+        {
+          "score": 0.34163618087768555,
+          "session_id": "lis_south_station_faq_r0684_70fa75bc53",
+          "matched_question": "介绍下你们家的房型",
+          "matched_answer": "我们酒店有：积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，您可以根据需求进行预订哈。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问该酒店的房型，酒店FAQ介绍了积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，并让客人根据需求预订。客人表现出好奇的情绪，酒店FAQ进行了专业解答。推测客人可能会根据介绍选择合适的房型进行预订。"
+        },
+        {
+          "score": 0.31368905305862427,
+          "session_id": "lis_south_station_faq_r0682_4909cb0c6b",
+          "matched_question": "你们有多少种房型？",
+          "matched_answer": "我们酒店有：积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，您可以根据需求进行预订哈。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店有多少种房型，丽斯未来酒店FAQ回复酒店有积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，并告知客人可根据需求进行预订。客人对房型种类表现出好奇，希望了解酒店的房型信息。"
+        },
+        {
+          "score": 0.3116995096206665,
+          "session_id": "lis_south_station_faq_r0681_4c8ab0e596",
+          "matched_question": "你们有哪些房型？",
+          "matched_answer": "我们酒店有：积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，您可以根据需求进行预订哈。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问酒店有哪些房型，丽斯未来酒店FAQ回复酒店有积木、合柴、岭南、艺林（双床房）、绿洲、麦田、菱湖七种房型，并建议客人根据需求进行预订。客人表现出好奇的情绪，想了解酒店房型信息，assistant及时进行了详细解答。推测客人可能有预订酒店房间的打算，后续可能会进一步询问房型的价格、设施等信息。"
+        }
+      ]
+    },
+    {
+      "row_number": 76,
+      "query": "麻烦帮我开一下发票",
+      "expected_answer": "目前酒店是可以提供增值税电子普或专票的，请在退房后打开酒店微信小程序--自由家安心宿，在线申请发票。发票会在申请后1至3个工作日上传至小程序，请您自行下载认领。",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.31265342235565186,
+      "top1_session_id": "lis_south_station_faq_r0076_8acec9e614",
+      "top1_question": "麻烦帮我开一下发票",
+      "top1_answer": "目前酒店是可以提供增值税电子普或专票的，请在退房后打开酒店微信小程序--自由家安心宿，在线申请发票。发票会在申请后1至3个工作日上传至小程序，请您自行下载认领。",
+      "hits": [
+        {
+          "score": 0.31265342235565186,
+          "session_id": "lis_south_station_faq_r0076_8acec9e614",
+          "matched_question": "麻烦帮我开一下发票",
+          "matched_answer": "目前酒店是可以提供增值税电子普或专票的，请在退房后打开酒店微信小程序--自由家安心宿，在线申请发票。发票会在申请后1至3个工作日上传至小程序，请您自行下载认领。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ提出开发票的请求，丽斯未来酒店FAQ告知客人酒店可提供增值税电子普票或专票，需在退房后打开酒店微信小程序--自由家安心宿在线申请，发票会在申请后1至3个工作日上传至小程序，由客人自行下载认领。"
+        },
+        {
+          "score": 0.29382359981536865,
+          "session_id": "lis_south_station_faq_r0069_c821e09cd2",
+          "matched_question": "发票怎么开？",
+          "matched_answer": "目前酒店是可以提供增值税电子普或专票的，请在退房后打开酒店微信小程序--自由家安心宿，在线申请发票。发票会在申请后1至3个工作日上传至小程序，请您自行下载认领。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问发票如何开具，丽斯未来酒店FAQ回复称酒店可提供增值税电子普或专票，客人需在退房后打开酒店微信小程序--自由家安心宿在线申请，发票会在申请后1至3个工作日上传至小程序，由客人自行下载认领。"
+        },
+        {
+          "score": 0.29169368743896484,
+          "session_id": "lis_south_station_faq_r0072_eb1c4257af",
+          "matched_question": "能开普票吗？",
+          "matched_answer": "目前酒店是可以提供增值税电子普或专票的，请在退房后打开酒店微信小程序--自由家安心宿，在线申请发票。发票会在申请后1至3个工作日上传至小程序，请您自行下载认领。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问能否开普票，丽斯未来酒店FAQ回复目前酒店可提供增值税电子普票或专票，需在退房后打开酒店微信小程序——自由家安心宿在线申请发票，发票会在申请后1至3个工作日上传至小程序，由客人自行下载认领。"
+        }
+      ]
+    },
+    {
+      "row_number": 577,
+      "query": "你好 请帮我送两瓶水",
+      "expected_answer": "您好，麻烦您去1020对面的洗衣房自取一下哈",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.36138808727264404,
+      "top1_session_id": "lis_south_station_faq_r0577_5738184a97",
+      "top1_question": "你好 请帮我送两瓶水",
+      "top1_answer": "您好，麻烦您去1020对面的洗衣房自取一下哈",
+      "hits": [
+        {
+          "score": 0.36138808727264404,
+          "session_id": "lis_south_station_faq_r0577_5738184a97",
+          "matched_question": "你好 请帮我送两瓶水",
+          "matched_answer": "您好，麻烦您去1020对面的洗衣房自取一下哈",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ请求送两瓶水，丽斯未来酒店FAQ让客人去1020对面的洗衣房自取"
+        },
+        {
+          "score": 0.31906598806381226,
+          "session_id": "lis_south_station_faq_r0615_da980c9164",
+          "matched_question": "可以给我送两瓶水吗？",
+          "matched_answer": "不需要的宝子，我们的洗衣房有配备多余的矿泉水，麻烦您去1020对面的洗衣房自取一下哈",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ请求送两瓶水，酒店FAQ回复不需要送水，让客人去1020对面的洗衣房自取多余的矿泉水。"
+        },
+        {
+          "score": 0.28365033864974976,
+          "session_id": "lis_south_station_faq_r0616_fbec3fd67a",
+          "matched_question": "矿泉水只提供两瓶吗？",
+          "matched_answer": "不需要的宝子，我们的洗衣房有配备多余的矿泉水，麻烦您去1020对面的洗衣房自取一下哈",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问矿泉水是否只提供两瓶，丽斯未来酒店FAQ告知客人洗衣房配备了多余的矿泉水，让客人去1020对面的洗衣房自取。"
+        }
+      ]
+    },
+    {
+      "row_number": 616,
+      "query": "矿泉水只提供两瓶吗？",
+      "expected_answer": "不需要的宝子，我们的洗衣房有配备多余的矿泉水，麻烦您去1020对面的洗衣房自取一下哈",
+      "case_type": "direct",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3714805841445923,
+      "top1_session_id": "lis_south_station_faq_r0616_fbec3fd67a",
+      "top1_question": "矿泉水只提供两瓶吗？",
+      "top1_answer": "不需要的宝子，我们的洗衣房有配备多余的矿泉水，麻烦您去1020对面的洗衣房自取一下哈",
+      "hits": [
+        {
+          "score": 0.3714805841445923,
+          "session_id": "lis_south_station_faq_r0616_fbec3fd67a",
+          "matched_question": "矿泉水只提供两瓶吗？",
+          "matched_answer": "不需要的宝子，我们的洗衣房有配备多余的矿泉水，麻烦您去1020对面的洗衣房自取一下哈",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问矿泉水是否只提供两瓶，丽斯未来酒店FAQ告知客人洗衣房配备了多余的矿泉水，让客人去1020对面的洗衣房自取。"
+        },
+        {
+          "score": 0.3249760866165161,
+          "session_id": "lis_south_station_faq_r0340_f4e4986b4b",
+          "matched_question": "有矿泉水吗？",
+          "matched_answer": "酒店客房均配备2瓶矿泉水，若另外需要，可前往1020房间对面的洗衣房自行取用。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人询问酒店是否有矿泉水，丽斯未来酒店FAQ回复称酒店客房均配备2瓶矿泉水，若另外需要，可前往1020房间对面的洗衣房自行取用。客人可能会根据回复去取用额外的矿泉水。"
+        },
+        {
+          "score": 0.3074016571044922,
+          "session_id": "lis_south_station_faq_r0634_8f3f9d65e2",
+          "matched_question": "问下房间的两瓶矿泉水是免费的吗？",
+          "matched_answer": "是的，房间内的矿泉水都是免费的",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问房间里的两瓶矿泉水是否免费，丽斯未来酒店FAQ回复房间内的矿泉水都是免费的。客人可能会基于此信息决定是否饮用房间内的矿泉水。"
+        }
+      ]
+    },
+    {
+      "row_number": 703,
+      "query": "房间的设施设备有问题？",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.3815118074417114,
+      "top1_session_id": "lis_south_station_faq_r0703_7684257761",
+      "top1_question": "房间的设施设备有问题？",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.3815118074417114,
+          "session_id": "lis_south_station_faq_r0703_7684257761",
+          "matched_question": "房间的设施设备有问题？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问房间设施设备是否有问题，丽斯未来酒店FAQ回复转接。客人对此问题感到好奇，而丽斯未来酒店FAQ迅速做出转接的反应，推测客人可能希望尽快解决房间设施设备的潜在问题，之后可能会等待转接后的处理结果。"
+        },
+        {
+          "score": 0.3472040891647339,
+          "session_id": "lis_south_station_faq_r0704_a75dc17fa6",
+          "matched_question": "房间设备坏了了怎么办？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ询问房间设备坏了怎么办，酒店FAQ回复转接。客人可能比较着急解决设备问题，后续可能会等待转接后的处理结果。"
+        },
+        {
+          "score": 0.29642897844314575,
+          "session_id": "lis_south_station_faq_r0705_fc41f9c40a",
+          "matched_question": "我房间的东西有问题",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间的东西有问题，客服转接处理。客人反馈问题时情绪未知，客服反应为转接。推测客人希望问题能得到及时解决，后续可能会等待处理结果并根据情况再次反馈。"
+        }
+      ]
+    },
+    {
+      "row_number": 644,
+      "query": "为什么登记显示异常",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.33163654804229736,
+      "top1_session_id": "lis_south_station_faq_r0644_b2f1aa9e9f",
+      "top1_question": "为什么登记显示异常",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.33163654804229736,
+          "session_id": "lis_south_station_faq_r0644_b2f1aa9e9f",
+          "matched_question": "为什么登记显示异常",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问登记显示异常的原因，丽斯未来酒店FAQ回复转接。客人对登记异常情况感到疑惑，而酒店FAQ采取转接措施应对。推测客人后续会等待转接后的处理结果，可能希望尽快解决登记异常问题。"
+        },
+        {
+          "score": 0.20129430294036865,
+          "session_id": "lis_south_station_faq_r0642_b75c5115a4",
+          "matched_question": "人脸登记失败怎么办？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ询问人脸登记失败怎么办，客服转接处理。客人表现出疑惑，客服未直接解答而是转接。推测客人可能希望尽快解决人脸登记失败的问题，等待转接后的进一步处理。"
+        },
+        {
+          "score": 0.17993009090423584,
+          "session_id": "lis_south_station_faq_r0436_e4c0b906ce",
+          "matched_question": "手机摄像头坏了，怎么登记？",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈手机摄像头坏了，询问如何进行登记，酒店FAQ回复转接。客人可能因手机摄像头损坏而感到困扰和着急，推测客人希望能顺利完成酒店登记入住。"
+        }
+      ]
+    },
+    {
+      "row_number": 655,
+      "query": "不喜欢吵得房间，安排安静一点的。",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.4723902940750122,
+      "top1_session_id": "lis_south_station_faq_r0655_ab7334c9c7",
+      "top1_question": "不喜欢吵得房间，安排安静一点的。",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.4723902940750122,
+          "session_id": "lis_south_station_faq_r0655_ab7334c9c7",
+          "matched_question": "不喜欢吵得房间，安排安静一点的。",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ表示不喜欢吵闹的房间，要求安排安静一点的房间，酒店FAQ回复转接。"
+        },
+        {
+          "score": 0.43441855907440186,
+          "session_id": "lis_south_station_faq_r0473_f9746e06d3",
+          "matched_question": "哪些房间比较吵？",
+          "matched_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人询问哪些房间比较吵，丽斯未来酒店FAQ回复双数房间号比较安静，具体房型为麦田、绿洲、菱湖，还表示准备了降噪耳塞，客人可前往1020对面的洗衣房自取。客人可能在考虑预订安静房间，之后可能会询问这些房型的价格、设施等信息。"
+        },
+        {
+          "score": 0.4082556366920471,
+          "session_id": "lis_south_station_faq_r0475_534dd0136c",
+          "matched_question": "给我推荐一个安静点的房间？",
+          "matched_answer": "目前双数房间号的都是比较安静的，具体的房型是麦田、绿洲、菱湖，您可以选择这些房间或房型。另外我们也准备了降噪耳塞，如有需要，您可前往1020对面的洗衣房可以自取。",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日下午13:11，酒店客人向丽斯未来酒店FAQ咨询安静的房间，丽斯未来酒店FAQ回复双数房间号比较安静，具体房型有麦田、绿洲、菱湖可供选择，还告知客人若有需要可前往1020对面的洗衣房自取降噪耳塞。"
+        }
+      ]
+    },
+    {
+      "row_number": 667,
+      "query": "窗帘",
+      "expected_answer": "转接",
+      "case_type": "handoff",
+      "top1_exact_match": true,
+      "topk_contains_exact": true,
+      "top1_score": 0.27208632230758667,
+      "top1_session_id": "lis_south_station_faq_r0672_95eb95dd2b",
+      "top1_question": "小爱为什么控制不了窗帘。",
+      "top1_answer": "转接",
+      "hits": [
+        {
+          "score": 0.27208632230758667,
+          "session_id": "lis_south_station_faq_r0672_95eb95dd2b",
+          "matched_question": "小爱为什么控制不了窗帘。",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈小爱无法控制窗帘，酒店FAQ回复转接。客人反馈问题时可能带有疑惑、困扰的情绪，推测客人希望尽快解决小爱控制窗帘的问题。"
+        },
+        {
+          "score": 0.2674279808998108,
+          "session_id": "lis_south_station_faq_r0667_0d27f8804c",
+          "matched_question": "窗帘",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人提到了“窗帘”，随后丽斯未来酒店FAQ回复“转接”。客人提及“窗帘”时情绪未知，可能是想反馈窗帘相关问题，如窗帘损坏、遮光效果不好等；丽斯未来酒店FAQ的反应是转接，推测可能会将客人的问题转接给相关部门处理。"
+        },
+        {
+          "score": 0.26375818252563477,
+          "session_id": "lis_south_station_faq_r0666_b6090df343",
+          "matched_question": "这个窗帘关不严",
+          "matched_answer": "转接",
+          "memory_type": "event_v1",
+          "summary": "2026年4月15日周三下午13:11，酒店客人向丽斯未来酒店FAQ反馈房间窗帘关不严，酒店FAQ回复转接处理。客人反馈问题时情绪可能有些不满，希望问题能得到解决。推测客人可能希望酒店尽快安排人员来处理窗帘问题，以保证房间的隐私和舒适度。"
+        }
+      ]
+    }
+  ]
+}
