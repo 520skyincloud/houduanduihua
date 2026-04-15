@@ -44,30 +44,65 @@ const COMMAND = {
 const PRICING_PREEMPT_KEYWORDS = [
   "调价",
   "收益",
+  "收益分析",
+  "经营分析",
+  "经营情况",
+  "收益情况",
   "复盘",
   "经营摘要",
   "盘面摘要",
+  "盘面",
   "飞书",
+  "发飞书",
+  "发群",
+  "推送",
   "策略",
+  "调价策略",
+  "调价方案",
+  "调价建议",
+  "价格策略",
+  "价格怎么调",
+  "怎么定价",
+  "定价策略",
+  "定价方案",
+  "定价",
   "改价",
+  "改价方案",
   "执行结果",
+  "执行详情",
   "审批",
   "批准",
+  "通过",
   "拒绝",
 ];
 
 const HARD_BACKEND_PREEMPT_KEYWORDS = [
   "早餐",
   "停车",
+  "车位",
+  "停哪",
+  "停哪儿",
+  "收钱",
+  "停车费",
+  "进车口",
+  "辅路",
   "发票",
+  "开票",
+  "抬头",
+  "税号",
   "入住",
   "退房",
+  "晚到",
+  "半夜到",
   "续住",
   "房型",
   "路线",
   "怎么走",
+  "导航",
+  "店名",
   "楼层",
   "会议室",
+  "开会地方",
   "洗衣房",
   "健身房",
   "营业时间",
@@ -111,6 +146,7 @@ const state = {
   },
   micPermission: "unknown",
   autoGreetingTriggered: false,
+  lastInterruptAt: 0,
 };
 
 function pushDebugEvent(key, payload) {
@@ -152,6 +188,15 @@ function setWarning(text) {
 
 function setCallback(text) {
   dom.callbackText.textContent = text;
+}
+
+function canSendInterrupt() {
+  const now = Date.now();
+  if (now - state.lastInterruptAt < 800) {
+    return false;
+  }
+  state.lastInterruptAt = now;
+  return true;
 }
 
 async function readMicrophonePermissionState() {
@@ -312,10 +357,10 @@ async function loadBootstrap() {
         : currentFaqRouteMode() === "s2s_memory"
         ? "主链为 S2S(2024-12-01)，酒店 FAQ 正在走原生 MemoryConfig 全量实验线，调价与确认类问题仍切后端。"
         : currentFaqRouteMode() === "hybrid_risk_split"
-        ? "主链为 S2S(2024-12-01)，低风险酒店问答走 S2S+Memory，高风险酒店事实与业务链由后端接管。"
+        ? "主链为 S2S(2024-12-01)，低风险自然交流走实时对话 AI，高风险酒店事实由本地 FAQ 语义匹配后端接管。"
         : "主链为 S2S(2024-12-01)，酒店知识与强规则问题命中后会切到后端知识链。"
     )
-    : "当前主链为 ASR -> LLM -> TTS，RTC 负责音频传输，酒店高风险事实与业务链仍由后端接管。";
+    : "当前主链为 ASR -> LLM -> TTS，RTC 负责音频传输；酒店事实题优先走本地 FAQ 语义匹配与标准句播报。";
   setPricingState(
     state.bootstrap.pricing?.revenue_mcp_enabled
       ? "收益链已启用，调价/复盘/执行请求将切到后端收益 MCP。"
@@ -345,6 +390,10 @@ function handleServerEvent(packet) {
   const { kind, payload } = packet;
   if (kind === "state") {
     const label = payload.state || "Idle";
+    if (payload.state === "interrupted") {
+      state.lastParagraphKey = "";
+      state.backendPreempt = { active: false, reason: "" };
+    }
     dom.thinkingText.textContent = payload.detail || "等待新的 RTC 事件。";
     if (payload.action_state && payload.action_state !== "none") {
       setPricingState(`收益链状态：${payload.action_state}`);
@@ -527,19 +576,23 @@ async function handleSubtitleEvent(data) {
       if (preempt.reason === "pricing-keyword-hit") {
         setPricingState("收益链接管中：pricing-keyword-hit");
       }
-      state.interrupting = true;
-      try {
-        await postJson(`/api/rtc/sessions/${state.sessionId}/interrupt`, { reason: "early-backend-preempt" });
-      } finally {
-        state.interrupting = false;
+      if (canSendInterrupt()) {
+        state.interrupting = true;
+        try {
+          await postJson(`/api/rtc/sessions/${state.sessionId}/interrupt`, { reason: "early-backend-preempt" });
+        } finally {
+          state.interrupting = false;
+        }
       }
     }
     if ((state.uiState === "Greeting" || state.uiState === "Speaking") && !state.interrupting) {
-      state.interrupting = true;
-      try {
-        await postJson(`/api/rtc/sessions/${state.sessionId}/interrupt`, { reason: "user-speech" });
-      } finally {
-        state.interrupting = false;
+      if (canSendInterrupt()) {
+        state.interrupting = true;
+        try {
+          await postJson(`/api/rtc/sessions/${state.sessionId}/interrupt`, { reason: "user-speech" });
+        } finally {
+          state.interrupting = false;
+        }
       }
     }
     if (data.paragraph && data.definite) {
@@ -757,6 +810,11 @@ async function handlePresence() {
 }
 
 async function handleInterrupt() {
+  if (!canSendInterrupt()) {
+    setCallback("回调日志：已忽略过于频繁的打断指令。");
+    return;
+  }
+  state.lastParagraphKey = "";
   await postJson(`/api/rtc/sessions/${state.sessionId}/interrupt`, {
     reason: "manual-button",
   });

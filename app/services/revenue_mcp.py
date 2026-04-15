@@ -41,6 +41,236 @@ HIGH_RISK_TOOLS = {
     "run_pms_reprice",
 }
 ALL_REVENUE_TOOLS = READ_ONLY_TOOLS | PREVIEW_TOOLS | HIGH_RISK_TOOLS
+SIDE_EFFECT_TOOLS = {
+    "run_operating_summary",
+    "run_store_revenue_review",
+    "generate_current_pricing_strategy",
+}
+SIDE_EFFECT_IDEMPOTENCY_SECONDS = 12.0
+RERUN_HINTS = [
+    "重新",
+    "重来",
+    "重发",
+    "重跑",
+    "再来",
+    "再做",
+    "再来一次",
+    "再来一版",
+    "重新来",
+    "重新跑",
+    "重新生成",
+    "重新发",
+    "再发一次",
+    "重发一次",
+    "重跑一次",
+    "再做一次",
+]
+
+RETROSPECTIVE_HINTS = [
+    "昨天",
+    "昨日",
+    "昨晚",
+    "上次",
+    "上一版",
+    "上一轮",
+    "前一版",
+]
+
+RETROSPECTIVE_SUBJECT_HINTS = [
+    "策略",
+    "调价",
+    "定价",
+    "收益",
+    "经营",
+]
+
+CURRENT_STRATEGY_HINTS = [
+    "今天",
+    "今日",
+    "当前",
+    "现在",
+    "这版",
+    "本轮",
+]
+
+SUMMARY_TRIGGER_L1 = [
+    "经营摘要",
+    "盘面摘要",
+    "收益分析",
+    "经营分析",
+    "经营情况",
+    "收益情况",
+    "今天收益",
+    "今日收益",
+    "今天经营",
+    "今日经营",
+    "今日盘面",
+    "今天盘面",
+    "盘面怎么样",
+    "收益怎么样",
+    "经营怎么样",
+    "分析一下收益",
+    "分析下收益",
+    "发经营摘要",
+    "发收益分析",
+    "发今天经营摘要",
+    "发今天收益分析",
+]
+
+SUMMARY_TRIGGER_L2 = [
+    "帮我分析今天收益",
+    "给我分析今天收益",
+    "来个今天收益分析",
+    "来个今天经营摘要",
+    "发个今天收益分析",
+    "发个今天经营摘要",
+    "把今天收益分析发我",
+    "把今天经营摘要发我",
+    "看下今天收益",
+    "看下今天经营情况",
+    "说下今天收益情况",
+]
+
+SUMMARY_TRIGGER_L3 = [
+    ("今天", "收益"),
+    ("今天", "经营"),
+    ("今日", "收益"),
+    ("今日", "经营"),
+    ("盘面", "分析"),
+    ("盘面", "摘要"),
+]
+
+REVIEW_TRIGGER_L1 = [
+    "昨日策略",
+    "昨日的策略",
+    "昨天策略",
+    "昨天的策略",
+    "昨日策略复盘",
+    "昨日的策略复盘",
+    "昨天调价复盘",
+    "昨天的调价复盘",
+    "经营复盘",
+    "收益复盘",
+    "昨日收益复盘",
+    "昨日的收益复盘",
+    "昨日复盘",
+    "策略复盘",
+    "昨天复盘",
+    "昨天收益复盘",
+    "昨天的收益复盘",
+    "昨天经营复盘",
+    "昨天的经营复盘",
+    "发昨日复盘",
+    "发昨天复盘",
+]
+
+REVIEW_TRIGGER_L2 = [
+    "来个昨天策略",
+    "来个昨天的策略",
+    "帮我看昨天策略",
+    "帮我看昨天的策略",
+    "昨天那个策略",
+    "昨天那版策略",
+    "上一版策略",
+    "上一轮策略",
+    "来个昨天收益复盘",
+    "来个昨天的收益复盘",
+    "帮我看昨天收益复盘",
+    "帮我做昨天收益复盘",
+    "给我昨天收益复盘",
+    "发一下昨天收益复盘",
+    "把昨天收益复盘发我",
+    "来个昨日经营复盘",
+    "昨天调价结果复盘",
+    "昨天定价复盘",
+]
+
+REVIEW_TRIGGER_L3 = [
+    ("昨天", "复盘"),
+    ("昨日", "复盘"),
+    ("昨天", "收益", "复盘"),
+    ("昨日", "收益", "复盘"),
+    ("昨天", "经营", "复盘"),
+    ("昨天", "调价", "复盘"),
+]
+
+LATEST_RESULT_QUERY_KEYWORDS = [
+    "最新调价结果",
+    "最近一次调价结果",
+    "调价结果怎么样",
+    "飞书发了吗",
+    "最新执行结果",
+    "最近结果",
+    "最近一次执行结果",
+    "执行结果怎么样",
+    "最新结果怎么样",
+]
+
+STRATEGY_TRIGGER_L1 = [
+    "调价策略",
+    "怎么调价",
+    "调价方案",
+    "看看今天怎么调价",
+    "收益策略",
+    "调价建议",
+    "价格策略",
+    "价格怎么调",
+    "怎么定价",
+    "定价策略",
+    "定价方案",
+    "定价",
+    "改价方案",
+    "生成调价策略",
+    "生成一版调价策略",
+    "来个调价策略",
+    "来一版调价策略",
+    "出一版当前调价方案",
+    "给我看看今天怎么调价",
+    "给我一版调价方案",
+    "做个调价方案",
+    "做个定价方案",
+]
+
+STRATEGY_TRIGGER_L2 = [
+    "帮我出个今天的调价方案",
+    "帮我做个今天的定价方案",
+    "给我出个价格方案",
+    "看下今天价格怎么调",
+    "说下今天价格怎么定",
+    "来个今天的价格策略",
+    "出一版今天的调价建议",
+    "给我看看今天房价怎么调",
+    "帮我生成今天的调价策略",
+    "做个今天收益调价方案",
+]
+
+STRATEGY_TRIGGER_L3 = [
+    ("今天", "调价"),
+    ("今天", "定价"),
+    ("价格", "怎么调"),
+    ("价格", "策略"),
+    ("定价", "方案"),
+    ("调价", "方案"),
+    ("收益", "策略"),
+]
+
+INTENT_FILLER_WORDS = [
+    "小丽",
+    "你好",
+    "您好",
+    "麻烦",
+    "请",
+    "帮我",
+    "给我",
+    "来个",
+    "来一份",
+    "来一版",
+    "来一个",
+    "看一下",
+    "看下",
+    "说一下",
+    "说下",
+]
 
 
 class RevenueMCPError(Exception):
@@ -175,6 +405,7 @@ class _RevenueMCPSession:
 class RevenueMCPService:
     def __init__(self) -> None:
         self._tool_cache: list[dict[str, Any]] = []
+        self._side_effect_cache: dict[str, tuple[float, BackendTurnResult]] = {}
 
     @property
     def enabled(self) -> bool:
@@ -316,6 +547,11 @@ class RevenueMCPService:
                     action_state="pricing_rejected",
                 )
 
+            normalized_query = self._normalize_query(query)
+            cached_result = self._get_recent_side_effect_result(action["tool_name"], normalized_query)
+            if cached_result is not None:
+                return cached_result
+
             if action["mode"] == "pending":
                 pending = self._build_pending_confirmation(
                     tool_name=action["tool_name"],
@@ -338,13 +574,19 @@ class RevenueMCPService:
                 payload = {"text": tool_result.text}
 
             if action["tool_name"] == "generate_current_pricing_strategy":
-                return self._format_strategy_preview(payload, query)
+                result = self._format_strategy_preview(payload, query)
+                self._remember_side_effect_result(action["tool_name"], normalized_query, result)
+                return result
             if action["tool_name"] == "get_latest_execution_summary":
                 return self._format_latest_execution(payload)
             if action["tool_name"] == "run_operating_summary":
-                return self._format_operating_summary(payload)
+                result = self._format_operating_summary(payload)
+                self._remember_side_effect_result(action["tool_name"], normalized_query, result)
+                return result
             if action["tool_name"] == "run_store_revenue_review":
-                return self._format_revenue_review(payload)
+                result = self._format_revenue_review(payload)
+                self._remember_side_effect_result(action["tool_name"], normalized_query, result)
+                return result
             if action["tool_name"] == "get_execution_overview":
                 return self._format_execution_overview(payload)
             return self._format_generic_preview(action["tool_name"], payload, tool_result.text)
@@ -360,43 +602,63 @@ class RevenueMCPService:
             )
 
     def _classify_query(self, query: str) -> Optional[dict[str, Any]]:
-        normalized = query.strip().lower()
+        normalized_query = self._normalize_query(query)
         contains_push = any(keyword in query for keyword in ["飞书", "推送", "群里", "发群"])
+        contains_no_push = any(
+            keyword in normalized_query
+            for keyword in [
+                "别发群",
+                "不要发群",
+                "不用发群",
+                "不发群",
+                "别推送",
+                "不要推送",
+                "不用推送",
+                "不推送",
+                "别发飞书",
+                "不要发飞书",
+                "不用发飞书",
+                "不发飞书",
+            ]
+        )
+        should_send_feishu = contains_push or not contains_no_push
 
         execution_id = self._extract_execution_id(query)
         rejection_reason = self._extract_rejection_reason(query)
 
-        if any(keyword in query for keyword in ["经营摘要", "盘面摘要"]):
+        if self._matches_trigger(normalized_query, SUMMARY_TRIGGER_L1, SUMMARY_TRIGGER_L2, SUMMARY_TRIGGER_L3):
             return {
                 "mode": "call",
                 "tool_name": "run_operating_summary",
                 "arguments": {},
             }
-        if any(keyword in query for keyword in ["昨日策略复盘", "昨天调价复盘", "经营复盘", "昨日复盘", "策略复盘"]):
+        if self._looks_like_review_query(normalized_query) or self._matches_trigger(
+            normalized_query, REVIEW_TRIGGER_L1, REVIEW_TRIGGER_L2, REVIEW_TRIGGER_L3
+        ):
             return {
                 "mode": "call",
                 "tool_name": "run_store_revenue_review",
-                "arguments": {"send_feishu": contains_push},
+                "arguments": {"send_feishu": should_send_feishu},
             }
-        if any(keyword in query for keyword in ["最新调价结果", "最近一次调价结果", "调价结果怎么样", "飞书发了吗"]):
+        if any(keyword in normalized_query for keyword in LATEST_RESULT_QUERY_KEYWORDS):
             return {
                 "mode": "call",
                 "tool_name": "get_latest_execution_summary",
                 "arguments": {},
             }
-        if execution_id and any(keyword in query for keyword in ["执行详情", "执行单", "execution"]):
+        if execution_id and any(keyword in normalized_query for keyword in ["执行详情", "执行单", "execution"]):
             return {
                 "mode": "call",
                 "tool_name": "get_execution_overview",
                 "arguments": {"execution_id": execution_id},
             }
-        if execution_id and any(keyword in query for keyword in ["批准", "通过", "审批通过"]):
+        if execution_id and any(keyword in normalized_query for keyword in ["批准", "通过", "审批通过"]):
             return {
                 "mode": "pending",
                 "tool_name": "approve_execution",
                 "arguments": {"execution_id": execution_id},
             }
-        if execution_id and any(keyword in query for keyword in ["拒绝", "驳回"]):
+        if execution_id and any(keyword in normalized_query for keyword in ["拒绝", "驳回"]):
             arguments = {"execution_id": execution_id}
             if rejection_reason:
                 arguments["reason"] = rejection_reason
@@ -405,13 +667,95 @@ class RevenueMCPService:
                 "tool_name": "reject_execution",
                 "arguments": arguments,
             }
-        if any(keyword in query for keyword in ["调价策略", "怎么调价", "调价方案", "看看今天怎么调价", "收益策略"]):
+        if self._looks_like_current_strategy_query(normalized_query) and self._matches_trigger(
+            normalized_query, STRATEGY_TRIGGER_L1, STRATEGY_TRIGGER_L2, STRATEGY_TRIGGER_L3
+        ):
             return {
                 "mode": "call",
                 "tool_name": "generate_current_pricing_strategy",
-                "arguments": {"days": 3, "send_feishu": contains_push},
+                "arguments": {"days": 3, "send_feishu": should_send_feishu},
             }
         return None
+
+    @staticmethod
+    def _normalize_query(query: str) -> str:
+        normalized = re.sub(r"[，。！？、,.!?\s]+", "", query)
+        for filler in INTENT_FILLER_WORDS:
+            normalized = normalized.replace(filler, "")
+        normalized = normalized.replace("的", "")
+        return normalized
+
+    @staticmethod
+    def _matches_trigger(
+        normalized_query: str,
+        layer1: list[str],
+        layer2: list[str],
+        layer3: list[tuple[str, ...]],
+    ) -> bool:
+        if any(keyword in normalized_query for keyword in layer1):
+            return True
+        if any(keyword in normalized_query for keyword in layer2):
+            return True
+        return any(all(token in normalized_query for token in token_group) for token_group in layer3)
+
+    @staticmethod
+    def _looks_like_review_query(normalized_query: str) -> bool:
+        has_retro = any(keyword in normalized_query for keyword in RETROSPECTIVE_HINTS)
+        has_subject = any(keyword in normalized_query for keyword in RETROSPECTIVE_SUBJECT_HINTS)
+        return has_retro and has_subject
+
+    @staticmethod
+    def _looks_like_current_strategy_query(normalized_query: str) -> bool:
+        if any(keyword in normalized_query for keyword in RETROSPECTIVE_HINTS):
+            return False
+        if any(keyword in normalized_query for keyword in CURRENT_STRATEGY_HINTS):
+            return True
+        return not any(keyword in normalized_query for keyword in ["复盘", "结果"])
+
+    def _get_recent_side_effect_result(
+        self,
+        tool_name: str,
+        normalized_query: str,
+    ) -> Optional[BackendTurnResult]:
+        if tool_name not in SIDE_EFFECT_TOOLS:
+            return None
+        allow_rerun = any(keyword in normalized_query for keyword in RERUN_HINTS)
+        exact_cache_key = f"{tool_name}:{normalized_query}"
+        tool_cache_key = f"{tool_name}:__tool__"
+        cached = self._side_effect_cache.get(exact_cache_key)
+        if not cached and not allow_rerun:
+            cached = self._side_effect_cache.get(tool_cache_key)
+        if not cached:
+            return None
+        created_ts, result = cached
+        if time.time() - created_ts > SIDE_EFFECT_IDEMPOTENCY_SECONDS:
+            self._side_effect_cache.pop(exact_cache_key, None)
+            self._side_effect_cache.pop(tool_cache_key, None)
+            return None
+        return BackendTurnResult(
+            status=result.status,
+            display_text=result.display_text,
+            speak_text="刚刚这类操作我已经帮您触发了，这次先不重复发送。",
+            state=result.state,
+            confidence=result.confidence,
+            needs_handoff=result.needs_handoff,
+            action_state=result.action_state,
+            metadata={**result.metadata, "duplicate_suppressed": True},
+        )
+
+    def _remember_side_effect_result(
+        self,
+        tool_name: str,
+        normalized_query: str,
+        result: BackendTurnResult,
+    ) -> None:
+        if tool_name not in SIDE_EFFECT_TOOLS:
+            return
+        created_ts = time.time()
+        exact_cache_key = f"{tool_name}:{normalized_query}"
+        tool_cache_key = f"{tool_name}:__tool__"
+        self._side_effect_cache[exact_cache_key] = (created_ts, result)
+        self._side_effect_cache[tool_cache_key] = (created_ts, result)
 
     async def _handle_confirmation(
         self,

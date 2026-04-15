@@ -68,7 +68,6 @@ class Settings(BaseModel):
     revenue_mcp_project_path: Path = Path(
         os.getenv("REVENUE_MCP_PROJECT_PATH", "/Users/sky/Project/New project voice")
     )
-
     answer_timeout_ms: int = int(os.getenv("ANSWER_TIMEOUT_MS", "250"))
     greeting_cooldown_seconds: int = int(os.getenv("GREETING_COOLDOWN_SECONDS", "60"))
     presence_reset_seconds: int = int(os.getenv("PRESENCE_RESET_SECONDS", "15"))
@@ -193,6 +192,10 @@ class Settings(BaseModel):
                 "只能依据命中的知识内容作答；若没有明确命中，就直接说明暂未查询到准确信息，不能猜。"
                 "酒店事实题先直接说结论，再补一句必要信息，不要寒暄，不要铺垫。"
                 "当命中内容里有关键事实时，优先原样复述关键事实本身，例如是否免费、入口从哪条路进入、需要提前几分钟联系等。"
+                "回答前先区分用户是在问是否存在、怎么收费、在哪、几点、是否提供某项服务，"
+                "不要把同一主题下不同意图的内容混答。"
+                "如果召回结果主题明显不相干，例如问游泳池却只检索到洗衣房、问停车场却只检索到充电桩，"
+                "必须直接说暂未查询到准确信息。"
                 "不要把用户画像或无关偏好当成酒店事实答案。"
                 "当业务系统需要接管回答时，保持自然停顿，避免与外部播报抢话。"
             )

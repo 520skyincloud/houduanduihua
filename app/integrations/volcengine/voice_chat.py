@@ -164,9 +164,10 @@ class VoiceChatPayloadFactory:
         }
 
     def _build_llm_config(self) -> dict[str, Any]:
+        system_messages = list(settings.volcengine_llm_system_messages)
         payload: dict[str, Any] = {
             "Mode": settings.volcengine_llm_mode,
-            "SystemMessages": settings.volcengine_llm_system_messages,
+            "SystemMessages": system_messages,
             "VisionConfig": {
                 "Enable": False,
             },

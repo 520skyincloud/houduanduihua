@@ -23,6 +23,7 @@ from app.integrations.volcengine import (
 )
 from app.models import BackendTurnResult, PresenceState, RTCSessionState
 from app.services.faq_store import FAQStore
+from app.services.faq_semantic import FAQSemanticExperiment
 from app.services.lobby import LobbyCoordinator
 from app.services.memory import MemoryFacade
 from app.services.ragflow import RAGFlowFacade
@@ -43,6 +44,7 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 store = FAQStore(settings.faq_index_path)
+faq_semantic = FAQSemanticExperiment(store.items)
 ragflow = RAGFlowFacade(store)
 memory = MemoryFacade()
 revenue_mcp = RevenueMCPService()
@@ -51,6 +53,7 @@ rtc_openapi = VolcengineRTCOpenAPI()
 voice_chat_factory = VoiceChatPayloadFactory()
 state_lock = Lock()
 voicechat_callback_log: list[dict[str, Any]] = []
+voice_chat_command_locks: dict[str, asyncio.Lock] = {}
 
 
 class BootstrapRequest(BaseModel):
@@ -203,6 +206,11 @@ def _config_groups() -> dict[str, object]:
             "api_health_url": settings.revenue_mcp_api_health_url,
             "validate_with": "GET /api/validate/revenue-mcp",
         },
+        "faq_semantic": {
+            "enabled": True,
+            "validate_with": "GET /api/validate/faq-semantic/benchmark",
+            "usage": "酒店事实问题主候选链，支持口语化语义匹配与未知问题拒答。",
+        },
         "asr_tts_backup": {
             "configured": settings.asr_tts_ready,
             "primary": settings.volcengine_primary_dialog_path in {"asr_tts", "asr-llm-tts", "cascade"},
@@ -235,6 +243,45 @@ def _faq_to_backend_result(resolved: Any) -> BackendTurnResult:
     )
 
 
+def _faq_semantic_to_backend_result(result: dict[str, Any]) -> BackendTurnResult:
+    top_match = result.get("top_match") or {}
+    answer = str(top_match.get("standard_answer") or "").strip()
+    if result.get("accepted") and answer:
+        return BackendTurnResult(
+            status="answered",
+            display_text=answer,
+            speak_text=answer,
+            state="speaking",
+            confidence=float(top_match.get("score") or 1.0),
+            metadata={
+                "source": "faq_semantic",
+                "faq_id": top_match.get("faq_id"),
+                "alias": top_match.get("alias"),
+                "matched_query": top_match.get("matched_query"),
+                "category": top_match.get("category"),
+                "query_category": result.get("query_category"),
+                "query_intent": result.get("query_intent"),
+                "elapsed_ms": result.get("elapsed_ms"),
+            },
+        )
+
+    not_found = "暂未查询到准确信息。"
+    return BackendTurnResult(
+        status="not_found",
+        display_text=not_found,
+        speak_text=not_found,
+        state="error",
+        confidence=float((top_match.get("score") or 0.0)),
+        metadata={
+            "source": "faq_semantic",
+            "query_category": result.get("query_category"),
+            "query_intent": result.get("query_intent"),
+            "reject_reason": result.get("reject_reason"),
+            "elapsed_ms": result.get("elapsed_ms"),
+        },
+    )
+
+
 def _decide_turn_owner(session_id: str, user_text: str) -> dict[str, object]:
     if settings.effective_dialog_path == "unconfigured":
         return {
@@ -258,6 +305,25 @@ def _decide_turn_owner(session_id: str, user_text: str) -> dict[str, object]:
             "confidence": max(decision.confidence, 0.99),
             "reason": "pure-s2s-test-mode",
         }
+    semantic_result = faq_semantic.query(user_text, limit=3)
+    if decision.intent not in {"pricing", "pricing_confirm", "chitchat"}:
+        if semantic_result.get("accepted"):
+            top_match = semantic_result.get("top_match") or {}
+            return {
+                "owner": "backend",
+                "intent": "faq",
+                "confidence": float(top_match.get("score") or decision.confidence),
+                "reason": "faq-semantic-hit",
+                "semantic_result": semantic_result,
+            }
+        if semantic_result.get("query_category"):
+            return {
+                "owner": "backend",
+                "intent": "faq",
+                "confidence": max(float((semantic_result.get("top_match") or {}).get("score") or 0.0), 0.65),
+                "reason": "faq-semantic-category-reject",
+                "semantic_result": semantic_result,
+            }
     if decision.owner == "s2s" and settings.effective_dialog_path == "unconfigured" and settings.volcengine_use_backend_fallback:
         return {
             "owner": "backend",
@@ -314,6 +380,14 @@ def _record_global_voicechat_callback(kind: str, payload: dict[str, Any]) -> Non
         }
     )
     del voicechat_callback_log[:-50]
+
+
+def _get_voice_chat_command_lock(session_id: str) -> asyncio.Lock:
+    lock = voice_chat_command_locks.get(session_id)
+    if lock is None:
+        lock = asyncio.Lock()
+        voice_chat_command_locks[session_id] = lock
+    return lock
 
 
 async def _start_voice_chat(session_id: str) -> dict[str, Any]:
@@ -394,8 +468,10 @@ async def _send_voice_chat_command(
             },
         )
 
+    command_lock = _get_voice_chat_command_lock(session_id)
     try:
-        response = await asyncio.to_thread(rtc_openapi.update_voice_chat, payload)
+        async with command_lock:
+            response = await asyncio.to_thread(rtc_openapi.update_voice_chat, payload)
     except Exception as exc:
         with state_lock:
             lobby.publish_event(
@@ -460,7 +536,12 @@ async def _process_turn(
         if route["intent"] in {"pricing", "pricing_confirm"}:
             resolved = await revenue_mcp.resolve_query(user_text, pending_confirmation)
         elif route["intent"] == "faq":
-            resolved = _faq_to_backend_result(resolve_answer(user_text, store.items))
+            semantic_result = route.get("semantic_result") or faq_semantic.query(user_text, limit=3)
+            resolved = _faq_semantic_to_backend_result(semantic_result)
+            if resolved.status != "answered":
+                exact_resolved = resolve_answer(user_text, store.items)
+                if exact_resolved.status == "answered":
+                    resolved = _faq_to_backend_result(exact_resolved)
         else:
             resolved = _faq_to_backend_result(await ragflow.resolve(user_text))
     except Exception as exc:
@@ -727,6 +808,24 @@ async def validate_revenue_mcp_tool(tool_name: str) -> dict[str, object]:
     return await revenue_mcp.validate_tool(tool_name)
 
 
+@app.get("/api/validate/faq-semantic/query")
+async def validate_faq_semantic_query(q: str, limit: int = 5) -> dict[str, object]:
+    return {
+        "ok": True,
+        "source": "local-faq-semantic-experiment",
+        **faq_semantic.query(q, limit=limit),
+    }
+
+
+@app.get("/api/validate/faq-semantic/benchmark")
+async def validate_faq_semantic_benchmark() -> dict[str, object]:
+    return {
+        "ok": True,
+        "source": "local-faq-semantic-experiment",
+        **faq_semantic.benchmark(),
+    }
+
+
 @app.get("/api/validate/voice-chat-payload")
 async def validate_voice_chat_payload() -> dict[str, object]:
     preview_session = RTCSessionState(
@@ -801,7 +900,7 @@ async def bootstrap(request: BootstrapRequest) -> dict[str, object]:
             "s2s_ready": settings.s2s_ready,
             "memory_enabled": settings.volcengine_enable_memory,
             "memory_ready": settings.memory_ready,
-            "turn_detection_mode": 1,
+            "turn_detection_mode": settings.volcengine_asr_turn_detection_mode,
             "subtitle_mode": 1,
             "greeting_text": settings.greeting_text,
             "transition_text": settings.transition_text,
@@ -989,15 +1088,16 @@ async def rtc_utterance(session_id: str, request: QueryRequest) -> dict[str, obj
                         "turn_id": turn.turn_id,
                     },
                 )
-                asyncio.create_task(
-                    _send_voice_chat_command(
-                        session_id,
-                        "interrupt",
-                        "",
-                        1,
-                        Reason="backend-owned-turn",
+                if request.source != "rtc-paragraph-preempted":
+                    asyncio.create_task(
+                        _send_voice_chat_command(
+                            session_id,
+                            "interrupt",
+                            "",
+                            1,
+                            Reason="backend-owned-turn",
+                        )
                     )
-                )
             else:
                 lobby.publish_event(
                     session_id,
