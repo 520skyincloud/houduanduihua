@@ -1,0 +1,196 @@
+{
+  "summary": {
+    "source_rows": 758,
+    "prompt_rows": 758,
+    "answerable_rows": 534,
+    "transfer_rows": 224,
+    "empty_rows": 0,
+    "unique_answerable_answers": 118,
+    "unique_intents": 8,
+    "top_intents": [
+      [
+        "misc",
+        267
+      ],
+      [
+        "service",
+        172
+      ],
+      [
+        "location",
+        28
+      ],
+      [
+        "parking",
+        26
+      ],
+      [
+        "invoice",
+        18
+      ],
+      [
+        "checkout",
+        14
+      ],
+      [
+        "checkin",
+        5
+      ],
+      [
+        "breakfast",
+        4
+      ]
+    ]
+  },
+  "metrics": {
+    "holdout_size": 300,
+    "exact_match": 0.8733,
+    "direct_accuracy": 0.8947,
+    "transfer_recall": 0.9341,
+    "direct_total": 209,
+    "direct_correct": 187,
+    "transfer_total": 91,
+    "correct": 262,
+    "failure_count": 38,
+    "top_failure_reasons": [
+      [
+        "cluster_mismatch",
+        26
+      ],
+      [
+        "transfer_misread",
+        6
+      ],
+      [
+        "intent_mismatch:misc->invoice",
+        1
+      ],
+      [
+        "intent_mismatch:misc->parking",
+        1
+      ],
+      [
+        "intent_mismatch:misc->location",
+        1
+      ],
+      [
+        "intent_mismatch:checkout->checkin",
+        1
+      ],
+      [
+        "parking_confusion:parking_exists->parking_type",
+        1
+      ],
+      [
+        "intent_mismatch:service->handoff",
+        1
+      ]
+    ],
+    "top_confusions": [
+      {
+        "gold_cluster_id": "handoff__handoff_projector__a529666e15",
+        "predicted_cluster_id": "service__projector_info__c383c56697",
+        "count": 3
+      },
+      {
+        "gold_cluster_id": "service__voice_control_aircon__594274380f",
+        "predicted_cluster_id": "service__voice_control_aircon__2c4716554f",
+        "count": 3
+      },
+      {
+        "gold_cluster_id": "handoff__handoff_transfer_generic__273c01b600",
+        "predicted_cluster_id": "handoff__handoff_aircon__0ebeaad30e",
+        "count": 2
+      },
+      {
+        "gold_cluster_id": "handoff__handoff_transfer_generic__273c01b600",
+        "predicted_cluster_id": "handoff__handoff_change_room__fdec855280",
+        "count": 2
+      },
+      {
+        "gold_cluster_id": "handoff__handoff_transfer_generic__273c01b600",
+        "predicted_cluster_id": "handoff__handoff_lost_found__cf63931152",
+        "count": 2
+      },
+      {
+        "gold_cluster_id": "misc__general__89e1837477",
+        "predicted_cluster_id": "invoice__invoice_title__3fc36d3f78",
+        "count": 1
+      },
+      {
+        "gold_cluster_id": "service__laundry_room__5077bac385",
+        "predicted_cluster_id": "service__laundry_room__0cd08960d3",
+        "count": 1
+      },
+      {
+        "gold_cluster_id": "service__microwave__6947f8cc88",
+        "predicted_cluster_id": "service__microwave__e72341c38a",
+        "count": 1
+      },
+      {
+        "gold_cluster_id": "handoff__handoff_equipment__85e1b1fe7c",
+        "predicted_cluster_id": "misc__general__14e9d03e12",
+        "count": 1
+      },
+      {
+        "gold_cluster_id": "misc__general__0496c3509f",
+        "predicted_cluster_id": "parking__parking_entrance__a9913c31e3",
+        "count": 1
+      },
+      {
+        "gold_cluster_id": "handoff__handoff_transfer_generic__273c01b600",
+        "predicted_cluster_id": "handoff__handoff_room_info__782a642c9a",
+        "count": 1
+      },
+      {
+        "gold_cluster_id": "service__amenity_supply__4ad0b34203",
+        "predicted_cluster_id": "service__amenity_supply__e41053bea8",
+        "count": 1
+      }
+    ],
+    "intent_distribution": [
+      [
+        "misc",
+        99
+      ],
+      [
+        "handoff",
+        91
+      ],
+      [
+        "service",
+        75
+      ],
+      [
+        "location",
+        11
+      ],
+      [
+        "parking",
+        9
+      ],
+      [
+        "invoice",
+        7
+      ],
+      [
+        "checkout",
+        6
+      ],
+      [
+        "breakfast",
+        1
+      ],
+      [
+        "checkin",
+        1
+      ]
+    ]
+  },
+  "sample_regression": {
+    "sample_size": 24,
+    "passed": 24,
+    "accuracy": 1.0,
+    "failures": []
+  }
+}

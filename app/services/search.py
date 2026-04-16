@@ -6,40 +6,15 @@ from typing import Optional, Tuple
 from app.models import FAQItem, ResolvedAnswer, SearchResult, TurnIntent, TurnRouteDecision
 
 
-PRICING_KEYWORDS = [
-    "调价",
-    "收益",
-    "收益分析",
-    "经营分析",
-    "经营情况",
-    "收益情况",
-    "复盘",
-    "经营摘要",
-    "盘面摘要",
-    "经营摘要",
-    "盘面",
-    "飞书",
-    "发飞书",
-    "发群",
-    "推送",
-    "策略",
-    "调价策略",
-    "调价方案",
-    "调价建议",
-    "价格策略",
-    "价格怎么调",
-    "怎么定价",
-    "定价策略",
-    "定价方案",
-    "定价",
-    "改价",
-    "改价方案",
-    "执行结果",
-    "执行详情",
-    "审批",
-    "批准",
-    "通过",
-    "拒绝",
+EXACT_PRICING_COMMANDS = [
+    "生成收益分析",
+    "生成昨日复盘",
+    "生成调价方案",
+]
+PRICING_COMMAND_PATTERNS = [
+    r"(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(收益分析)",
+    r"(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(昨日复盘)",
+    r"(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(调价方案)",
 ]
 CHITCHAT_KEYWORDS = ["你好", "您好", "嗨", "介绍一下你", "你是谁", "你能做什么"]
 FAQ_KEYWORDS = [
@@ -61,6 +36,32 @@ FAQ_KEYWORDS = [
     "门口",
     "房间",
     "高铁",
+    "护发素",
+    "漱口水",
+    "矿泉水",
+    "卷纸",
+    "纸巾",
+    "被套",
+    "被子",
+    "枕头",
+    "枕套",
+    "床单",
+    "梳子",
+    "拖鞋",
+    "牙刷",
+    "牙膏",
+    "洗发水",
+    "沐浴露",
+    "吹风机",
+    "投影仪",
+    "投屏",
+    "门锁密码",
+    "洗衣机",
+    "空调",
+    "遥控器",
+    "小爱同学",
+    "美团",
+    "抖音",
 ]
 HARD_BACKEND_KEYWORDS = [
     "早餐",
@@ -88,6 +89,74 @@ HARD_BACKEND_KEYWORDS = [
     "剃须刀",
     "用品",
     "前台",
+    "护发素",
+    "漱口水",
+    "矿泉水",
+    "卷纸",
+    "纸巾",
+    "被套",
+    "被子",
+    "枕头",
+    "枕套",
+    "床单",
+    "梳子",
+    "拖鞋",
+    "牙刷",
+    "牙膏",
+    "洗发水",
+    "沐浴露",
+    "吹风机",
+    "投影仪",
+    "投屏",
+    "门锁密码",
+    "洗衣机",
+    "空调",
+    "遥控器",
+    "小爱同学",
+    "美团",
+    "抖音",
+]
+FAQ_REQUEST_VERBS = [
+    "想用",
+    "想要",
+    "想拿",
+    "想问",
+    "需要",
+    "有没有",
+    "有没",
+    "能给",
+    "能不能",
+    "可以给",
+    "能提供",
+    "能用",
+    "用一下",
+]
+HOTEL_SUPPLY_KEYWORDS = [
+    "护发素",
+    "漱口水",
+    "矿泉水",
+    "卷纸",
+    "纸巾",
+    "被套",
+    "被子",
+    "枕头",
+    "枕套",
+    "床单",
+    "梳子",
+    "拖鞋",
+    "牙刷",
+    "牙膏",
+    "洗发水",
+    "沐浴露",
+    "吹风机",
+    "剃须刀",
+    "投影仪",
+    "投屏",
+    "门锁密码",
+    "洗衣机",
+    "空调",
+    "遥控器",
+    "小爱同学",
 ]
 CONFIRM_KEYWORDS = ["确认", "执行", "通过", "批准", "按这个", "就按", "可以", "行", "ok", "好的"]
 REJECT_KEYWORDS = ["拒绝", "不要", "取消", "算了", "驳回", "不执行"]
@@ -145,16 +214,38 @@ def classify_intent(text: str) -> TurnIntent:
     if not normalized:
         return "unknown"
 
+    if normalized in EXACT_PRICING_COMMANDS:
+        return "pricing"
+
     if any(keyword in normalized for keyword in CHITCHAT_KEYWORDS):
         return "chitchat"
 
-    if any(keyword in normalized for keyword in PRICING_KEYWORDS):
+    if looks_like_pricing_intent(normalized):
         return "pricing"
+
+    if looks_like_hotel_faq_request(normalized):
+        return "faq"
 
     if any(keyword in normalized for keyword in FAQ_KEYWORDS):
         return "faq"
 
     return "unknown"
+
+
+def looks_like_pricing_intent(normalized: str) -> bool:
+    if normalized in EXACT_PRICING_COMMANDS:
+        return True
+    return any(re.search(pattern, normalized) for pattern in PRICING_COMMAND_PATTERNS)
+
+
+def looks_like_hotel_faq_request(normalized: str) -> bool:
+    if any(keyword in normalized for keyword in FAQ_KEYWORDS):
+        return True
+    if any(keyword in normalized for keyword in HOTEL_SUPPLY_KEYWORDS):
+        return True
+    return any(verb in normalized for verb in FAQ_REQUEST_VERBS) and any(
+        keyword in normalized for keyword in HOTEL_SUPPLY_KEYWORDS
+    )
 
 
 def looks_like_confirmation(query: str) -> bool:
@@ -375,7 +466,7 @@ def resolve_answer(query: str, items: list[FAQItem]) -> ResolvedAnswer:
 
     result = search_faq(query, items)
     if result.faq_id is None or result.confidence < 0.35:
-        text = "我暂时没有查到准确结果，您可以换个说法，或者联系现场工作人员。"
+        text = "您可以换个更具体的说法，我再帮您查一下。"
         return ResolvedAnswer(
             status="not_found",
             faq_id=None,

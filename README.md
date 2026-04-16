@@ -4,6 +4,7 @@
 
 - **主对话链**：火山 RTC + `StartVoiceChat(2024-12-01)` + `S2SConfig` + 长期记忆
 - **后端可控链**：FAQ / RAGFlow / 强规则 / 过渡语 / 转人工
+- **FAQ v2 旁路**：`normalize / lexicon / retrieve / rerank / engine` 的新链路，默认 shadow，可灰度切换
 - **收益调价链**：直连 `'/Users/sky/Project/New project voice'` 的 SSE MCP，由后端统一接管
 - **展厅页面**：中间预留自研 3D 人物挂载容器，火山官方数字人只保留备用位
 
@@ -52,6 +53,8 @@ uvicorn app.main:app --host 0.0.0.0 --port 12000 --reload
 - 主链版本：
   - `VOLCENGINE_VOICE_CHAT_VERSION=2024-12-01`
   - `VOLCENGINE_PRIMARY_DIALOG_PATH=s2s`
+- FAQ v2 旁路：
+  - `VOLCENGINE_FAQ_V2_MODE=shadow`
 - S2S / Memory：
   - `VOLCENGINE_ENABLE_S2S`
   - `VOLCENGINE_S2S_CONFIG_JSON`
@@ -112,6 +115,8 @@ uvicorn app.main:app --host 0.0.0.0 --port 12000 --reload
 - `GET /api/validate/memory`
 - `GET /api/validate/revenue-mcp`
 - `GET /api/validate/revenue-mcp/tools/{tool_name}`
+- `GET /api/validate/faq-v2/query`
+- `GET /api/validate/faq-v2/benchmark`
 - `GET /api/validate/voice-chat-payload`
 - `POST /api/bootstrap`
 - `POST /api/rtc/sessions/{session_id}/connected`

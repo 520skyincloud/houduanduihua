@@ -10,7 +10,7 @@ from pydantic import BaseModel
 BASE_DIR = Path(__file__).resolve().parent.parent
 for env_path in (BASE_DIR / ".env", BASE_DIR / ".env.local"):
     if env_path.exists():
-        load_dotenv(env_path, override=False)
+        load_dotenv(env_path, override=True)
 
 
 def _parse_bool(value: Optional[str], default: bool = False) -> bool:
@@ -44,6 +44,24 @@ class Settings(BaseModel):
     ragflow_search_url: Optional[str] = os.getenv("RAGFLOW_SEARCH_URL")
     ragflow_dataset_id: Optional[str] = os.getenv("RAGFLOW_DATASET_ID")
     ragflow_timeout_seconds: float = float(os.getenv("RAGFLOW_TIMEOUT_SECONDS", "8"))
+    fastgpt_enabled: bool = _parse_bool(os.getenv("FASTGPT_ENABLED"), True)
+    fastgpt_base_url: str = os.getenv("FASTGPT_BASE_URL", "http://127.0.0.1:3000")
+    fastgpt_username: Optional[str] = os.getenv("FASTGPT_USERNAME")
+    fastgpt_password: Optional[str] = os.getenv("FASTGPT_PASSWORD")
+    fastgpt_dataset_id: Optional[str] = os.getenv("FASTGPT_DATASET_ID")
+    fastgpt_language: str = os.getenv("FASTGPT_LANGUAGE", "zh-CN")
+    fastgpt_timeout_seconds: float = float(os.getenv("FASTGPT_TIMEOUT_SECONDS", "12"))
+    fastgpt_min_score: float = float(os.getenv("FASTGPT_MIN_SCORE", "0.6"))
+    fastgpt_browser_cookie_db: Optional[str] = os.getenv(
+        "FASTGPT_BROWSER_COOKIE_DB",
+        str(Path.home() / "Library/Application Support/Google/Chrome/Default/Cookies"),
+    )
+    fastgpt_browser_cookie_domain: str = os.getenv(
+        "FASTGPT_BROWSER_COOKIE_DOMAIN", "127.0.0.1"
+    )
+    fastgpt_browser_cookie_name: str = os.getenv(
+        "FASTGPT_BROWSER_COOKIE_NAME", "fastgpt_token"
+    )
     revenue_mcp_enabled: bool = _parse_bool(os.getenv("REVENUE_MCP_ENABLED"), True)
     revenue_mcp_sse_url: str = os.getenv(
         "REVENUE_MCP_SSE_URL", "http://127.0.0.1:8765/sse"
@@ -55,7 +73,7 @@ class Settings(BaseModel):
         "REVENUE_MCP_API_HEALTH_URL", "http://127.0.0.1:8001/health"
     )
     revenue_mcp_timeout_seconds: float = float(
-        os.getenv("REVENUE_MCP_TIMEOUT_SECONDS", "15")
+        os.getenv("REVENUE_MCP_TIMEOUT_SECONDS", "180")
     )
     revenue_mcp_default_store_id: Optional[int] = (
         int(os.getenv("REVENUE_MCP_DEFAULT_STORE_ID"))
@@ -77,7 +95,7 @@ class Settings(BaseModel):
     )
     transition_text: str = os.getenv(
         "TRANSITION_TEXT",
-        "您好，我帮您查一下，请稍等。",
+        "好的，正在进行操作。",
     )
 
     volcengine_primary_dialog_path: str = os.getenv(
@@ -89,6 +107,9 @@ class Settings(BaseModel):
     volcengine_faq_route_mode: str = os.getenv(
         "VOLCENGINE_FAQ_ROUTE_MODE", "hybrid_risk_split"
     )
+    volcengine_faq_v2_mode: str = os.getenv(
+        "VOLCENGINE_FAQ_V2_MODE", "shadow"
+    ).strip().lower()
     volcengine_region: str = os.getenv("VOLCENGINE_REGION", "cn-north-1")
     volcengine_rtc_host: str = os.getenv("VOLCENGINE_RTC_HOST", "rtc.volcengineapi.com")
     volcengine_access_key_id: Optional[str] = os.getenv("VOLCENGINE_ACCESS_KEY_ID")
@@ -186,18 +207,24 @@ class Settings(BaseModel):
         os.getenv("VOLCENGINE_LLM_SYSTEM_MESSAGES_JSON"),
         [
             (
-                "你是丽斯未来酒店展厅数字人接待助手。"
-                "酒店固定知识必须严格遵循外部知识库或记忆库返回结果，不编造，不扩写。"
-                "凡是早餐、停车、发票、入住退房、路线、楼层、设施、用品、会议室这类酒店事实问题，"
-                "只能依据命中的知识内容作答；若没有明确命中，就直接说明暂未查询到准确信息，不能猜。"
-                "酒店事实题先直接说结论，再补一句必要信息，不要寒暄，不要铺垫。"
-                "当命中内容里有关键事实时，优先原样复述关键事实本身，例如是否免费、入口从哪条路进入、需要提前几分钟联系等。"
-                "回答前先区分用户是在问是否存在、怎么收费、在哪、几点、是否提供某项服务，"
-                "不要把同一主题下不同意图的内容混答。"
-                "如果召回结果主题明显不相干，例如问游泳池却只检索到洗衣房、问停车场却只检索到充电桩，"
-                "必须直接说暂未查询到准确信息。"
-                "不要把用户画像或无关偏好当成酒店事实答案。"
-                "当业务系统需要接管回答时，保持自然停顿，避免与外部播报抢话。"
+                "你是丽斯未来酒店展厅数字人接待助手，你的名字叫小丽。"
+                "你的回答分为两种模式。"
+                "一类是酒店事实问答。"
+                "当用户问到早餐、停车、发票、入住退房、路线、楼层、设施、用品、会议室等酒店固定信息时，"
+                "你必须严格依据命中的知识内容回答，不编造、不猜测、不扩写。"
+                "如果没有明确命中，就直接说“您可以换个更具体的说法，我再帮您查一下”，不要补充想象内容。"
+                "回答这类问题时，先直接说结论，再补充一句必要信息即可，不要寒暄，不要铺垫。"
+                "如果命中内容中包含关键事实，例如是否免费、从哪条路进入、需要提前几分钟联系、是否提供某项服务，"
+                "要优先保留这些关键事实本身。"
+                "回答前先判断用户是在问是否存在、怎么收费、在哪、几点、怎么办理，"
+                "不要把不同意图混在一起回答。"
+                "如果召回结果明显不相关，例如问游泳池却只命中洗衣房，问停车却只命中充电桩，"
+                "就直接说“您可以换个更具体的说法，我再帮您查一下”。"
+                "另一类是非酒店事实对话。"
+                "如果用户是在闲聊、打招呼、问你是谁、问你能做什么，允许你自然、亲切、简短地交流，"
+                "可以更像真人一点，但仍然保持简洁，不要长篇大论。"
+                "如果用户的问题同时包含酒店事实和闲聊，优先先把酒店事实回答清楚，再补一句自然回应。"
+                "你的整体语气要自然、亲切、利落，像一个靠谱的酒店数字人助手。"
             )
         ],
     )
@@ -299,8 +326,27 @@ class Settings(BaseModel):
         return self.volcengine_faq_route_mode in {"s2s_memory", "hybrid_risk_split"}
 
     @property
+    def faq_v2_enabled(self) -> bool:
+        return self.volcengine_faq_v2_mode in {"shadow", "gray", "direct"}
+
+    @property
     def pure_s2s_enabled(self) -> bool:
         return self.volcengine_primary_dialog_path == "s2s" and self.volcengine_force_pure_s2s
+
+    @property
+    def fastgpt_ready(self) -> bool:
+        return bool(
+            self.fastgpt_enabled
+            and self.fastgpt_base_url
+            and self.fastgpt_dataset_id
+            and (
+                (
+                    self.fastgpt_browser_cookie_db
+                    and Path(self.fastgpt_browser_cookie_db).exists()
+                )
+                or (self.fastgpt_username and self.fastgpt_password)
+            )
+        )
 
     @property
     def effective_dialog_path(self) -> str:

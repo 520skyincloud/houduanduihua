@@ -24,11 +24,19 @@ from app.integrations.volcengine import (
 from app.models import BackendTurnResult, PresenceState, RTCSessionState
 from app.services.faq_store import FAQStore
 from app.services.faq_semantic import FAQSemanticExperiment
+from app.services.faq_v2 import FaqV2Experiment
+from app.services.fastgpt import FastGPTFacade
 from app.services.lobby import LobbyCoordinator
 from app.services.memory import MemoryFacade
 from app.services.ragflow import RAGFlowFacade
 from app.services.revenue_mcp import RevenueMCPService
-from app.services.search import chunk_speak_text, decide_turn_route, resolve_answer
+from app.services.search import (
+    chunk_speak_text,
+    decide_turn_route,
+    looks_like_hotel_faq_request,
+    normalize_text,
+    resolve_answer,
+)
 
 
 app = FastAPI(title=settings.app_name)
@@ -45,6 +53,8 @@ app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="stat
 
 store = FAQStore(settings.faq_index_path)
 faq_semantic = FAQSemanticExperiment(store.items)
+faq_v2 = FaqV2Experiment()
+fastgpt = FastGPTFacade()
 ragflow = RAGFlowFacade(store)
 memory = MemoryFacade()
 revenue_mcp = RevenueMCPService()
@@ -54,6 +64,33 @@ voice_chat_factory = VoiceChatPayloadFactory()
 state_lock = Lock()
 voicechat_callback_log: list[dict[str, Any]] = []
 voice_chat_command_locks: dict[str, asyncio.Lock] = {}
+
+
+def _get_pricing_busy_turn(session_id: str) -> int | None:
+    session = lobby.get_session(session_id)
+    turn_id = session.metrics.get("pricing_busy_turn_id")
+    busy_until = session.metrics.get("pricing_busy_until")
+    if not turn_id or not busy_until:
+        return None
+    if busy_until <= perf_counter():
+        session.metrics.pop("pricing_busy_turn_id", None)
+        session.metrics.pop("pricing_busy_until", None)
+        return None
+    return int(turn_id)
+
+
+def _mark_pricing_busy(session_id: str, turn_id: int) -> None:
+    session = lobby.get_session(session_id)
+    session.metrics["pricing_busy_turn_id"] = float(turn_id)
+    session.metrics["pricing_busy_until"] = perf_counter() + max(settings.revenue_mcp_timeout_seconds, 180)
+
+
+def _clear_pricing_busy(session_id: str, turn_id: int) -> None:
+    session = lobby.get_session(session_id)
+    active_turn_id = session.metrics.get("pricing_busy_turn_id")
+    if active_turn_id and int(active_turn_id) == turn_id:
+        session.metrics.pop("pricing_busy_turn_id", None)
+        session.metrics.pop("pricing_busy_until", None)
 
 
 class BootstrapRequest(BaseModel):
@@ -211,6 +248,20 @@ def _config_groups() -> dict[str, object]:
             "validate_with": "GET /api/validate/faq-semantic/benchmark",
             "usage": "酒店事实问题主候选链，支持口语化语义匹配与未知问题拒答。",
         },
+        "faq_v2": {
+            "enabled": settings.faq_v2_enabled,
+            "mode": settings.volcengine_faq_v2_mode,
+            "validate_with": "GET /api/validate/faq-v2/benchmark",
+            "usage": "xiaoli-hotel-assistant 的新 FAQ 旁路，默认 shadow，可切 gray/direct。",
+        },
+        "fastgpt": {
+            "enabled": settings.fastgpt_enabled,
+            "configured": settings.fastgpt_ready,
+            "base_url": settings.fastgpt_base_url,
+            "dataset_id": settings.fastgpt_dataset_id,
+            "validate_with": "GET /api/validate/fastgpt?q=...",
+            "usage": "仅用于 FAQv2 miss 时的严格兜底，不参与 pricing/clarify/handoff。",
+        },
         "asr_tts_backup": {
             "configured": settings.asr_tts_ready,
             "primary": settings.volcengine_primary_dialog_path in {"asr_tts", "asr-llm-tts", "cascade"},
@@ -265,7 +316,7 @@ def _faq_semantic_to_backend_result(result: dict[str, Any]) -> BackendTurnResult
             },
         )
 
-    not_found = "暂未查询到准确信息。"
+    not_found = "您可以换个更具体的说法，我再帮您查一下。"
     return BackendTurnResult(
         status="not_found",
         display_text=not_found,
@@ -278,6 +329,76 @@ def _faq_semantic_to_backend_result(result: dict[str, Any]) -> BackendTurnResult
             "query_intent": result.get("query_intent"),
             "reject_reason": result.get("reject_reason"),
             "elapsed_ms": result.get("elapsed_ms"),
+        },
+    )
+
+
+def _faq_v2_to_backend_result(result: dict[str, Any]) -> BackendTurnResult:
+    top_match = result.get("top_match") or {}
+    answer = str(result.get("answer") or top_match.get("answer") or "").strip()
+    decision = str(result.get("decision") or "miss")
+    if decision == "direct" and answer:
+        handoff = bool(top_match.get("handoff")) or str(top_match.get("intent") or "") == "handoff"
+        return BackendTurnResult(
+            status="handoff" if handoff else "answered",
+            display_text=answer,
+            speak_text=answer,
+            state="handoff" if handoff else "speaking",
+            confidence=float(result.get("confidence") or top_match.get("score") or 1.0),
+            needs_handoff=handoff,
+            metadata={
+                "source": "faq_v2",
+                "decision": decision,
+                "top_match": top_match,
+                "normalized_query": result.get("normalizedQuery"),
+            },
+        )
+
+    clarify_question = str(result.get("clarifyQuestion") or "请问您是想了解酒店哪一方面的信息？").strip()
+    return BackendTurnResult(
+        status="not_found",
+        display_text=clarify_question,
+        speak_text=clarify_question,
+        state="speaking",
+        confidence=float(result.get("confidence") or top_match.get("score") or 0.0),
+        metadata={
+            "source": "faq_v2",
+            "decision": decision,
+            "top_match": top_match,
+            "normalized_query": result.get("normalizedQuery"),
+        },
+    )
+
+
+def _fastgpt_to_backend_result(result: dict[str, Any]) -> BackendTurnResult:
+    answer = str(result.get("answer") or "").strip()
+    matched_question = str(result.get("matched_question") or "").strip()
+    score = float(result.get("score") or 0.0)
+    if result.get("hit") and answer:
+        return BackendTurnResult(
+            status="answered",
+            display_text=answer,
+            speak_text=answer,
+            state="speaking",
+            confidence=score,
+            metadata={
+                "source": "fastgpt",
+                "matched_question": matched_question,
+                "score": score,
+            },
+        )
+    not_found = "您可以换个更具体的说法，我再帮您查一下。"
+    return BackendTurnResult(
+        status="not_found",
+        display_text=not_found,
+        speak_text="",
+        state="listening",
+        confidence=score,
+        metadata={
+            "source": "fastgpt",
+            "matched_question": matched_question,
+            "score": score,
+            "fallback_miss": True,
         },
     )
 
@@ -298,44 +419,44 @@ def _decide_turn_owner(session_id: str, user_text: str) -> dict[str, object]:
         has_pending_confirmation=bool(pending_confirmation),
         faq_route_mode=settings.volcengine_faq_route_mode,
     )
+    if decision.intent in {"pricing", "pricing_confirm"}:
+        return {
+            "owner": "backend",
+            "intent": decision.intent,
+            "confidence": decision.confidence,
+            "reason": decision.reason,
+            "faq_v2_result": None,
+        }
+    if decision.intent == "faq" or looks_like_hotel_faq_request(normalize_text(user_text)):
+        return {
+            "owner": "backend",
+            "intent": "faq",
+            "confidence": max(decision.confidence, 0.8),
+            "reason": "hotel-knowledge-fastgpt-priority",
+            "faq_v2_result": None,
+        }
     if settings.pure_s2s_enabled:
         return {
             "owner": "s2s",
             "intent": decision.intent,
             "confidence": max(decision.confidence, 0.99),
             "reason": "pure-s2s-test-mode",
+            "faq_v2_result": None,
         }
-    semantic_result = faq_semantic.query(user_text, limit=3)
-    if decision.intent not in {"pricing", "pricing_confirm", "chitchat"}:
-        if semantic_result.get("accepted"):
-            top_match = semantic_result.get("top_match") or {}
-            return {
-                "owner": "backend",
-                "intent": "faq",
-                "confidence": float(top_match.get("score") or decision.confidence),
-                "reason": "faq-semantic-hit",
-                "semantic_result": semantic_result,
-            }
-        if semantic_result.get("query_category"):
-            return {
-                "owner": "backend",
-                "intent": "faq",
-                "confidence": max(float((semantic_result.get("top_match") or {}).get("score") or 0.0), 0.65),
-                "reason": "faq-semantic-category-reject",
-                "semantic_result": semantic_result,
-            }
     if decision.owner == "s2s" and settings.effective_dialog_path == "unconfigured" and settings.volcengine_use_backend_fallback:
         return {
             "owner": "backend",
             "intent": decision.intent,
             "confidence": decision.confidence,
             "reason": "dialog-ai-not-ready-fallback",
+            "faq_v2_result": None,
         }
     return {
         "owner": decision.owner,
         "intent": decision.intent,
         "confidence": decision.confidence,
         "reason": decision.reason,
+        "faq_v2_result": None,
     }
 
 
@@ -505,9 +626,14 @@ async def _process_turn(
     route: dict[str, object],
 ) -> None:
     start_ts = perf_counter()
+    transition_delay_ms = settings.answer_timeout_ms
+    should_send_transition = route["intent"] in {"pricing", "pricing_confirm"}
+    if should_send_transition:
+        transition_delay_ms = max(settings.answer_timeout_ms, 1200)
+    pricing_busy_acquired = False
 
     async def send_transition() -> None:
-        await asyncio.sleep(settings.answer_timeout_ms / 1000)
+        await asyncio.sleep(transition_delay_ms / 1000)
         with state_lock:
             if not lobby.mark_transition_sent(session_id, turn_id):
                 return
@@ -528,20 +654,41 @@ async def _process_turn(
             1,
         )
 
-    transition_task = asyncio.create_task(send_transition())
+    transition_task = asyncio.create_task(send_transition()) if should_send_transition else None
     with state_lock:
         pending_confirmation = lobby.get_pending_confirmation(session_id)
 
     try:
         if route["intent"] in {"pricing", "pricing_confirm"}:
-            resolved = await revenue_mcp.resolve_query(user_text, pending_confirmation)
+            with state_lock:
+                active_pricing_turn = _get_pricing_busy_turn(session_id)
+                if active_pricing_turn and active_pricing_turn != turn_id:
+                    resolved = BackendTurnResult(
+                        status="pricing_preview",
+                        display_text="上一轮收益或调价操作还在处理中，请先等这一轮完成。",
+                        speak_text="上一轮操作还在处理中，请先等这一轮完成。",
+                        state="pricing_preview",
+                        action_state="pricing_preview",
+                        metadata={"source": "pricing-busy-guard", "active_turn_id": active_pricing_turn},
+                    )
+                else:
+                    _mark_pricing_busy(session_id, turn_id)
+                    pricing_busy_acquired = True
+                    resolved = None
+            if resolved is None:
+                resolved = await revenue_mcp.resolve_query(user_text, pending_confirmation)
         elif route["intent"] == "faq":
-            semantic_result = route.get("semantic_result") or faq_semantic.query(user_text, limit=3)
-            resolved = _faq_semantic_to_backend_result(semantic_result)
-            if resolved.status != "answered":
-                exact_resolved = resolve_answer(user_text, store.items)
-                if exact_resolved.status == "answered":
-                    resolved = _faq_to_backend_result(exact_resolved)
+            if settings.fastgpt_enabled and settings.fastgpt_ready:
+                fastgpt_result = await fastgpt.search(user_text)
+                resolved = _fastgpt_to_backend_result(fastgpt_result)
+            else:
+                resolved = BackendTurnResult(
+                    status="not_found",
+                    display_text="您可以换个更具体的说法，我再帮您查一下。",
+                    speak_text="",
+                    state="listening",
+                    metadata={"source": "fastgpt", "configured": False},
+                )
         else:
             resolved = _faq_to_backend_result(await ragflow.resolve(user_text))
     except Exception as exc:
@@ -553,8 +700,11 @@ async def _process_turn(
             metadata={"error": str(exc)},
         )
     processing_ms = round((perf_counter() - start_ts) * 1000, 2)
+    if pricing_busy_acquired:
+        with state_lock:
+            _clear_pricing_busy(session_id, turn_id)
 
-    if not transition_task.done():
+    if transition_task and not transition_task.done():
         transition_task.cancel()
         try:
             await transition_task
@@ -826,6 +976,32 @@ async def validate_faq_semantic_benchmark() -> dict[str, object]:
     }
 
 
+@app.get("/api/validate/faq-v2/query")
+async def validate_faq_v2_query(q: str, limit: int = 5) -> dict[str, object]:
+    return {
+        "ok": True,
+        "source": "faq-v2-sidecar",
+        **faq_v2.query(q, limit=limit),
+    }
+
+
+@app.get("/api/validate/faq-v2/benchmark")
+async def validate_faq_v2_benchmark() -> dict[str, object]:
+    return {
+        "ok": True,
+        "source": "faq-v2-sidecar",
+        **faq_v2.benchmark(),
+    }
+
+
+@app.get("/api/validate/fastgpt")
+async def validate_fastgpt(q: str) -> dict[str, object]:
+    return {
+        "source": "fastgpt-service",
+        **await fastgpt.validate(q),
+    }
+
+
 @app.get("/api/validate/voice-chat-payload")
 async def validate_voice_chat_payload() -> dict[str, object]:
     preview_session = RTCSessionState(
@@ -1057,6 +1233,15 @@ async def rtc_utterance(session_id: str, request: QueryRequest) -> dict[str, obj
     try:
         with state_lock:
             route = _decide_turn_owner(session_id, request.user_text)
+            normalized_user_text = normalize_text(request.user_text)
+            if route["intent"] not in {"pricing", "pricing_confirm"} and looks_like_hotel_faq_request(normalized_user_text):
+                route = {
+                    "owner": "backend",
+                    "intent": "faq",
+                    "confidence": max(float(route.get("confidence") or 0.0), 0.8),
+                    "reason": "hotel-faq-fastgpt-entry-priority",
+                    "faq_v2_result": None,
+                }
             turn = lobby.start_turn_with_owner(
                 session_id,
                 request.user_text,
@@ -1123,7 +1308,7 @@ async def rtc_utterance(session_id: str, request: QueryRequest) -> dict[str, obj
         "confidence": route["confidence"],
         "processing_ms": round((perf_counter() - started) * 1000, 2),
         "transition_after_ms": settings.answer_timeout_ms,
-        "transition_text": settings.transition_text,
+        "transition_text": settings.transition_text if route["intent"] in {"pricing", "pricing_confirm"} else "",
     }
 
 

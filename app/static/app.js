@@ -41,39 +41,16 @@ const COMMAND = {
   EXTERNAL_TEXT_TO_LLM: "ExternalTextToLLM",
 };
 
-const PRICING_PREEMPT_KEYWORDS = [
-  "调价",
-  "收益",
-  "收益分析",
-  "经营分析",
-  "经营情况",
-  "收益情况",
-  "复盘",
-  "经营摘要",
-  "盘面摘要",
-  "盘面",
-  "飞书",
-  "发飞书",
-  "发群",
-  "推送",
-  "策略",
-  "调价策略",
-  "调价方案",
-  "调价建议",
-  "价格策略",
-  "价格怎么调",
-  "怎么定价",
-  "定价策略",
-  "定价方案",
-  "定价",
-  "改价",
-  "改价方案",
-  "执行结果",
-  "执行详情",
-  "审批",
-  "批准",
-  "通过",
-  "拒绝",
+const EXACT_PRICING_COMMANDS = [
+  "生成收益分析",
+  "生成昨日复盘",
+  "生成调价方案",
+];
+
+const PRICING_COMMAND_PATTERNS = [
+  /(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(收益分析)/,
+  /(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(昨日复盘)/,
+  /(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(调价方案)/,
 ];
 
 const HARD_BACKEND_PREEMPT_KEYWORDS = [
@@ -147,7 +124,42 @@ const state = {
   micPermission: "unknown",
   autoGreetingTriggered: false,
   lastInterruptAt: 0,
+  revenueTurnPending: false,
+  revenuePendingTurnId: null,
+  revenueBusyUntil: 0,
+  revenueBusyReleaseTimer: null,
 };
+
+function revenueTurnIsBusy() {
+  return state.revenueTurnPending || Date.now() < state.revenueBusyUntil;
+}
+
+function clearRevenueBusyLatch() {
+  state.revenueTurnPending = false;
+  state.revenuePendingTurnId = null;
+  state.revenueBusyUntil = 0;
+  if (state.revenueBusyReleaseTimer) {
+    window.clearTimeout(state.revenueBusyReleaseTimer);
+    state.revenueBusyReleaseTimer = null;
+  }
+}
+
+function holdRevenueBusyForSpeak(speakText = "") {
+  const text = String(speakText || "").trim();
+  const chars = text.length;
+  const holdMs = Math.min(12000, Math.max(4000, 1800 + chars * 120));
+  state.revenueBusyUntil = Date.now() + holdMs;
+  if (state.revenueBusyReleaseTimer) {
+    window.clearTimeout(state.revenueBusyReleaseTimer);
+  }
+  state.revenueBusyReleaseTimer = window.setTimeout(() => {
+    state.revenueBusyUntil = 0;
+    state.revenueBusyReleaseTimer = null;
+    if (!state.revenueTurnPending) {
+      setPricingState("收益链待机中，等待调价或复盘指令。");
+    }
+  }, holdMs);
+}
 
 function pushDebugEvent(key, payload) {
   const target = state[key];
@@ -264,13 +276,20 @@ function pureS2SEnabled() {
   return Boolean(state.bootstrap?.voice_chat?.pure_s2s_enabled);
 }
 
+function matchesPricingPreempt(normalized) {
+  if (EXACT_PRICING_COMMANDS.includes(normalized)) {
+    return true;
+  }
+  return PRICING_COMMAND_PATTERNS.some((pattern) => pattern.test(normalized));
+}
+
 function shouldPreemptToBackend(text) {
   const normalized = normalizeRouteText(text);
   if (!normalized) return { hit: false, reason: "" };
   if (pureS2SEnabled()) {
     return { hit: false, reason: "" };
   }
-  if (PRICING_PREEMPT_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
+  if (matchesPricingPreempt(normalized)) {
     return { hit: true, reason: "pricing-keyword-hit" };
   }
   if (currentFaqRouteMode() === "s2s_memory") {
@@ -393,6 +412,7 @@ function handleServerEvent(packet) {
     if (payload.state === "interrupted") {
       state.lastParagraphKey = "";
       state.backendPreempt = { active: false, reason: "" };
+      clearRevenueBusyLatch();
     }
     dom.thinkingText.textContent = payload.detail || "等待新的 RTC 事件。";
     if (payload.action_state && payload.action_state !== "none") {
@@ -429,6 +449,11 @@ function handleServerEvent(packet) {
   if (kind === "turn_result") {
     state.backendPreempt = { active: false, reason: "" };
     state.currentOwner = "backend";
+    if (state.revenueTurnPending && payload.turn_id === state.revenuePendingTurnId) {
+      state.revenueTurnPending = false;
+      state.revenuePendingTurnId = null;
+      holdRevenueBusyForSpeak(payload.speak_text || payload.display_text || "");
+    }
     dom.aiSubtitleText.textContent = payload.display_text;
     dom.speakText.textContent = payload.speak_text;
     if (payload.action_state && payload.action_state !== "none") {
@@ -440,6 +465,10 @@ function handleServerEvent(packet) {
     return;
   }
   if (kind === "turn_started") {
+    if (payload.owner === "backend" && (payload.intent === "pricing" || payload.intent === "pricing_confirm")) {
+      state.revenueTurnPending = true;
+      state.revenuePendingTurnId = payload.turn_id ?? null;
+    }
     if (payload.owner !== "backend") {
       state.backendPreempt = { active: false, reason: "" };
     }
@@ -560,6 +589,12 @@ async function handleSubtitleEvent(data) {
   });
   if (isUser) {
     dom.userSubtitleText.textContent = data.text;
+    if (revenueTurnIsBusy()) {
+      if (data.paragraph && data.definite) {
+        setStatus("Thinking", "收益链处理中，请先等这一轮结果返回。");
+      }
+      return;
+    }
     const preempt = shouldPreemptToBackend(data.text);
     if (
       preempt.hit &&
@@ -572,7 +607,7 @@ async function handleSubtitleEvent(data) {
         reason: preempt.reason,
       };
       state.currentOwner = "backend";
-      setStatus("Thinking", `已提前切到后端：${preempt.reason}`, state.bootstrap.voice_chat.transition_text);
+      setStatus("Thinking", `已提前切到后端：${preempt.reason}`);
       if (preempt.reason === "pricing-keyword-hit") {
         setPricingState("收益链接管中：pricing-keyword-hit");
       }
@@ -585,7 +620,7 @@ async function handleSubtitleEvent(data) {
         }
       }
     }
-    if ((state.uiState === "Greeting" || state.uiState === "Speaking") && !state.interrupting) {
+    if ((state.uiState === "Greeting" || state.uiState === "Speaking") && !state.interrupting && !revenueTurnIsBusy()) {
       if (canSendInterrupt()) {
         state.interrupting = true;
         try {
@@ -761,7 +796,7 @@ async function initRtc() {
         handlePresence().catch((error) => {
           setWarning(`自动迎宾触发失败：${String(error)}`);
         });
-      }, 500);
+      }, 120);
     }
   } else {
     setWarning((startPayload.warnings || []).join(" "));
@@ -770,6 +805,11 @@ async function initRtc() {
 }
 
 async function submitTurn(userText, source = "manual") {
+  if (revenueTurnIsBusy()) {
+    setStatus("Thinking", "当前操作还在处理中，请先等这一轮结果返回。");
+    setPricingState("收益链处理中，请先等当前操作完成。");
+    return;
+  }
   const requestId = ++state.activeRequestId;
   dom.userSubtitleText.textContent = userText;
   setStatus("Listening", `正在判断本轮由 S2S 还是后端接管：${userText}`, dom.speakText.textContent);
@@ -781,13 +821,17 @@ async function submitTurn(userText, source = "manual") {
     if (requestId !== state.activeRequestId) return;
     state.currentOwner = payload.owner;
     if (payload.owner === "backend") {
+      if (payload.intent === "pricing" || payload.intent === "pricing_confirm") {
+        state.revenueTurnPending = true;
+        state.revenuePendingTurnId = payload.turn_id ?? null;
+      }
       const detail = payload.intent === "pricing" || payload.intent === "pricing_confirm"
         ? `收益链接管：${payload.route_reason}`
         : `后端接管：${payload.route_reason}`;
       if (payload.intent === "pricing" || payload.intent === "pricing_confirm") {
         setPricingState(`收益链接管中：${payload.route_reason}`);
       }
-      setStatus("Thinking", detail, state.bootstrap.voice_chat.transition_text);
+      setStatus("Thinking", detail, payload.transition_text || "");
     } else {
       setStatus("Listening", `S2S 主链继续作答：${payload.route_reason}`, dom.speakText.textContent);
     }
@@ -796,6 +840,8 @@ async function submitTurn(userText, source = "manual") {
     );
   } catch (error) {
     if (requestId !== state.activeRequestId) return;
+    state.revenueTurnPending = false;
+    state.revenuePendingTurnId = null;
     setStatus("Error", "提交用户话术失败。", String(error));
   }
 }

@@ -46,7 +46,7 @@ SIDE_EFFECT_TOOLS = {
     "run_store_revenue_review",
     "generate_current_pricing_strategy",
 }
-SIDE_EFFECT_IDEMPOTENCY_SECONDS = 12.0
+SIDE_EFFECT_IDEMPOTENCY_SECONDS = 45.0
 RERUN_HINTS = [
     "重新",
     "重来",
@@ -66,132 +66,25 @@ RERUN_HINTS = [
     "再做一次",
 ]
 
-RETROSPECTIVE_HINTS = [
-    "昨天",
-    "昨日",
-    "昨晚",
-    "上次",
-    "上一版",
-    "上一轮",
-    "前一版",
-]
+EXACT_VOICE_COMMANDS: dict[str, tuple[str, dict[str, Any]]] = {
+    "生成收益分析": ("run_operating_summary", {"send_feishu": True}),
+    "生成昨日复盘": ("run_store_revenue_review", {"send_feishu": True}),
+    "生成调价方案": ("generate_current_pricing_strategy", {"days": 3, "send_feishu": True}),
+}
 
-RETROSPECTIVE_SUBJECT_HINTS = [
-    "策略",
-    "调价",
-    "定价",
-    "收益",
-    "经营",
-]
-
-CURRENT_STRATEGY_HINTS = [
-    "今天",
-    "今日",
-    "当前",
-    "现在",
-    "这版",
-    "本轮",
-]
-
-SUMMARY_TRIGGER_L1 = [
-    "经营摘要",
-    "盘面摘要",
-    "收益分析",
-    "经营分析",
-    "经营情况",
-    "收益情况",
-    "今天收益",
-    "今日收益",
-    "今天经营",
-    "今日经营",
-    "今日盘面",
-    "今天盘面",
-    "盘面怎么样",
-    "收益怎么样",
-    "经营怎么样",
-    "分析一下收益",
-    "分析下收益",
-    "发经营摘要",
-    "发收益分析",
-    "发今天经营摘要",
-    "发今天收益分析",
-]
-
-SUMMARY_TRIGGER_L2 = [
-    "帮我分析今天收益",
-    "给我分析今天收益",
-    "来个今天收益分析",
-    "来个今天经营摘要",
-    "发个今天收益分析",
-    "发个今天经营摘要",
-    "把今天收益分析发我",
-    "把今天经营摘要发我",
-    "看下今天收益",
-    "看下今天经营情况",
-    "说下今天收益情况",
-]
-
-SUMMARY_TRIGGER_L3 = [
-    ("今天", "收益"),
-    ("今天", "经营"),
-    ("今日", "收益"),
-    ("今日", "经营"),
-    ("盘面", "分析"),
-    ("盘面", "摘要"),
-]
-
-REVIEW_TRIGGER_L1 = [
-    "昨日策略",
-    "昨日的策略",
-    "昨天策略",
-    "昨天的策略",
-    "昨日策略复盘",
-    "昨日的策略复盘",
-    "昨天调价复盘",
-    "昨天的调价复盘",
-    "经营复盘",
-    "收益复盘",
-    "昨日收益复盘",
-    "昨日的收益复盘",
-    "昨日复盘",
-    "策略复盘",
-    "昨天复盘",
-    "昨天收益复盘",
-    "昨天的收益复盘",
-    "昨天经营复盘",
-    "昨天的经营复盘",
-    "发昨日复盘",
-    "发昨天复盘",
-]
-
-REVIEW_TRIGGER_L2 = [
-    "来个昨天策略",
-    "来个昨天的策略",
-    "帮我看昨天策略",
-    "帮我看昨天的策略",
-    "昨天那个策略",
-    "昨天那版策略",
-    "上一版策略",
-    "上一轮策略",
-    "来个昨天收益复盘",
-    "来个昨天的收益复盘",
-    "帮我看昨天收益复盘",
-    "帮我做昨天收益复盘",
-    "给我昨天收益复盘",
-    "发一下昨天收益复盘",
-    "把昨天收益复盘发我",
-    "来个昨日经营复盘",
-    "昨天调价结果复盘",
-    "昨天定价复盘",
-]
-
-REVIEW_TRIGGER_L3 = [
-    ("昨天", "复盘"),
-    ("昨日", "复盘"),
-    ("昨天", "收益", "复盘"),
-    ("昨日", "收益", "复盘"),
-    ("昨天", "经营", "复盘"),
-    ("昨天", "调价", "复盘"),
+VOICE_COMMAND_PATTERNS: list[tuple[str, tuple[str, dict[str, Any]]]] = [
+    (
+        r"(生成|来个|做个|发个|给我来个|给我做个|帮我生成|帮我做个).*(收益分析|经营摘要|经营分析|今日收益分析|今天收益分析)",
+        ("run_operating_summary", {"send_feishu": True}),
+    ),
+    (
+        r"(生成|来个|做个|发个|给我来个|给我做个|帮我生成|帮我做个).*(昨日复盘|昨天复盘|昨日收益复盘|昨天收益复盘|昨日策略复盘|昨天策略复盘)",
+        ("run_store_revenue_review", {"send_feishu": True}),
+    ),
+    (
+        r"(生成|来个|做个|发个|给我来个|给我做个|帮我生成|帮我做个).*(调价方案|调价策略|定价方案|定价策略|价格方案)",
+        ("generate_current_pricing_strategy", {"days": 3, "send_feishu": True}),
+    ),
 ]
 
 LATEST_RESULT_QUERY_KEYWORDS = [
@@ -204,54 +97,6 @@ LATEST_RESULT_QUERY_KEYWORDS = [
     "最近一次执行结果",
     "执行结果怎么样",
     "最新结果怎么样",
-]
-
-STRATEGY_TRIGGER_L1 = [
-    "调价策略",
-    "怎么调价",
-    "调价方案",
-    "看看今天怎么调价",
-    "收益策略",
-    "调价建议",
-    "价格策略",
-    "价格怎么调",
-    "怎么定价",
-    "定价策略",
-    "定价方案",
-    "定价",
-    "改价方案",
-    "生成调价策略",
-    "生成一版调价策略",
-    "来个调价策略",
-    "来一版调价策略",
-    "出一版当前调价方案",
-    "给我看看今天怎么调价",
-    "给我一版调价方案",
-    "做个调价方案",
-    "做个定价方案",
-]
-
-STRATEGY_TRIGGER_L2 = [
-    "帮我出个今天的调价方案",
-    "帮我做个今天的定价方案",
-    "给我出个价格方案",
-    "看下今天价格怎么调",
-    "说下今天价格怎么定",
-    "来个今天的价格策略",
-    "出一版今天的调价建议",
-    "给我看看今天房价怎么调",
-    "帮我生成今天的调价策略",
-    "做个今天收益调价方案",
-]
-
-STRATEGY_TRIGGER_L3 = [
-    ("今天", "调价"),
-    ("今天", "定价"),
-    ("价格", "怎么调"),
-    ("价格", "策略"),
-    ("定价", "方案"),
-    ("调价", "方案"),
-    ("收益", "策略"),
 ]
 
 INTENT_FILLER_WORDS = [
@@ -591,11 +436,11 @@ class RevenueMCPService:
                 return self._format_execution_overview(payload)
             return self._format_generic_preview(action["tool_name"], payload, tool_result.text)
         except Exception as exc:
-            detail = f"收益链调用失败：{exc}"
+            detail = "当前操作暂时没有完成，您可以稍后再试。"
             return BackendTurnResult(
                 status="error",
                 display_text=detail,
-                speak_text="收益链当前调用失败，我先不继续执行这类操作。",
+                speak_text="当前操作暂时没有完成，您可以稍后再试。",
                 state="error",
                 action_state="pricing_rejected",
                 metadata={"error": str(exc)},
@@ -603,6 +448,14 @@ class RevenueMCPService:
 
     def _classify_query(self, query: str) -> Optional[dict[str, Any]]:
         normalized_query = self._normalize_query(query)
+        explicit_command = self._match_explicit_voice_command(normalized_query)
+        if explicit_command is not None:
+            tool_name, arguments = explicit_command
+            return {
+                "mode": "call",
+                "tool_name": tool_name,
+                "arguments": arguments,
+            }
         contains_push = any(keyword in query for keyword in ["飞书", "推送", "群里", "发群"])
         contains_no_push = any(
             keyword in normalized_query
@@ -626,20 +479,6 @@ class RevenueMCPService:
         execution_id = self._extract_execution_id(query)
         rejection_reason = self._extract_rejection_reason(query)
 
-        if self._matches_trigger(normalized_query, SUMMARY_TRIGGER_L1, SUMMARY_TRIGGER_L2, SUMMARY_TRIGGER_L3):
-            return {
-                "mode": "call",
-                "tool_name": "run_operating_summary",
-                "arguments": {},
-            }
-        if self._looks_like_review_query(normalized_query) or self._matches_trigger(
-            normalized_query, REVIEW_TRIGGER_L1, REVIEW_TRIGGER_L2, REVIEW_TRIGGER_L3
-        ):
-            return {
-                "mode": "call",
-                "tool_name": "run_store_revenue_review",
-                "arguments": {"send_feishu": should_send_feishu},
-            }
         if any(keyword in normalized_query for keyword in LATEST_RESULT_QUERY_KEYWORDS):
             return {
                 "mode": "call",
@@ -667,14 +506,16 @@ class RevenueMCPService:
                 "tool_name": "reject_execution",
                 "arguments": arguments,
             }
-        if self._looks_like_current_strategy_query(normalized_query) and self._matches_trigger(
-            normalized_query, STRATEGY_TRIGGER_L1, STRATEGY_TRIGGER_L2, STRATEGY_TRIGGER_L3
-        ):
-            return {
-                "mode": "call",
-                "tool_name": "generate_current_pricing_strategy",
-                "arguments": {"days": 3, "send_feishu": should_send_feishu},
-            }
+        return None
+
+    @staticmethod
+    def _match_explicit_voice_command(normalized_query: str) -> Optional[tuple[str, dict[str, Any]]]:
+        for command, action in EXACT_VOICE_COMMANDS.items():
+            if normalized_query == command:
+                return action
+        for pattern, action in VOICE_COMMAND_PATTERNS:
+            if re.search(pattern, normalized_query):
+                return action
         return None
 
     @staticmethod
@@ -684,33 +525,6 @@ class RevenueMCPService:
             normalized = normalized.replace(filler, "")
         normalized = normalized.replace("的", "")
         return normalized
-
-    @staticmethod
-    def _matches_trigger(
-        normalized_query: str,
-        layer1: list[str],
-        layer2: list[str],
-        layer3: list[tuple[str, ...]],
-    ) -> bool:
-        if any(keyword in normalized_query for keyword in layer1):
-            return True
-        if any(keyword in normalized_query for keyword in layer2):
-            return True
-        return any(all(token in normalized_query for token in token_group) for token_group in layer3)
-
-    @staticmethod
-    def _looks_like_review_query(normalized_query: str) -> bool:
-        has_retro = any(keyword in normalized_query for keyword in RETROSPECTIVE_HINTS)
-        has_subject = any(keyword in normalized_query for keyword in RETROSPECTIVE_SUBJECT_HINTS)
-        return has_retro and has_subject
-
-    @staticmethod
-    def _looks_like_current_strategy_query(normalized_query: str) -> bool:
-        if any(keyword in normalized_query for keyword in RETROSPECTIVE_HINTS):
-            return False
-        if any(keyword in normalized_query for keyword in CURRENT_STRATEGY_HINTS):
-            return True
-        return not any(keyword in normalized_query for keyword in ["复盘", "结果"])
 
     def _get_recent_side_effect_result(
         self,
@@ -914,7 +728,12 @@ class RevenueMCPService:
 
     def _format_operating_summary(self, payload: dict[str, Any]) -> BackendTurnResult:
         text = payload.get("detail") or payload.get("summary") or payload.get("status") or "经营摘要已处理。"
-        speak_text = to_speak_text(str(text))
+        business_date = payload.get("business_date")
+        speak_text = (
+            f"{business_date or '今天'}的收益分析已经生成，并已发送到飞书。"
+            if payload.get("feishu_status") == "sent_via_app"
+            else f"{business_date or '今天'}的收益分析已经生成。"
+        )
         return BackendTurnResult(
             status="pricing_preview",
             display_text=str(text),
@@ -926,7 +745,15 @@ class RevenueMCPService:
 
     def _format_revenue_review(self, payload: dict[str, Any]) -> BackendTurnResult:
         detail = payload.get("detail") or payload.get("summary") or payload.get("status") or "昨日策略复盘已处理。"
-        speak_text = to_speak_text(str(detail))
+        review_date = payload.get("review_date") or "昨日"
+        execution_count = payload.get("execution_count")
+        if execution_count:
+            speak_text = (
+                f"{review_date}的复盘已经生成，基于 {execution_count} 条策略样本分析，"
+                + ("并已发送到飞书。" if payload.get("feishu_status") == "sent_via_app" else "您可以查看详情。")
+            )
+        else:
+            speak_text = f"{review_date}的复盘已经生成，但可用样本不足。"
         return BackendTurnResult(
             status="pricing_preview",
             display_text=str(detail),
