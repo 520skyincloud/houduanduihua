@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ app_name }}</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/styles.css?v=20260417-caption-owner-unify-1">
 </head>
 <body>
   <div class="screen-shell">
@@ -29,6 +29,7 @@
         <div class="panel-card compact">
           <h2>当前状态</h2>
           <p id="thinkingText">等待初始化 RTC、S2S 与自研 3D 舞台。</p>
+          <p class="secondary-line" id="liveCaptionText">实时听写：等待中。</p>
           <p class="secondary-line" id="pricingStateText">收益链待机中，等待调价或复盘指令。</p>
         </div>
         <div class="ring ring-one"></div>
@@ -67,6 +68,7 @@
           <h2>回调与指标</h2>
           <p id="metricText">链路耗时：待机中</p>
           <p id="callbackText">回调日志：等待字幕 / 状态 / 任务事件。</p>
+          <p class="secondary-line" id="rtcSubtitleDebugText">RTC 字幕调试：等待字幕包。</p>
         </div>
         <div class="panel-card compact">
           <h2>链路所有权</h2>
@@ -112,6 +114,6 @@
     </footer>
   </div>
 
-    <script type="module" src="/static/app.js?v=20260416-pricing-preempt-tighten-1"></script>
+    <script type="module" src="/static/app.js?v=20260417-caption-prefixless-1"></script>
   </body>
 </html>

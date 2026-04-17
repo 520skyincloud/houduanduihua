@@ -4,6 +4,7 @@ import asyncio
 import json
 import re
 import time
+import uuid
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from typing import Any, AsyncIterator, Optional
@@ -13,7 +14,7 @@ import httpx
 
 from app.config import settings
 from app.models import BackendTurnResult, PendingConfirmation
-from app.services.search import looks_like_confirmation, looks_like_rejection, to_speak_text
+from app.services.search import canonical_pricing_command, looks_like_confirmation, looks_like_rejection, to_speak_text
 
 
 READ_ONLY_TOOLS = {
@@ -34,19 +35,43 @@ PREVIEW_TOOLS = {
     "run_store_revenue_review",
     "get_execution_overview",
 }
+PUSH_TOOLS = {
+    "push_revenue_operating_summary",
+    "push_revenue_cycle_summary",
+    "push_revenue_execution_result",
+    "push_revenue_review_request",
+    "push_revenue_review_summary",
+    "push_review_operations_analysis",
+    "push_price_gap_diagnosis",
+    "push_negative_review_alert",
+    "push_store_feishu_test_message",
+}
 HIGH_RISK_TOOLS = {
     "confirm_current_pricing_strategy",
     "approve_execution",
     "reject_execution",
     "run_pms_reprice",
 }
-ALL_REVENUE_TOOLS = READ_ONLY_TOOLS | PREVIEW_TOOLS | HIGH_RISK_TOOLS
+ALL_REVENUE_TOOLS = READ_ONLY_TOOLS | PREVIEW_TOOLS | PUSH_TOOLS | HIGH_RISK_TOOLS
 SIDE_EFFECT_TOOLS = {
     "run_operating_summary",
     "run_store_revenue_review",
     "generate_current_pricing_strategy",
+    "push_revenue_operating_summary",
+    "push_revenue_cycle_summary",
+    "push_revenue_review_summary",
+    "push_store_feishu_test_message",
 }
 SIDE_EFFECT_IDEMPOTENCY_SECONDS = 45.0
+TOOL_FAMILIES: dict[str, str] = {
+    "run_operating_summary": "operating_summary",
+    "run_store_revenue_review": "revenue_review",
+    "generate_current_pricing_strategy": "pricing_plan",
+    "push_revenue_operating_summary": "operating_summary_push",
+    "push_revenue_cycle_summary": "pricing_cycle_push",
+    "push_revenue_review_summary": "revenue_review_push",
+    "push_store_feishu_test_message": "feishu_test_push",
+}
 RERUN_HINTS = [
     "重新",
     "重来",
@@ -66,26 +91,60 @@ RERUN_HINTS = [
     "再做一次",
 ]
 
-EXACT_VOICE_COMMANDS: dict[str, tuple[str, dict[str, Any]]] = {
-    "生成收益分析": ("run_operating_summary", {"send_feishu": True}),
-    "生成昨日复盘": ("run_store_revenue_review", {"send_feishu": True}),
-    "生成调价方案": ("generate_current_pricing_strategy", {"days": 3, "send_feishu": True}),
+VOICE_COMMAND_ACTIONS: dict[str, tuple[str, dict[str, Any]]] = {
+    "收益分析": ("run_operating_summary", {"send_feishu": True}),
+    "昨日复盘": ("run_store_revenue_review", {"send_feishu": True}),
+    "调价方案": ("generate_current_pricing_strategy", {"days": 3, "send_feishu": True}),
 }
-
-VOICE_COMMAND_PATTERNS: list[tuple[str, tuple[str, dict[str, Any]]]] = [
+VOICE_COMMAND_KEYWORDS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("收益分析", ("收益分析", "发收益分析", "做收益分析", "来个收益分析", "给我收益分析", "帮我做收益分析")),
+    ("昨日复盘", ("昨日复盘", "昨天复盘", "发昨日复盘", "发昨天复盘", "来个昨日复盘", "给我昨日复盘")),
+    ("调价方案", ("调价方案", "生成调价方案", "来个调价方案", "给我调价方案", "出一版调价方案")),
+)
+VOICE_PUSH_KEYWORDS: tuple[tuple[str, tuple[str, ...], dict[str, Any]], ...] = (
     (
-        r"(生成|来个|做个|发个|给我来个|给我做个|帮我生成|帮我做个).*(收益分析|经营摘要|经营分析|今日收益分析|今天收益分析)",
-        ("run_operating_summary", {"send_feishu": True}),
+        "push_store_feishu_test_message",
+        (
+            "飞书测试",
+            "测试飞书",
+            "发飞书测试",
+            "来个飞书测试",
+            "做个飞书测试",
+            "给我来个飞书测试",
+            "帮我发个飞书测试",
+        ),
+        {},
     ),
     (
-        r"(生成|来个|做个|发个|给我来个|给我做个|帮我生成|帮我做个).*(昨日复盘|昨天复盘|昨日收益复盘|昨天收益复盘|昨日策略复盘|昨天策略复盘)",
-        ("run_store_revenue_review", {"send_feishu": True}),
+        "push_revenue_operating_summary",
+        (
+            "经营摘要",
+            "发经营摘要",
+            "推送经营摘要",
+            "把经营摘要发到飞书",
+            "来个经营摘要",
+            "做个经营摘要",
+            "给我来个经营摘要",
+            "帮我发经营摘要",
+        ),
+        {},
     ),
     (
-        r"(生成|来个|做个|发个|给我来个|给我做个|帮我生成|帮我做个).*(调价方案|调价策略|定价方案|定价策略|价格方案)",
-        ("generate_current_pricing_strategy", {"days": 3, "send_feishu": True}),
+        "push_revenue_review_summary",
+        (
+            "昨日复盘发飞书",
+            "发昨日复盘",
+            "推送昨日复盘",
+            "把昨天复盘发群里",
+            "把昨日复盘发到飞书",
+            "来个昨日复盘推送",
+            "做个昨日复盘推送",
+            "给我发个昨日复盘",
+            "帮我推送昨日复盘",
+        ),
+        {},
     ),
-]
+)
 
 LATEST_RESULT_QUERY_KEYWORDS = [
     "最新调价结果",
@@ -105,16 +164,6 @@ INTENT_FILLER_WORDS = [
     "您好",
     "麻烦",
     "请",
-    "帮我",
-    "给我",
-    "来个",
-    "来一份",
-    "来一版",
-    "来一个",
-    "看一下",
-    "看下",
-    "说一下",
-    "说下",
 ]
 
 
@@ -251,6 +300,8 @@ class RevenueMCPService:
     def __init__(self) -> None:
         self._tool_cache: list[dict[str, Any]] = []
         self._side_effect_cache: dict[str, tuple[float, BackendTurnResult]] = {}
+        self._task_results: dict[str, dict[str, Any]] = {}
+        self._session_family_tasks: dict[tuple[str, str], dict[str, Any]] = {}
 
     @property
     def enabled(self) -> bool:
@@ -375,6 +426,7 @@ class RevenueMCPService:
 
     async def resolve_query(
         self,
+        session_id: str,
         query: str,
         pending_confirmation: Optional[PendingConfirmation],
     ) -> BackendTurnResult:
@@ -393,9 +445,11 @@ class RevenueMCPService:
                 )
 
             normalized_query = self._normalize_query(query)
-            cached_result = self._get_recent_side_effect_result(action["tool_name"], normalized_query)
-            if cached_result is not None:
-                return cached_result
+            family = TOOL_FAMILIES.get(action["tool_name"])
+            if family is not None:
+                cached_result = self._get_recent_family_dispatch(session_id, family, normalized_query)
+                if cached_result is not None:
+                    return cached_result
 
             if action["mode"] == "pending":
                 pending = self._build_pending_confirmation(
@@ -411,6 +465,15 @@ class RevenueMCPService:
                     action_state="pricing_confirm_pending",
                     pending_confirmation=pending,
                     metadata={"tool_name": pending.tool_name, "arguments": pending.arguments},
+                )
+
+            if family is not None and action["mode"] == "call":
+                return self._enqueue_side_effect_task(
+                    session_id=session_id,
+                    family=family,
+                    tool_name=action["tool_name"],
+                    arguments=action["arguments"],
+                    normalized_query=normalized_query,
                 )
 
             tool_result = await self.call_tool(action["tool_name"], action["arguments"])
@@ -445,6 +508,138 @@ class RevenueMCPService:
                 action_state="pricing_rejected",
                 metadata={"error": str(exc)},
             )
+
+    def _get_recent_family_dispatch(
+        self,
+        session_id: str,
+        family: str,
+        normalized_query: str,
+    ) -> Optional[BackendTurnResult]:
+        allow_rerun = any(keyword in normalized_query for keyword in RERUN_HINTS)
+        task = self._session_family_tasks.get((session_id, family))
+        if not task or allow_rerun:
+            return None
+        created_ts = float(task.get("created_at") or 0.0)
+        if time.time() - created_ts > SIDE_EFFECT_IDEMPOTENCY_SECONDS:
+            return None
+        return BackendTurnResult(
+            status="pricing_preview",
+            display_text="刚刚同类操作已经帮您触发了，这次先不重复发送。",
+            speak_text="刚刚同类操作已经帮您触发了，这次先不重复发送。",
+            state="pricing_preview",
+            action_state="pricing_preview",
+            metadata={
+                "duplicate_suppressed": True,
+                "source": "pricing-family-idempotency",
+                "family": family,
+                "task_id": task.get("task_id"),
+                "status": task.get("status"),
+            },
+        )
+
+    def _enqueue_side_effect_task(
+        self,
+        *,
+        session_id: str,
+        family: str,
+        tool_name: str,
+        arguments: dict[str, Any],
+        normalized_query: str,
+    ) -> BackendTurnResult:
+        task_id = uuid.uuid4().hex
+        created_at = time.time()
+        record = {
+            "task_id": task_id,
+            "family": family,
+            "tool_name": tool_name,
+            "arguments": dict(arguments),
+            "normalized_query": normalized_query,
+            "status": "queued",
+            "created_at": created_at,
+            "completed_at": None,
+        }
+        self._task_results[task_id] = record
+        self._session_family_tasks[(session_id, family)] = record
+        asyncio.create_task(
+            self._run_side_effect_task(
+                session_id=session_id,
+                family=family,
+                task_id=task_id,
+                tool_name=tool_name,
+                arguments=dict(arguments),
+                normalized_query=normalized_query,
+            )
+        )
+        return self._build_async_confirmation(family, task_id)
+
+    async def _run_side_effect_task(
+        self,
+        *,
+        session_id: str,
+        family: str,
+        task_id: str,
+        tool_name: str,
+        arguments: dict[str, Any],
+        normalized_query: str,
+    ) -> None:
+        record = self._task_results.get(task_id)
+        if record is None:
+            return
+        record["status"] = "running"
+        try:
+            tool_result = await self.call_tool(tool_name, arguments)
+            payload = tool_result.structured_content
+            if not isinstance(payload, dict):
+                payload = {"text": tool_result.text}
+            if tool_name == "generate_current_pricing_strategy":
+                result = self._format_strategy_preview(payload, "")
+            elif tool_name == "run_operating_summary":
+                result = self._format_operating_summary(payload)
+            elif tool_name == "run_store_revenue_review":
+                result = self._format_revenue_review(payload)
+            else:
+                result = self._format_generic_preview(tool_name, payload, tool_result.text)
+            self._remember_side_effect_result(tool_name, normalized_query, result)
+            record["status"] = "completed"
+            record["result"] = result
+            record["payload"] = payload
+        except Exception as exc:
+            record["status"] = "failed"
+            record["error"] = str(exc)
+        finally:
+            record["completed_at"] = time.time()
+            active = self._session_family_tasks.get((session_id, family))
+            if active and active.get("task_id") == task_id:
+                self._session_family_tasks[(session_id, family)] = record
+
+    @staticmethod
+    def _build_async_confirmation(family: str, task_id: str) -> BackendTurnResult:
+        mapping = {
+            "operating_summary": (
+                "收益分析任务已创建，结果会继续发送到飞书。",
+                "好的，正在为您生成收益分析。",
+            ),
+            "revenue_review": (
+                "昨日复盘任务已创建，结果会继续发送到飞书。",
+                "好的，正在为您生成昨日复盘。",
+            ),
+            "pricing_plan": (
+                "调价方案任务已创建，结果会继续发送到飞书。",
+                "好的，正在为您生成调价方案。",
+            ),
+        }
+        display_text, speak_text = mapping.get(
+            family,
+            ("任务已创建，结果会继续发送到飞书。", "好的，正在为您处理。"),
+        )
+        return BackendTurnResult(
+            status="pricing_preview",
+            display_text=display_text,
+            speak_text=speak_text,
+            state="pricing_preview",
+            action_state="pricing_preview",
+            metadata={"task_id": task_id, "family": family, "async_dispatched": True},
+        )
 
     def _classify_query(self, query: str) -> Optional[dict[str, Any]]:
         normalized_query = self._normalize_query(query)
@@ -510,13 +705,16 @@ class RevenueMCPService:
 
     @staticmethod
     def _match_explicit_voice_command(normalized_query: str) -> Optional[tuple[str, dict[str, Any]]]:
-        for command, action in EXACT_VOICE_COMMANDS.items():
-            if normalized_query == command:
-                return action
-        for pattern, action in VOICE_COMMAND_PATTERNS:
-            if re.search(pattern, normalized_query):
-                return action
-        return None
+        for tool_name, keywords, arguments in VOICE_PUSH_KEYWORDS:
+            if any(keyword in normalized_query for keyword in keywords):
+                return tool_name, dict(arguments)
+        for family, keywords in VOICE_COMMAND_KEYWORDS:
+            if any(keyword in normalized_query for keyword in keywords):
+                return VOICE_COMMAND_ACTIONS[family]
+        family = canonical_pricing_command(normalized_query)
+        if family is None:
+            return None
+        return VOICE_COMMAND_ACTIONS.get(family)
 
     @staticmethod
     def _normalize_query(query: str) -> str:
@@ -869,6 +1067,18 @@ class RevenueMCPService:
 
     @staticmethod
     def _validation_arguments(tool_name: str) -> dict[str, Any]:
+        if tool_name in {
+            "push_revenue_operating_summary",
+            "push_revenue_cycle_summary",
+            "push_revenue_review_summary",
+            "push_review_operations_analysis",
+            "push_price_gap_diagnosis",
+            "push_negative_review_alert",
+            "push_store_feishu_test_message",
+        }:
+            return {}
+        if tool_name in {"push_revenue_execution_result", "push_revenue_review_request"}:
+            return {"execution_id": 999999}
         if tool_name == "generate_current_pricing_strategy":
             return {"days": 3, "send_feishu": False}
         if tool_name == "run_store_revenue_review":

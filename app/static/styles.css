@@ -142,12 +142,24 @@ button {
 .response-card p {
   color: var(--muted);
   line-height: 1.7;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .secondary-line {
   margin-top: 10px;
   color: rgba(171, 214, 255, 0.88);
   font-size: 13px;
+}
+
+#liveCaptionText {
+  color: rgba(214, 232, 255, 0.82);
+  min-height: 20px;
+}
+
+#rtcSubtitleDebugText {
+  color: rgba(198, 214, 233, 0.72);
+  min-height: 20px;
 }
 
 .avatar-stage {

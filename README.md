@@ -31,16 +31,16 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python scripts/import_faq.py --input "/Users/sky/Downloads/02-（丽斯高铁南站）-单问单答.xlsx" --output data/faq_index.json
-uvicorn app.main:app --host 0.0.0.0 --port 12000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 16000 --reload
 ```
 
-打开 <http://127.0.0.1:12000>。
+打开 <http://127.0.0.1:16000>。
 
 ## 配置方式
 
 - 运行时统一读取 `.env`
 - 示例模板见 `.env.example`
-- 当前本地默认端口：`12000`
+- 当前本地默认端口：`16000`
 
 ### 当前已落地的关键变量
 

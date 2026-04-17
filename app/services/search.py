@@ -6,17 +6,89 @@ from typing import Optional, Tuple
 from app.models import FAQItem, ResolvedAnswer, SearchResult, TurnIntent, TurnRouteDecision
 
 
+PRICING_COMMAND_ALIASES = {
+    "收益分析": [
+        "生成收益分析",
+        "给我生成收益分析",
+        "帮我生成收益分析",
+        "来个收益分析",
+        "做个收益分析",
+        "来一版收益分析",
+        "做一版收益分析",
+    ],
+    "昨日复盘": [
+        "生成昨日复盘",
+        "给我生成昨日复盘",
+        "帮我生成昨日复盘",
+        "来个昨日复盘",
+        "做个昨日复盘",
+        "来一版昨日复盘",
+        "做一版昨日复盘",
+    ],
+    "调价方案": [
+        "生成调价方案",
+        "给我生成调价方案",
+        "帮我生成调价方案",
+        "来个调价方案",
+        "做个调价方案",
+        "来一版调价方案",
+        "做一版调价方案",
+    ],
+}
 EXACT_PRICING_COMMANDS = [
-    "生成收益分析",
-    "生成昨日复盘",
-    "生成调价方案",
+    alias for aliases in PRICING_COMMAND_ALIASES.values() for alias in aliases
+]
+PRICING_FILLER_WORDS = [
+    "小丽",
+    "你好",
+    "您好",
+    "麻烦",
+    "请",
 ]
 PRICING_COMMAND_PATTERNS = [
-    r"(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(收益分析)",
-    r"(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(昨日复盘)",
-    r"(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(调价方案)",
+    r"(生成|帮我生成|给我生成|做个|做一版|帮我做个|来个|来一版).*(收益分析)",
+    r"(生成|帮我生成|给我生成|做个|做一版|帮我做个|来个|来一版).*(昨日复盘)",
+    r"(生成|帮我生成|给我生成|做个|做一版|帮我做个|来个|来一版).*(调价方案)",
+]
+PRICING_COMMAND_FAMILY_PATTERNS = [
+    ("收益分析", r"(生成|帮我生成|给我生成|做个|做一版|帮我做个|来个|来一版).*(收益分析)"),
+    ("昨日复盘", r"(生成|帮我生成|给我生成|做个|做一版|帮我做个|来个|来一版).*(昨日复盘)"),
+    ("昨日复盘", r"(生成|帮我生成|给我生成|做个|做一版|帮我做个|来个|来一版).*(昨天复盘)"),
+    ("调价方案", r"(生成|帮我生成|给我生成|做个|做一版|帮我做个|来个|来一版).*(调价方案)"),
 ]
 CHITCHAT_KEYWORDS = ["你好", "您好", "嗨", "介绍一下你", "你是谁", "你能做什么"]
+VISION_KEYWORDS = [
+    "看看",
+    "看下",
+    "看一下",
+    "识别",
+    "图片",
+    "照片",
+    "截图",
+    "图上",
+    "图里",
+    "手上拿的",
+    "这是什么",
+    "写了什么",
+    "看到了什么",
+]
+EXTERNAL_INFO_KEYWORDS = [
+    "天气",
+    "下雨",
+    "气温",
+    "温度",
+    "周边",
+    "附近",
+    "商场",
+    "地铁",
+    "公交",
+    "机场",
+    "高铁站",
+    "火车站",
+    "路线规划",
+    "路况",
+    "新闻",
+]
 FAQ_KEYWORDS = [
     "酒店",
     "早餐",
@@ -115,6 +187,14 @@ HARD_BACKEND_KEYWORDS = [
     "小爱同学",
     "美团",
     "抖音",
+]
+HOTEL_FACT_VISUAL_KEYWORDS = [
+    "早餐券",
+    "房卡",
+    "发票",
+    "订单",
+    "入住",
+    "停车票",
 ]
 FAQ_REQUEST_VERBS = [
     "想用",
@@ -217,6 +297,12 @@ def classify_intent(text: str) -> TurnIntent:
     if normalized in EXACT_PRICING_COMMANDS:
         return "pricing"
 
+    if looks_like_vision_request(normalized):
+        return "vision"
+
+    if looks_like_external_info_request(normalized):
+        return "external_info"
+
     if any(keyword in normalized for keyword in CHITCHAT_KEYWORDS):
         return "chitchat"
 
@@ -232,10 +318,62 @@ def classify_intent(text: str) -> TurnIntent:
     return "unknown"
 
 
-def looks_like_pricing_intent(normalized: str) -> bool:
-    if normalized in EXACT_PRICING_COMMANDS:
+def looks_like_vision_request(normalized: str) -> bool:
+    return any(keyword in normalized for keyword in VISION_KEYWORDS)
+
+
+def looks_like_external_info_request(normalized: str) -> bool:
+    if any(keyword in normalized for keyword in EXTERNAL_INFO_KEYWORDS):
         return True
-    return any(re.search(pattern, normalized) for pattern in PRICING_COMMAND_PATTERNS)
+    if "路线" in normalized and not looks_like_hotel_faq_request(normalized):
+        return True
+    return False
+
+
+def vision_requires_hotel_facts(normalized: str) -> bool:
+    return any(keyword in normalized for keyword in HOTEL_FACT_VISUAL_KEYWORDS) or any(
+        keyword in normalized for keyword in HARD_BACKEND_KEYWORDS
+    )
+
+
+def looks_like_pricing_intent(normalized: str) -> bool:
+    return canonical_pricing_command(normalized) is not None
+
+
+def canonical_pricing_command(normalized: str) -> str | None:
+    normalized_for_match = strip_pricing_fillers(normalized)
+    for family, aliases in PRICING_COMMAND_ALIASES.items():
+        if normalized_for_match in aliases:
+            return family
+    for family, pattern in PRICING_COMMAND_FAMILY_PATTERNS:
+        if re.search(pattern, normalized_for_match):
+            return family
+    return match_pricing_command_tokens(normalized_for_match)
+
+
+def strip_pricing_fillers(normalized: str) -> str:
+    stripped = normalized
+    for filler in PRICING_FILLER_WORDS:
+        stripped = stripped.replace(filler, "")
+    return stripped
+
+
+def match_pricing_command_tokens(normalized: str) -> str | None:
+    token_groups = [
+        ("收益分析", ("收益", "分析")),
+        ("昨日复盘", ("昨日", "复盘")),
+        ("昨日复盘", ("昨天", "复盘")),
+        ("调价方案", ("调价", "方案")),
+    ]
+    action_hints = ("生成", "来个", "来一版", "做个", "做一版", "给我", "帮我")
+    for family, required_tokens in token_groups:
+        if all(token in normalized for token in required_tokens):
+            if "生成" in normalized and any(hint in normalized for hint in action_hints):
+                return family
+            compact = "".join(required_tokens)
+            if compact in normalized and "生成" in normalized:
+                return family
+    return None
 
 
 def looks_like_hotel_faq_request(normalized: str) -> bool:
@@ -271,15 +409,47 @@ def decide_turn_route(
             intent="unknown",
             confidence=1.0,
             reason="empty-input",
+            chain="hotel_fact_chain",
+            requires_grounding=False,
+            grounding_source="none",
+            allow_freeform_answer=False,
         )
 
     intent = classify_intent(query)
+    if intent == "vision":
+        return TurnRouteDecision(
+            owner="backend",
+            intent="vision",
+            confidence=0.94,
+            reason="vision-keyword-hit",
+            chain="vision_chain",
+            requires_grounding=True,
+            grounding_source="vision",
+            allow_freeform_answer=False,
+        )
+
+    if intent == "external_info":
+        return TurnRouteDecision(
+            owner="backend",
+            intent="external_info",
+            confidence=0.88,
+            reason="external-info-keyword-hit",
+            chain="hotel_fact_chain",
+            requires_grounding=True,
+            grounding_source="web",
+            allow_freeform_answer=False,
+        )
+
     if intent == "chitchat":
         return TurnRouteDecision(
-            owner="s2s",
+            owner="native",
             intent=intent,
             confidence=0.92,
             reason="chitchat-whitelist",
+            chain="social_chain",
+            requires_grounding=False,
+            grounding_source="none",
+            allow_freeform_answer=True,
         )
 
     if has_pending_confirmation and (looks_like_confirmation(query) or looks_like_rejection(query)):
@@ -288,6 +458,10 @@ def decide_turn_route(
             intent="pricing_confirm",
             confidence=0.98,
             reason="pricing-confirmation-pending",
+            chain="hotel_fact_chain",
+            requires_grounding=True,
+            grounding_source="mcp",
+            allow_freeform_answer=False,
         )
 
     if intent == "pricing":
@@ -296,6 +470,10 @@ def decide_turn_route(
             intent="pricing",
             confidence=0.95,
             reason="pricing-keyword-hit",
+            chain="hotel_fact_chain",
+            requires_grounding=True,
+            grounding_source="mcp",
+            allow_freeform_answer=False,
         )
 
     hard_faq_hit = any(keyword in normalized for keyword in HARD_BACKEND_KEYWORDS) or bool(
@@ -307,26 +485,38 @@ def decide_turn_route(
             intent="faq",
             confidence=0.96,
             reason="hard-backend-rule",
+            chain="hotel_fact_chain",
+            requires_grounding=True,
+            grounding_source="rule",
+            allow_freeform_answer=False,
         )
 
     faq_result = search_faq(query, items)
     if faq_route_mode == "hybrid_risk_split" and intent == "faq":
         confidence = faq_result.confidence if faq_result.faq_id is not None else 0.72
         return TurnRouteDecision(
-            owner="s2s",
+            owner="native",
             intent="faq",
             confidence=max(confidence, 0.72),
             reason="faq-low-risk-s2s-memory",
+            chain="social_chain",
+            requires_grounding=False,
+            grounding_source="none",
+            allow_freeform_answer=True,
         )
     if faq_route_mode == "s2s_memory" and (
         intent == "faq" or hard_faq_hit or (faq_result.faq_id is not None and faq_result.confidence >= 0.45)
     ):
         confidence = faq_result.confidence if faq_result.faq_id is not None else 0.72
         return TurnRouteDecision(
-            owner="s2s",
+            owner="native",
             intent="faq",
             confidence=max(confidence, 0.72),
             reason="faq-s2s-memory-experiment",
+            chain="social_chain",
+            requires_grounding=False,
+            grounding_source="none",
+            allow_freeform_answer=True,
         )
 
     if faq_result.faq_id is not None and faq_result.confidence >= 0.45:
@@ -335,13 +525,21 @@ def decide_turn_route(
             intent="faq",
             confidence=faq_result.confidence,
             reason="faq-fast-hit",
+            chain="hotel_fact_chain",
+            requires_grounding=True,
+            grounding_source="faq",
+            allow_freeform_answer=False,
         )
 
     return TurnRouteDecision(
-        owner="s2s",
+        owner="native",
         intent="unknown",
         confidence=0.55,
         reason="safe-s2s-fallback",
+        chain="social_chain",
+        requires_grounding=False,
+        grounding_source="none",
+        allow_freeform_answer=True,
     )
 
 

@@ -32,6 +32,9 @@ class VoiceChatPayloadFactory:
                 "SubtitleMode": 1,
             },
         }
+        websearch_config = self._build_native_websearch_config()
+        if websearch_config:
+            config["WebSearchAgentConfig"] = websearch_config
         if dialog_path == "s2s":
             config["S2SConfig"] = self._build_s2s_config()
             if (
@@ -168,14 +171,37 @@ class VoiceChatPayloadFactory:
         payload: dict[str, Any] = {
             "Mode": settings.volcengine_llm_mode,
             "SystemMessages": system_messages,
-            "VisionConfig": {
-                "Enable": False,
-            },
+            "VisionConfig": self._build_native_vision_config(),
         }
         if settings.volcengine_llm_thinking_type:
             payload["ThinkingType"] = settings.volcengine_llm_thinking_type
         if settings.volcengine_llm_endpoint_id:
             payload["EndPointId"] = settings.volcengine_llm_endpoint_id
+        return payload
+
+    def _build_native_vision_config(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {"Enable": settings.volcengine_llm_vision_enabled}
+        if settings.volcengine_llm_vision_config_json:
+            payload = _deep_merge(payload, dict(settings.volcengine_llm_vision_config_json))
+        return payload
+
+    def _build_native_websearch_config(self) -> dict[str, Any] | None:
+        if not settings.volcengine_llm_websearch_enabled:
+            return None
+        payload: dict[str, Any] = {"Enable": True}
+        api_key = settings.volcengine_llm_websearch_api_key or settings.volcengine_realtime_api_key
+        if api_key:
+            payload["APIKey"] = api_key
+        if settings.volcengine_llm_websearch_function_name:
+            payload["FunctionName"] = settings.volcengine_llm_websearch_function_name
+        if settings.volcengine_llm_websearch_function_description:
+            payload["FunctionDescription"] = settings.volcengine_llm_websearch_function_description
+        if settings.volcengine_llm_websearch_params_string:
+            payload["ParamsString"] = settings.volcengine_llm_websearch_params_string
+        if settings.volcengine_llm_websearch_comfort_words:
+            payload["ComfortWords"] = settings.volcengine_llm_websearch_comfort_words
+        if settings.volcengine_llm_websearch_config_json:
+            payload = _deep_merge(payload, dict(settings.volcengine_llm_websearch_config_json))
         return payload
 
     def _build_s2s_config(self) -> dict[str, Any]:

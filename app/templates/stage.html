@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ app_name }} · 3D 对话页</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/stage.css?v=20260417-caption-motion-2" />
+  </head>
+  <body class="{% if embed_mode %}stage-embed stage-embed--panel{% endif %}">
+    <main class="scene {% if embed_mode %}scene--embed{% endif %}" id="scene">
+      <canvas id="particle-field" class="particle-field" aria-hidden="true"></canvas>
+
+      <h1 class="brand-title">
+        <img class="brand-title__logo" src="/static/stage-assets/images/site-logo.png" alt="丽斯未来酒店" />
+      </h1>
+
+      <section class="process-bubble" id="process-bubble" aria-live="polite">
+        <span class="process-bubble__dot" aria-hidden="true"></span>
+        <div class="process-bubble__content">
+          <p class="process-bubble__label" id="process-label">进程面板</p>
+          <p class="process-bubble__main" id="process-main">waiting.bootstrap</p>
+          <p class="process-bubble__detail" id="process-detail">正在准备对话链路</p>
+          <p class="process-bubble__detail" id="rtc-subtitle-debug">RTC 字幕调试：等待字幕包</p>
+        </div>
+      </section>
+
+      <div class="sky-glow sky-glow-a" aria-hidden="true"></div>
+      <div class="sky-glow sky-glow-b" aria-hidden="true"></div>
+      <div class="sky-glow sky-glow-c" aria-hidden="true"></div>
+
+      <div class="mist mist-a" aria-hidden="true"></div>
+      <div class="mist mist-b" aria-hidden="true"></div>
+      <div class="mist mist-c" aria-hidden="true"></div>
+
+      <div class="beam beam-a" aria-hidden="true"></div>
+      <div class="beam beam-b" aria-hidden="true"></div>
+      <div class="beam beam-c" aria-hidden="true"></div>
+
+      <div class="orbit orbit-a" aria-hidden="true"></div>
+      <div class="orbit orbit-b" aria-hidden="true"></div>
+      <div class="orbit orbit-c" aria-hidden="true"></div>
+
+      <div class="light-shards" aria-hidden="true">
+        <span class="shard shard-a"></span>
+        <span class="shard shard-b"></span>
+        <span class="shard shard-c"></span>
+        <span class="shard shard-d"></span>
+        <span class="shard shard-e"></span>
+        <span class="shard shard-f"></span>
+      </div>
+
+      <section class="avatar-system" id="avatar-system">
+        <div class="avatar-aura" aria-hidden="true"></div>
+        <div class="avatar-sheen" aria-hidden="true"></div>
+        <div class="avatar-orbit avatar-orbit-a" aria-hidden="true"></div>
+        <div class="avatar-orbit avatar-orbit-b" aria-hidden="true"></div>
+        <div class="avatar-orbit avatar-orbit-c" aria-hidden="true"></div>
+        <div class="avatar-platform" aria-hidden="true"></div>
+        <div class="model-stage" id="model-stage" aria-hidden="true"></div>
+        <div class="avatar-reflection" aria-hidden="true"></div>
+        <div class="floor-glow" aria-hidden="true"></div>
+        <div class="floor-ring floor-ring-a" aria-hidden="true"></div>
+        <div class="floor-ring floor-ring-b" aria-hidden="true"></div>
+      </section>
+
+      <div class="breath-strip" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <section class="caption-stack" id="caption-stack" aria-live="polite">
+        <p class="caption-line caption-line--far" id="caption-line-0"></p>
+        <p class="caption-line caption-line--mid" id="caption-line-1"></p>
+        <p class="caption-line caption-line--live" id="caption-line-2"></p>
+      </section>
+    </main>
+
+    <script type="module" src="/static/stage-app.js?v=20260417-caption-prefixless-1"></script>
+  </body>
+</html>

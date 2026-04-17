@@ -7,6 +7,8 @@ const dom = {
   metricText: document.getElementById("metricText"),
   sessionText: document.getElementById("sessionText"),
   thinkingText: document.getElementById("thinkingText"),
+  liveCaptionText: document.getElementById("liveCaptionText"),
+  rtcSubtitleDebugText: document.getElementById("rtcSubtitleDebugText"),
   pricingStateText: document.getElementById("pricingStateText"),
   callbackText: document.getElementById("callbackText"),
   knowledgeText: document.getElementById("knowledgeText"),
@@ -41,16 +43,50 @@ const COMMAND = {
   EXTERNAL_TEXT_TO_LLM: "ExternalTextToLLM",
 };
 
-const EXACT_PRICING_COMMANDS = [
-  "生成收益分析",
-  "生成昨日复盘",
-  "生成调价方案",
+const PRICING_COMMAND_ALIASES = {
+  "收益分析": [
+    "生成收益分析",
+    "给我生成收益分析",
+    "帮我生成收益分析",
+    "来个收益分析",
+    "做个收益分析",
+    "来一版收益分析",
+    "做一版收益分析",
+  ],
+  "昨日复盘": [
+    "生成昨日复盘",
+    "给我生成昨日复盘",
+    "帮我生成昨日复盘",
+    "来个昨日复盘",
+    "做个昨日复盘",
+    "来一版昨日复盘",
+    "做一版昨日复盘",
+  ],
+  "调价方案": [
+    "生成调价方案",
+    "给我生成调价方案",
+    "帮我生成调价方案",
+    "来个调价方案",
+    "做个调价方案",
+    "来一版调价方案",
+    "做一版调价方案",
+  ],
+};
+
+const EXACT_PRICING_COMMANDS = Object.values(PRICING_COMMAND_ALIASES).flat();
+
+const PRICING_FILLER_WORDS = [
+  "小丽",
+  "你好",
+  "您好",
+  "麻烦",
+  "请",
 ];
 
 const PRICING_COMMAND_PATTERNS = [
-  /(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(收益分析)/,
-  /(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(昨日复盘)/,
-  /(生成|帮我生成|给我生成|做个|帮我做个|来个|来一版).*(调价方案)/,
+  /(生成|帮我生成|给我生成|做个|做一版|帮我做个|来个|来一版).*(收益分析)/,
+  /(生成|帮我生成|给我生成|做个|做一版|帮我做个|来个|来一版).*(昨日复盘)/,
+  /(生成|帮我生成|给我生成|做个|做一版|帮我做个|来个|来一版).*(调价方案)/,
 ];
 
 const HARD_BACKEND_PREEMPT_KEYWORDS = [
@@ -111,6 +147,10 @@ const state = {
   joined: false,
   voiceChatStarted: false,
   activeRequestId: 0,
+  activeTurnId: 0,
+  activeTurnToken: "",
+  activeTurnOwner: "backend",
+  activeTurnPhase: "idle",
   lastParagraphKey: "",
   interrupting: false,
   uiState: "Idle",
@@ -128,6 +168,13 @@ const state = {
   revenuePendingTurnId: null,
   revenueBusyUntil: 0,
   revenueBusyReleaseTimer: null,
+  liveAiComposite: "",
+  interruptGate: {
+    active: false,
+    turnId: 0,
+    turnToken: "",
+    status: "idle",
+  },
 };
 
 function revenueTurnIsBusy() {
@@ -176,7 +223,7 @@ function pushDebugEvent(key, payload) {
 function setStatus(stateLabel, detail = "", speak = "") {
   state.uiState = stateLabel;
   dom.statusChip.textContent = stateLabel;
-  if (detail) dom.aiSubtitleText.textContent = detail;
+  if (detail) dom.thinkingText.textContent = detail;
   if (speak) dom.speakText.textContent = speak;
 }
 
@@ -202,6 +249,46 @@ function setCallback(text) {
   dom.callbackText.textContent = text;
 }
 
+function setLiveTranscript(text = "") {
+  if (!dom.liveCaptionText) return;
+  const normalized = String(text || "").trim();
+  dom.liveCaptionText.textContent = normalized ? `实时听写：${normalized}` : "实时听写：";
+}
+
+function clearLiveTranscript() {
+  setLiveTranscript("");
+}
+
+function mergeCaptionChunk(previousText = "", nextText = "") {
+  const prev = String(previousText || "").trim();
+  const next = String(nextText || "").trim();
+  if (!next) return prev;
+  if (!prev) return next;
+  if (next.includes(prev)) return next;
+  if (prev.includes(next)) return prev;
+  const maxOverlap = Math.min(prev.length, next.length);
+  for (let size = maxOverlap; size > 0; size -= 1) {
+    if (prev.slice(-size) === next.slice(0, size)) {
+      return `${prev}${next.slice(size)}`;
+    }
+  }
+  return `${prev}${next}`;
+}
+
+function setRtcSubtitleDebug(payload = {}) {
+  if (!dom.rtcSubtitleDebugText) return;
+  const source = String(payload.source || "unknown");
+  const role = String(payload.role || "unknown");
+  const userId = String(payload.userId || "-");
+  const text = String(payload.text || "").trim();
+  const flags = [payload.paragraph ? "paragraph" : "", payload.definite ? "definite" : ""]
+    .filter(Boolean)
+    .join("/");
+  dom.rtcSubtitleDebugText.textContent = text
+    ? `RTC 字幕调试：${role} · ${source} · ${userId}${flags ? ` · ${flags}` : ""} · ${text}`
+    : `RTC 字幕调试：${role} · ${source} · ${userId}${flags ? ` · ${flags}` : ""}`;
+}
+
 function canSendInterrupt() {
   const now = Date.now();
   if (now - state.lastInterruptAt < 800) {
@@ -209,6 +296,66 @@ function canSendInterrupt() {
   }
   state.lastInterruptAt = now;
   return true;
+}
+
+function setActiveTurn(payload = {}) {
+  const turnId = Number(payload.turn_id || 0);
+  const turnToken = typeof payload.turn_token === "string" ? payload.turn_token : "";
+  if (turnId && turnId >= state.activeTurnId) {
+    state.activeTurnId = turnId;
+    state.activeTurnToken = turnToken || state.activeTurnToken;
+  }
+  if (payload.owner) {
+    state.activeTurnOwner = payload.owner;
+  }
+  if (payload.phase) {
+    state.activeTurnPhase = payload.phase;
+  }
+}
+
+function matchesCurrentTurn(payload = {}, allowLiveWithoutToken = false) {
+  const turnId = Number(payload.turn_id || 0);
+  const turnToken = typeof payload.turn_token === "string" ? payload.turn_token : "";
+  if (!turnId) return allowLiveWithoutToken;
+  if (turnId < state.activeTurnId) return false;
+  if (turnId > state.activeTurnId) {
+    setActiveTurn(payload);
+    return true;
+  }
+  if (!state.activeTurnToken) return true;
+  if (!turnToken) return allowLiveWithoutToken;
+  return turnToken === state.activeTurnToken;
+}
+
+function updateInterruptGate(payload = {}) {
+  const gate = typeof payload.interrupt_gate === "string" ? payload.interrupt_gate : "";
+  if (!gate) return;
+  if (gate === "interrupting" || gate === "waiting_interrupt_ack") {
+    state.interruptGate = {
+      active: true,
+      turnId: Number(payload.turn_id || state.activeTurnId || 0),
+      turnToken: typeof payload.turn_token === "string" ? payload.turn_token : state.activeTurnToken,
+      status: gate,
+    };
+    return;
+  }
+  state.interruptGate = {
+    active: false,
+    turnId: 0,
+    turnToken: "",
+    status: gate,
+  };
+}
+
+function shouldRenderAiLiveCaption() {
+  return !state.interruptGate.active;
+}
+
+function shouldAcceptAiFinalSubtitle(payload = {}) {
+  const turnId = Number(payload.turn_id || 0);
+  if (!turnId) return true;
+  if (payload.owner === "backend") return true;
+  return state.activeTurnOwner !== "backend";
 }
 
 async function readMicrophonePermissionState() {
@@ -227,30 +374,51 @@ async function readMicrophonePermissionState() {
   }
 }
 
-async function ensureMicrophoneAccess(interactive = true) {
-  const permissionState = await readMicrophonePermissionState();
-  state.micPermission = permissionState;
-  if (permissionState === "granted") {
-    setWarning("麦克风权限已授权。");
+async function readCameraPermissionState() {
+  if (!navigator.permissions?.query) {
+    return "unknown";
+  }
+  try {
+    const status = await navigator.permissions.query({ name: "camera" });
+    return status.state || "unknown";
+  } catch (error) {
+    pushDebugEvent("lastBinaryEvents", {
+      type: "permission-query-camera",
+      error: String(error),
+    });
+    return "unknown";
+  }
+}
+
+async function ensureMicrophoneAccess(interactive = true, includeVideo = false) {
+  const micPermissionState = await readMicrophonePermissionState();
+  const cameraPermissionState = includeVideo ? await readCameraPermissionState() : "granted";
+  state.micPermission = micPermissionState;
+  if (micPermissionState === "granted" && cameraPermissionState === "granted") {
+    setWarning(includeVideo ? "摄像头和麦克风权限已授权。" : "麦克风权限已授权。");
     return true;
   }
-  if (permissionState === "denied") {
-    setWarning("浏览器已拒绝麦克风权限。请点击地址栏旁的站点设置，改成允许后，再点“重新授权麦克风”。");
+  if (micPermissionState === "denied" || (includeVideo && cameraPermissionState === "denied")) {
+    setWarning(
+      includeVideo
+        ? "浏览器已拒绝摄像头或麦克风权限。请点击地址栏旁的站点设置，改成允许后，再点“重新授权”。"
+        : "浏览器已拒绝麦克风权限。请点击地址栏旁的站点设置，改成允许后，再点“重新授权麦克风”。"
+    );
     return false;
   }
   if (!interactive) {
-    setWarning("麦克风权限尚未确认，请点“重新授权麦克风”触发授权。");
+    setWarning(includeVideo ? "摄像头或麦克风权限尚未确认，请点“重新授权”触发授权。" : "麦克风权限尚未确认，请点“重新授权麦克风”触发授权。");
     return false;
   }
   if (!navigator.mediaDevices?.getUserMedia) {
-    setWarning("当前浏览器不支持 getUserMedia，无法启动麦克风采集。");
+    setWarning(includeVideo ? "当前浏览器不支持音视频采集，无法启动摄像头和麦克风。" : "当前浏览器不支持 getUserMedia，无法启动麦克风采集。");
     return false;
   }
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: includeVideo });
     stream.getTracks().forEach((track) => track.stop());
     state.micPermission = "granted";
-    setWarning("麦克风权限授权成功，正在继续 RTC 联调。");
+    setWarning(includeVideo ? "摄像头和麦克风权限授权成功，正在继续 RTC 联调。" : "麦克风权限授权成功，正在继续 RTC 联调。");
     return true;
   } catch (error) {
     state.micPermission = "denied";
@@ -277,10 +445,25 @@ function pureS2SEnabled() {
 }
 
 function matchesPricingPreempt(normalized) {
-  if (EXACT_PRICING_COMMANDS.includes(normalized)) {
+  const stripped = PRICING_FILLER_WORDS.reduce((acc, filler) => acc.replaceAll(filler, ""), normalized);
+  if (EXACT_PRICING_COMMANDS.includes(stripped)) {
     return true;
   }
-  return PRICING_COMMAND_PATTERNS.some((pattern) => pattern.test(normalized));
+  if (PRICING_COMMAND_PATTERNS.some((pattern) => pattern.test(stripped))) {
+    return true;
+  }
+  const tokenGroups = [
+    ["收益", "分析"],
+    ["昨日", "复盘"],
+    ["昨天", "复盘"],
+    ["调价", "方案"],
+  ];
+  const actionHints = ["生成", "来个", "来一版", "做个", "做一版", "给我", "帮我"];
+  return tokenGroups.some((tokens) =>
+    tokens.every((token) => stripped.includes(token)) &&
+    stripped.includes("生成") &&
+    (actionHints.some((hint) => stripped.includes(hint)) || stripped.includes(tokens.join("")))
+  );
 }
 
 function shouldPreemptToBackend(text) {
@@ -289,11 +472,13 @@ function shouldPreemptToBackend(text) {
   if (pureS2SEnabled()) {
     return { hit: false, reason: "" };
   }
-  if (matchesPricingPreempt(normalized)) {
-    return { hit: true, reason: "pricing-keyword-hit" };
-  }
   if (currentFaqRouteMode() === "s2s_memory") {
     return { hit: false, reason: "" };
+  }
+  if (
+    matchesPricingPreempt(normalized)
+  ) {
+    return { hit: true, reason: "pricing-keyword-hit" };
   }
   if (
     HARD_BACKEND_PREEMPT_KEYWORDS.some((keyword) => normalized.includes(keyword)) ||
@@ -339,6 +524,83 @@ function tlvToString(buffer) {
     lengthBuffer[3];
   const value = new TextDecoder().decode(valueBuffer.subarray(0, length));
   return { type, value };
+}
+
+function decodeBase64ToBytes(base64Text) {
+  const normalized = String(base64Text || "").trim();
+  if (!normalized) {
+    throw new Error("empty base64 payload");
+  }
+  const binary = window.atob(normalized);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return bytes;
+}
+
+function unpackSubtitleMessage(bufferLike) {
+  const bytes = bufferLike instanceof Uint8Array ? bufferLike : new Uint8Array(bufferLike);
+  if (bytes.length < 8) {
+    throw new Error("subtitle payload too short");
+  }
+  const header = String.fromCharCode(...bytes.subarray(0, 4));
+  if (header !== MESSAGE_TYPE.SUBTITLE) {
+    throw new Error(`unexpected subtitle header: ${header}`);
+  }
+  const length =
+    (bytes[4] << 24) |
+    (bytes[5] << 16) |
+    (bytes[6] << 8) |
+    bytes[7];
+  const payloadBytes = bytes.subarray(8, 8 + length);
+  return JSON.parse(new TextDecoder().decode(payloadBytes));
+}
+
+async function consumeSubtitlePayload(parsed, source) {
+  pushDebugEvent("lastBinaryEvents", {
+    type: `${MESSAGE_TYPE.SUBTITLE}:${source}`,
+    parsed,
+  });
+  const entries = Array.isArray(parsed?.data) ? parsed.data : [];
+  for (const item of entries) {
+    await handleSubtitleEvent(item || {}, source);
+  }
+}
+
+function bindRtcSubtitleListeners(engine, VERTC) {
+  engine.on(VERTC.events.onRoomBinaryMessageReceived, async (event) => {
+    try {
+      const { type, value } = tlvToString(event.message);
+      const parsed = JSON.parse(value);
+      pushDebugEvent("lastBinaryEvents", {
+        type,
+        parsed,
+      });
+      if (type === MESSAGE_TYPE.SUBTITLE) {
+        await consumeSubtitlePayload(parsed, "room_binary");
+      }
+      if (type === MESSAGE_TYPE.BRIEF) {
+        const [label, detail] = mapBriefCode(parsed?.Stage?.Code);
+        setStatus(label, detail, dom.speakText.textContent);
+      }
+    } catch (error) {
+      setCallback(`回调日志：解析 room binary message 失败，${String(error)}`);
+    }
+  });
+
+  engine.on("on_volc_message_data", async (event) => {
+    try {
+      const parsed = unpackSubtitleMessage(decodeBase64ToBytes(event?.message));
+      await consumeSubtitlePayload(parsed, "on_volc_message_data");
+    } catch (error) {
+      pushDebugEvent("lastBinaryEvents", {
+        type: "on_volc_message_data:error",
+        error: String(error),
+      });
+      setCallback(`回调日志：解析 on_volc_message_data 失败，${String(error)}`);
+    }
+  });
 }
 
 async function postJson(url, payload = {}) {
@@ -408,11 +670,18 @@ function bindSse() {
 function handleServerEvent(packet) {
   const { kind, payload } = packet;
   if (kind === "state") {
+    setActiveTurn(payload);
+    updateInterruptGate(payload);
+    if (!matchesCurrentTurn(payload, true) && payload.state !== "interrupted") {
+      return;
+    }
     const label = payload.state || "Idle";
     if (payload.state === "interrupted") {
       state.lastParagraphKey = "";
       state.backendPreempt = { active: false, reason: "" };
       clearRevenueBusyLatch();
+      clearLiveTranscript();
+      state.liveAiComposite = "";
     }
     dom.thinkingText.textContent = payload.detail || "等待新的 RTC 事件。";
     if (payload.action_state && payload.action_state !== "none") {
@@ -438,24 +707,59 @@ function handleServerEvent(packet) {
     return;
   }
   if (kind === "subtitle") {
+    if (!matchesCurrentTurn(payload, payload.kind !== "final")) {
+      return;
+    }
+    const text = String(payload.text || "").trim();
+    if (!text) {
+      return;
+    }
     if (payload.speaker === "user") {
-      dom.userSubtitleText.textContent = payload.text;
+      if (payload.kind === "final") {
+        dom.userSubtitleText.textContent = text;
+        clearLiveTranscript();
+      } else {
+        setLiveTranscript(text);
+      }
     } else {
-      dom.aiSubtitleText.textContent = payload.text;
-      dom.speakText.textContent = payload.text;
+      if (payload.kind !== "final" && !shouldRenderAiLiveCaption()) {
+        return;
+      }
+      if (payload.kind === "final") {
+        if (!shouldAcceptAiFinalSubtitle(payload)) {
+          return;
+        }
+        clearLiveTranscript();
+        state.liveAiComposite = "";
+        dom.aiSubtitleText.textContent = text;
+        dom.speakText.textContent = text;
+      } else {
+        state.liveAiComposite = mergeCaptionChunk(state.liveAiComposite, text);
+        dom.aiSubtitleText.textContent = state.liveAiComposite;
+        dom.speakText.textContent = state.liveAiComposite;
+        setLiveTranscript(text);
+      }
     }
     return;
   }
   if (kind === "turn_result") {
+    setActiveTurn(payload);
+    updateInterruptGate(payload);
+    if (!matchesCurrentTurn(payload)) {
+      return;
+    }
     state.backendPreempt = { active: false, reason: "" };
     state.currentOwner = "backend";
+    clearLiveTranscript();
+    state.liveAiComposite = "";
     if (state.revenueTurnPending && payload.turn_id === state.revenuePendingTurnId) {
       state.revenueTurnPending = false;
       state.revenuePendingTurnId = null;
       holdRevenueBusyForSpeak(payload.speak_text || payload.display_text || "");
     }
-    dom.aiSubtitleText.textContent = payload.display_text;
-    dom.speakText.textContent = payload.speak_text;
+    const spokenText = String(payload.speak_text || payload.display_text || "").trim();
+    dom.aiSubtitleText.textContent = spokenText || payload.display_text;
+    dom.speakText.textContent = spokenText || payload.display_text;
     if (payload.action_state && payload.action_state !== "none") {
       setPricingState(`收益链状态：${payload.action_state}`);
     } else {
@@ -465,12 +769,17 @@ function handleServerEvent(packet) {
     return;
   }
   if (kind === "turn_started") {
+    setActiveTurn(payload);
+    updateInterruptGate(payload);
     if (payload.owner === "backend" && (payload.intent === "pricing" || payload.intent === "pricing_confirm")) {
       state.revenueTurnPending = true;
       state.revenuePendingTurnId = payload.turn_id ?? null;
     }
     if (payload.owner !== "backend") {
       state.backendPreempt = { active: false, reason: "" };
+    } else {
+      clearLiveTranscript();
+      state.liveAiComposite = "";
     }
     state.currentOwner = payload.owner || state.currentOwner;
     return;
@@ -482,6 +791,9 @@ function handleServerEvent(packet) {
     return;
   }
   if (kind === "callback") {
+    if (payload.callback_type === "agent_command_ack" && payload.command === "interrupt" && payload.applies_to_current_turn) {
+      updateInterruptGate({ ...payload, interrupt_gate: payload.ok ? "acked" : "ack_error" });
+    }
     if (payload.callback_type === "agent_command_ack") {
       setCallback(
         `回调日志：${payload.command} ${payload.ok ? "发送成功" : "发送失败"}，${payload.detail || "无明细"}。`
@@ -528,6 +840,7 @@ async function dispatchAgentCommand(payload) {
       ok: true,
       detail: `sent via ${sender === state.rtc.room ? "room" : "engine"}${reliableOrdered !== undefined ? " / reliable_ordered" : ""}`,
       turn_id: payload.turn_id ?? null,
+      turn_token: payload.turn_token ?? null,
     });
     setCallback(`回调日志：已发送 ${payload.command} 指令给 ${state.bootstrap.rtc.ai_user_id}。`);
     if (payload.message) {
@@ -539,6 +852,7 @@ async function dispatchAgentCommand(payload) {
       ok: false,
       detail: String(error),
       turn_id: payload.turn_id ?? null,
+      turn_token: payload.turn_token ?? null,
     }).catch(() => {});
     throw error;
   }
@@ -547,12 +861,13 @@ async function dispatchAgentCommand(payload) {
 async function sendTextToAgent(text) {
   if (!text || !text.trim()) return;
   if (!state.rtc || !state.voiceChatStarted) {
-    throw new Error("RTC / VoiceChat 尚未就绪，无法向 S2S 发送文本。");
+    throw new Error("RTC / VoiceChat 尚未就绪，无法向火山原生 VoiceChat 主链发送文本。");
   }
-  state.currentOwner = "s2s";
+  state.currentOwner = "native";
   dom.userSubtitleText.textContent = text;
-  setPricingState("收益链待机中，当前为 S2S 主链文本直发测试。");
-  setStatus("Listening", `已向 S2S 主链发送文本：${text}`, dom.speakText.textContent);
+  clearLiveTranscript();
+  setPricingState("收益链待机中，当前为火山原生 VoiceChat 主链文本直发测试。");
+  setStatus("Listening", `已向火山原生 VoiceChat 主链发送文本：${text}`, dom.speakText.textContent);
   await dispatchAgentCommand({
     command: COMMAND.EXTERNAL_TEXT_TO_LLM,
     message: text,
@@ -577,18 +892,28 @@ function mapBriefCode(code) {
   }
 }
 
-async function handleSubtitleEvent(data) {
+async function handleSubtitleEvent(data, source = "unknown") {
   if (!data || !data.text) return;
   const isUser = data.userId === state.bootstrap.rtc.user_id;
+  const isAi = data.userId === state.bootstrap.rtc.ai_user_id;
   pushDebugEvent("lastSubtitleEvents", {
     text: data.text,
     userId: data.userId,
     paragraph: Boolean(data.paragraph),
     definite: Boolean(data.definite),
     isUser,
+    isAi,
+    source,
+  });
+  setRtcSubtitleDebug({
+    source,
+    role: isUser ? "user" : isAi ? "ai" : "unknown",
+    userId: data.userId,
+    text: data.text,
+    paragraph: Boolean(data.paragraph),
+    definite: Boolean(data.definite),
   });
   if (isUser) {
-    dom.userSubtitleText.textContent = data.text;
     if (revenueTurnIsBusy()) {
       if (data.paragraph && data.definite) {
         setStatus("Thinking", "收益链处理中，请先等这一轮结果返回。");
@@ -634,13 +959,22 @@ async function handleSubtitleEvent(data) {
       const paragraphKey = `${data.userId}:${data.text}`;
       if (paragraphKey !== state.lastParagraphKey) {
         state.lastParagraphKey = paragraphKey;
+        dom.userSubtitleText.textContent = data.text;
+        clearLiveTranscript();
         const source = state.backendPreempt.active ? "rtc-paragraph-preempted" : "rtc-paragraph";
         await submitTurn(data.text, source);
         state.backendPreempt = { active: false, reason: "" };
       }
+    } else {
+      setLiveTranscript(data.text);
     }
   } else {
-    dom.aiSubtitleText.textContent = data.text;
+    if (shouldRenderAiLiveCaption()) {
+      state.liveAiComposite = mergeCaptionChunk(state.liveAiComposite, data.text);
+      dom.aiSubtitleText.textContent = state.liveAiComposite;
+      dom.speakText.textContent = state.liveAiComposite;
+      setLiveTranscript(data.text);
+    }
   }
 }
 
@@ -666,26 +1000,7 @@ function attachRtcListeners(VERTC) {
       updateAvatarStatus("火山备用视频流已取消，自研 3D 舞台继续保留。");
     }
   });
-  engine.on(VERTC.events.onRoomBinaryMessageReceived, async (event) => {
-    try {
-      const { type, value } = tlvToString(event.message);
-      const parsed = JSON.parse(value);
-      pushDebugEvent("lastBinaryEvents", {
-        type,
-        parsed,
-      });
-      if (type === MESSAGE_TYPE.SUBTITLE) {
-        const data = parsed.data?.[0] || {};
-        await handleSubtitleEvent(data);
-      }
-      if (type === MESSAGE_TYPE.BRIEF) {
-        const [label, detail] = mapBriefCode(parsed?.Stage?.Code);
-        setStatus(label, detail, dom.speakText.textContent);
-      }
-    } catch (error) {
-      setCallback(`回调日志：解析 room binary message 失败，${String(error)}`);
-    }
-  });
+  bindRtcSubtitleListeners(engine, VERTC);
   engine.on(VERTC.events.onError, (event) => {
     setStatus("Error", `RTC 错误：${event.errorCode || "unknown"}`);
   });
@@ -717,14 +1032,15 @@ async function initRtc() {
   };
 
   attachRtcListeners(VERTC);
-  const micReady = await ensureMicrophoneAccess(true);
+  const cameraVisionEnabled = Boolean(state.bootstrap?.voice_chat?.camera_vision_enabled);
+  const micReady = await ensureMicrophoneAccess(true, cameraVisionEnabled);
   if (!micReady) {
     setConnection("等待麦克风授权");
     updateAvatarStatus("麦克风权限未就绪，RTC/VoiceChat 未启动。");
     return;
   }
   try {
-    await VERTC.enableDevices({ audio: true, video: false });
+    await VERTC.enableDevices({ audio: true, video: cameraVisionEnabled });
   } catch (error) {
     setWarning(`麦克风设备启用失败：${String(error)}`);
   }
@@ -748,6 +1064,14 @@ async function initRtc() {
     setStatus("Error", `音频采集启动失败：${String(error)}`);
     setWarning(`音频采集未启动，已阻止 VoiceChat 启动，避免云端出现 feed audio slice error：${String(error)}`);
     return;
+  }
+  if (cameraVisionEnabled && typeof engine.startVideoCapture === "function") {
+    try {
+      await engine.startVideoCapture();
+      setCallback("回调日志：已启动本地摄像头采集，供火山官方视觉链使用。");
+    } catch (error) {
+      setWarning(`摄像头启动失败，官方视觉链将无法看到实时画面：${String(error)}`);
+    }
   }
 
   const joinedRoom = await engine.joinRoom(
@@ -780,6 +1104,14 @@ async function initRtc() {
       setWarning("本地麦克风采集与 RTC 音频发布已完成，正在启动 VoiceChat。");
     } catch (error) {
       setWarning(`本地音频流显式发布失败：${String(error)}`);
+    }
+  }
+  if (cameraVisionEnabled && typeof engine.publishStream === "function" && state.rtcModule?.MediaType?.VIDEO) {
+    try {
+      await engine.publishStream(state.rtcModule.MediaType.VIDEO);
+      setCallback("回调日志：已发布本地视频流，供火山官方视觉链使用。");
+    } catch (error) {
+      setWarning(`本地视频流发布失败，官方视觉链将无法使用实时画面：${String(error)}`);
     }
   }
   await postJson(`/api/rtc/sessions/${state.sessionId}/connected`);
@@ -819,6 +1151,8 @@ async function submitTurn(userText, source = "manual") {
       source,
     });
     if (requestId !== state.activeRequestId) return;
+    setActiveTurn(payload);
+    updateInterruptGate(payload.owner === "backend" ? { ...payload, interrupt_gate: "interrupting" } : payload);
     state.currentOwner = payload.owner;
     if (payload.owner === "backend") {
       if (payload.intent === "pricing" || payload.intent === "pricing_confirm") {
@@ -833,11 +1167,17 @@ async function submitTurn(userText, source = "manual") {
       }
       setStatus("Thinking", detail, payload.transition_text || "");
     } else {
-      setStatus("Listening", `S2S 主链继续作答：${payload.route_reason}`, dom.speakText.textContent);
+      setStatus("Listening", `火山原生 VoiceChat 主链继续作答：${payload.route_reason}`, dom.speakText.textContent);
     }
     setMetric(
       `链路耗时：utterance ${payload.processing_ms} ms / turn ${payload.turn_id} / owner ${payload.owner} / 阈值 ${payload.transition_after_ms} ms`
     );
+    if (
+      payload.owner !== "backend" &&
+      !["rtc-paragraph", "rtc-paragraph-preempted"].includes(source)
+    ) {
+      await sendTextToAgent(userText);
+    }
   } catch (error) {
     if (requestId !== state.activeRequestId) return;
     state.revenueTurnPending = false;
@@ -861,6 +1201,7 @@ async function handleInterrupt() {
     return;
   }
   state.lastParagraphKey = "";
+  dom.aiSubtitleText.textContent = "";
   await postJson(`/api/rtc/sessions/${state.sessionId}/interrupt`, {
     reason: "manual-button",
   });
@@ -871,7 +1212,7 @@ async function start() {
     await loadBootstrap();
     bindSse();
     dom.micBtn.addEventListener("click", async () => {
-      const ok = await ensureMicrophoneAccess(true);
+      const ok = await ensureMicrophoneAccess(true, Boolean(state.bootstrap?.voice_chat?.camera_vision_enabled));
       if (!ok) return;
       if (!state.joined || !state.voiceChatStarted) {
         await initRtc();

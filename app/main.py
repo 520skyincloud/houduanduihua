@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
 import uuid
 from pathlib import Path
 from threading import Lock
 from time import perf_counter
-from typing import Any
+from typing import Any, Optional
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -23,20 +24,19 @@ from app.integrations.volcengine import (
 )
 from app.models import BackendTurnResult, PresenceState, RTCSessionState
 from app.services.faq_store import FAQStore
-from app.services.faq_semantic import FAQSemanticExperiment
-from app.services.faq_v2 import FaqV2Experiment
+from app.services.external_search import ExternalSearchFacade
 from app.services.fastgpt import FastGPTFacade
 from app.services.lobby import LobbyCoordinator
 from app.services.memory import MemoryFacade
-from app.services.ragflow import RAGFlowFacade
 from app.services.revenue_mcp import RevenueMCPService
 from app.services.search import (
     chunk_speak_text,
     decide_turn_route,
     looks_like_hotel_faq_request,
     normalize_text,
-    resolve_answer,
+    vision_requires_hotel_facts,
 )
+from app.services.vision import VisionFacade
 
 
 app = FastAPI(title=settings.app_name)
@@ -52,46 +52,19 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 store = FAQStore(settings.faq_index_path)
-faq_semantic = FAQSemanticExperiment(store.items)
-faq_v2 = FaqV2Experiment()
 fastgpt = FastGPTFacade()
-ragflow = RAGFlowFacade(store)
 memory = MemoryFacade()
 revenue_mcp = RevenueMCPService()
+external_search = ExternalSearchFacade()
+vision = VisionFacade()
 lobby = LobbyCoordinator()
 rtc_openapi = VolcengineRTCOpenAPI()
 voice_chat_factory = VoiceChatPayloadFactory()
 state_lock = Lock()
 voicechat_callback_log: list[dict[str, Any]] = []
 voice_chat_command_locks: dict[str, asyncio.Lock] = {}
-
-
-def _get_pricing_busy_turn(session_id: str) -> int | None:
-    session = lobby.get_session(session_id)
-    turn_id = session.metrics.get("pricing_busy_turn_id")
-    busy_until = session.metrics.get("pricing_busy_until")
-    if not turn_id or not busy_until:
-        return None
-    if busy_until <= perf_counter():
-        session.metrics.pop("pricing_busy_turn_id", None)
-        session.metrics.pop("pricing_busy_until", None)
-        return None
-    return int(turn_id)
-
-
-def _mark_pricing_busy(session_id: str, turn_id: int) -> None:
-    session = lobby.get_session(session_id)
-    session.metrics["pricing_busy_turn_id"] = float(turn_id)
-    session.metrics["pricing_busy_until"] = perf_counter() + max(settings.revenue_mcp_timeout_seconds, 180)
-
-
-def _clear_pricing_busy(session_id: str, turn_id: int) -> None:
-    session = lobby.get_session(session_id)
-    active_turn_id = session.metrics.get("pricing_busy_turn_id")
-    if active_turn_id and int(active_turn_id) == turn_id:
-        session.metrics.pop("pricing_busy_turn_id", None)
-        session.metrics.pop("pricing_busy_until", None)
-
+INTERRUPT_GATE_TIMEOUT_MS = 320
+INTERRUPT_GATE_POLL_MS = 40
 
 class BootstrapRequest(BaseModel):
     client_id: str = "lobby-screen"
@@ -107,6 +80,16 @@ class QueryRequest(BaseModel):
     source: str = "rtc-subtitle"
 
 
+class VisionAnalyzeResponse(BaseModel):
+    ok: bool
+    configured: bool
+    scene_summary: str
+    detected_text: str
+    objects: list[Any]
+    confidence: float
+    detail: str = ""
+
+
 class InterruptRequest(BaseModel):
     reason: str = "barge-in"
 
@@ -120,6 +103,7 @@ class AgentCommandAckRequest(BaseModel):
     ok: bool = True
     detail: str = ""
     turn_id: Optional[int] = None
+    turn_token: Optional[str] = None
 
 
 def _make_room_id() -> str:
@@ -192,6 +176,82 @@ def _session_warnings() -> list[str]:
     return warnings
 
 
+def _turn_fields(session: RTCSessionState | None) -> dict[str, Any]:
+    if session is None or session.last_turn is None:
+        return {}
+    turn = session.last_turn
+    return {
+        "turn_id": turn.turn_id,
+        "turn_token": turn.turn_token,
+        "owner": turn.owner,
+        "phase": turn.phase,
+        "chain": turn.chain,
+    }
+
+
+def _event_matches_current_turn(
+    payload: dict[str, Any],
+    session: RTCSessionState,
+) -> tuple[bool, int | None, str | None]:
+    turn_id = payload.get("turn_id")
+    turn_token = payload.get("turn_token")
+    if isinstance(turn_id, str) and turn_id.isdigit():
+        turn_id = int(turn_id)
+    elif not isinstance(turn_id, int):
+        turn_id = None
+    if turn_token is not None:
+        turn_token = str(turn_token)
+    matches = bool(
+        turn_id is not None
+        and turn_id == session.active_turn_id
+        and turn_token
+        and turn_token == session.active_turn_token
+    )
+    return matches, turn_id, turn_token
+
+
+def _decode_subtitle_server_message(payload: dict[str, Any]) -> dict[str, Any] | None:
+    message = payload.get("message")
+    if not isinstance(message, str) or not message:
+        return None
+    try:
+        raw = base64.b64decode(message)
+    except Exception:
+        return None
+    if len(raw) < 8 or raw[:4] != b"subv":
+        return None
+    expected_length = int.from_bytes(raw[4:8], "big")
+    body = raw[8:]
+    if expected_length != len(body):
+        return None
+    try:
+        decoded = json.loads(body.decode("utf-8"))
+    except Exception:
+        return None
+    if not isinstance(decoded, dict):
+        return None
+    return decoded
+
+
+async def _wait_for_interrupt_gate(session_id: str, turn_id: int, turn_token: str) -> str:
+    deadline = perf_counter() + (INTERRUPT_GATE_TIMEOUT_MS / 1000)
+    while perf_counter() < deadline:
+        with state_lock:
+            status = lobby.interrupt_gate_status(session_id, turn_id, turn_token)
+        if not status["is_current"]:
+            return "stale"
+        if status["acked"]:
+            return "acked"
+        if not status["active"]:
+            return "closed"
+        await asyncio.sleep(INTERRUPT_GATE_POLL_MS / 1000)
+    with state_lock:
+        gate_event = lobby.close_interrupt_gate(session_id, turn_id, turn_token, "timeout")
+        if gate_event:
+            lobby.publish_event(session_id, "state", gate_event)
+    return "timeout"
+
+
 def _config_groups() -> dict[str, object]:
     callback_urls = settings.callback_urls()
     return {
@@ -231,11 +291,6 @@ def _config_groups() -> dict[str, object]:
             "project_name": settings.volcengine_memory_project_name,
             "validate_with": "GET /api/validate/memory",
         },
-        "backend_fallback": {
-            "enabled": settings.volcengine_use_backend_fallback,
-            "ragflow_search_url": settings.ragflow_search_url,
-            "validate_with": "POST /api/rtc/sessions/{session_id}/utterances",
-        },
         "revenue_mcp": {
             "enabled": settings.revenue_mcp_enabled,
             "configured": settings.revenue_mcp_ready,
@@ -243,24 +298,41 @@ def _config_groups() -> dict[str, object]:
             "api_health_url": settings.revenue_mcp_api_health_url,
             "validate_with": "GET /api/validate/revenue-mcp",
         },
-        "faq_semantic": {
-            "enabled": True,
-            "validate_with": "GET /api/validate/faq-semantic/benchmark",
-            "usage": "酒店事实问题主候选链，支持口语化语义匹配与未知问题拒答。",
-        },
-        "faq_v2": {
-            "enabled": settings.faq_v2_enabled,
-            "mode": settings.volcengine_faq_v2_mode,
-            "validate_with": "GET /api/validate/faq-v2/benchmark",
-            "usage": "xiaoli-hotel-assistant 的新 FAQ 旁路，默认 shadow，可切 gray/direct。",
-        },
         "fastgpt": {
             "enabled": settings.fastgpt_enabled,
             "configured": settings.fastgpt_ready,
             "base_url": settings.fastgpt_base_url,
             "dataset_id": settings.fastgpt_dataset_id,
+            "dataset_name": settings.fastgpt_dataset_name,
             "validate_with": "GET /api/validate/fastgpt?q=...",
-            "usage": "仅用于 FAQv2 miss 时的严格兜底，不参与 pricing/clarify/handoff。",
+            "usage": "酒店事实问题唯一知识入口。",
+        },
+        "volcengine_native_websearch": {
+            "enabled": settings.volcengine_llm_websearch_enabled,
+            "configured": settings.volcengine_llm_websearch_ready,
+            "function_name": settings.volcengine_llm_websearch_function_name,
+            "validate_with": "GET /api/validate/voice-chat-payload + 外部动态信息走 S2S/LLMConfig",
+            "usage": "火山官方联网问答 Agent / WebSearchAgentConfig，优先用于天气、交通、周边等动态问题。",
+        },
+        "external_search": {
+            "enabled": settings.external_search_enabled,
+            "configured": settings.external_search_enabled,
+            "engine": settings.external_search_engine,
+            "validate_with": "GET /api/validate/external-search?q=天气怎么样",
+            "usage": "后端兜底联网搜索，仅在未启用火山官方联网问答 Agent 时处理外部动态信息。",
+        },
+        "volcengine_native_vision": {
+            "enabled": settings.volcengine_llm_vision_enabled,
+            "configured": settings.volcengine_llm_vision_ready,
+            "camera_enabled": settings.volcengine_enable_camera_vision,
+            "validate_with": "GET /api/validate/voice-chat-payload + RTC 视频采集/发布",
+            "usage": "火山官方视觉理解能力，通过 LLMConfig.VisionConfig 接入；启用摄像头后可供主链直接感知画面。",
+        },
+        "vision": {
+            "enabled": settings.vision_analysis_enabled,
+            "configured": bool(settings.vision_analysis_url),
+            "validate_with": "GET /api/validate/vision-config + POST /api/vision/analyze",
+            "usage": "后端图片分析兜底，仅在未启用火山官方视觉链或上传图片场景下使用。",
         },
         "asr_tts_backup": {
             "configured": settings.asr_tts_ready,
@@ -282,98 +354,13 @@ def _config_groups() -> dict[str, object]:
     }
 
 
-def _faq_to_backend_result(resolved: Any) -> BackendTurnResult:
-    state = "handoff" if resolved.status == "handoff" else "speaking"
-    return BackendTurnResult(
-        status=resolved.status,
-        display_text=resolved.display_text,
-        speak_text=resolved.speak_text,
-        state=state,
-        confidence=resolved.confidence,
-        needs_handoff=resolved.needs_handoff,
-    )
-
-
-def _faq_semantic_to_backend_result(result: dict[str, Any]) -> BackendTurnResult:
-    top_match = result.get("top_match") or {}
-    answer = str(top_match.get("standard_answer") or "").strip()
-    if result.get("accepted") and answer:
-        return BackendTurnResult(
-            status="answered",
-            display_text=answer,
-            speak_text=answer,
-            state="speaking",
-            confidence=float(top_match.get("score") or 1.0),
-            metadata={
-                "source": "faq_semantic",
-                "faq_id": top_match.get("faq_id"),
-                "alias": top_match.get("alias"),
-                "matched_query": top_match.get("matched_query"),
-                "category": top_match.get("category"),
-                "query_category": result.get("query_category"),
-                "query_intent": result.get("query_intent"),
-                "elapsed_ms": result.get("elapsed_ms"),
-            },
-        )
-
-    not_found = "您可以换个更具体的说法，我再帮您查一下。"
-    return BackendTurnResult(
-        status="not_found",
-        display_text=not_found,
-        speak_text=not_found,
-        state="error",
-        confidence=float((top_match.get("score") or 0.0)),
-        metadata={
-            "source": "faq_semantic",
-            "query_category": result.get("query_category"),
-            "query_intent": result.get("query_intent"),
-            "reject_reason": result.get("reject_reason"),
-            "elapsed_ms": result.get("elapsed_ms"),
-        },
-    )
-
-
-def _faq_v2_to_backend_result(result: dict[str, Any]) -> BackendTurnResult:
-    top_match = result.get("top_match") or {}
-    answer = str(result.get("answer") or top_match.get("answer") or "").strip()
-    decision = str(result.get("decision") or "miss")
-    if decision == "direct" and answer:
-        handoff = bool(top_match.get("handoff")) or str(top_match.get("intent") or "") == "handoff"
-        return BackendTurnResult(
-            status="handoff" if handoff else "answered",
-            display_text=answer,
-            speak_text=answer,
-            state="handoff" if handoff else "speaking",
-            confidence=float(result.get("confidence") or top_match.get("score") or 1.0),
-            needs_handoff=handoff,
-            metadata={
-                "source": "faq_v2",
-                "decision": decision,
-                "top_match": top_match,
-                "normalized_query": result.get("normalizedQuery"),
-            },
-        )
-
-    clarify_question = str(result.get("clarifyQuestion") or "请问您是想了解酒店哪一方面的信息？").strip()
-    return BackendTurnResult(
-        status="not_found",
-        display_text=clarify_question,
-        speak_text=clarify_question,
-        state="speaking",
-        confidence=float(result.get("confidence") or top_match.get("score") or 0.0),
-        metadata={
-            "source": "faq_v2",
-            "decision": decision,
-            "top_match": top_match,
-            "normalized_query": result.get("normalizedQuery"),
-        },
-    )
-
-
 def _fastgpt_to_backend_result(result: dict[str, Any]) -> BackendTurnResult:
     answer = str(result.get("answer") or "").strip()
     matched_question = str(result.get("matched_question") or "").strip()
     score = float(result.get("score") or 0.0)
+    route = str(result.get("route") or "").strip()
+    route_label = str(result.get("route_label") or "").strip()
+    dataset_name = str(result.get("dataset_name") or "").strip()
     if result.get("hit") and answer:
         return BackendTurnResult(
             status="answered",
@@ -385,20 +372,145 @@ def _fastgpt_to_backend_result(result: dict[str, Any]) -> BackendTurnResult:
                 "source": "fastgpt",
                 "matched_question": matched_question,
                 "score": score,
+                "route": route,
+                "route_label": route_label,
+                "dataset_name": dataset_name,
+                "quotes": result.get("quotes") or [],
             },
         )
-    not_found = "您可以换个更具体的说法，我再帮您查一下。"
+    not_found = "这个我这边暂时没查到准确信息，您也可以直接联系前台确认一下。"
     return BackendTurnResult(
         status="not_found",
         display_text=not_found,
-        speak_text="",
-        state="listening",
+        speak_text=not_found,
+        state="speaking",
         confidence=score,
         metadata={
             "source": "fastgpt",
             "matched_question": matched_question,
             "score": score,
+            "route": route,
+            "route_label": route_label,
+            "dataset_name": dataset_name,
             "fallback_miss": True,
+        },
+    )
+
+
+def _build_not_found_result(source: str, chain: str = "hotel_fact_chain") -> BackendTurnResult:
+    not_found = "这个我这边暂时没查到准确信息，您也可以直接联系前台确认一下。"
+    return BackendTurnResult(
+        status="not_found",
+        display_text=not_found,
+        speak_text=not_found,
+        state="speaking",
+        metadata={
+            "source": source,
+            "chain": chain,
+            "grounding_source": source,
+            "confidence_band": "low",
+        },
+    )
+
+
+def _attach_chain_metadata(
+    result: BackendTurnResult,
+    chain: str,
+    grounding_source: str,
+    tool_calls: list[str] | None = None,
+    **extra: Any,
+) -> BackendTurnResult:
+    metadata = dict(result.metadata)
+    metadata.setdefault("source", grounding_source)
+    metadata["chain"] = chain
+    metadata["grounding_source"] = grounding_source
+    metadata["tool_calls"] = tool_calls or []
+    metadata["confidence_band"] = (
+        "high" if result.confidence >= 0.85 else "medium" if result.confidence >= 0.6 else "low"
+    )
+    metadata.update(extra)
+    result.metadata = metadata
+    return result
+
+
+async def _resolve_hotel_fact_result(user_text: str) -> BackendTurnResult:
+    if settings.fastgpt_enabled and settings.fastgpt_ready:
+        fastgpt_result = await fastgpt.search(user_text)
+        if fastgpt_result.get("hit"):
+            return _attach_chain_metadata(
+                _fastgpt_to_backend_result(fastgpt_result),
+                "hotel_fact_chain",
+                "fastgpt",
+                ["fastgpt"],
+            )
+
+    result = _build_not_found_result("fastgpt")
+    result.metadata["configured"] = bool(settings.fastgpt_enabled and settings.fastgpt_ready)
+    result.metadata["tool_calls"] = ["fastgpt"] if settings.fastgpt_enabled else []
+    return result
+
+
+def _external_info_to_backend_result(result: dict[str, Any]) -> BackendTurnResult:
+    if result.get("ok") and result.get("answer"):
+        answer = str(result.get("answer") or "").strip()
+        return BackendTurnResult(
+            status="answered",
+            display_text=answer,
+            speak_text=answer,
+            state="external_searching",
+            confidence=0.8 if result.get("results") else 0.45,
+            metadata={
+                "source": "web",
+                "web_sources": result.get("sources") or [],
+                "results": result.get("results") or [],
+            },
+        )
+    answer = "这个问题需要参考外部公开信息，但我暂时没有检索到稳定结果，建议以实际现场信息为准。"
+    return BackendTurnResult(
+        status="not_found",
+        display_text=answer,
+        speak_text=answer,
+        state="external_searching",
+        confidence=0.0,
+        metadata={
+            "source": "web",
+            "web_sources": result.get("sources") or [],
+            "detail": result.get("detail") or "",
+        },
+    )
+
+
+def _vision_to_backend_result(result: dict[str, Any], question: str, needs_fact_resolution: bool) -> BackendTurnResult:
+    if result.get("ok") and not needs_fact_resolution:
+        observed_bits = [
+            str(result.get("scene_summary") or "").strip(),
+            str(result.get("detected_text") or "").strip(),
+        ]
+        answer = "；".join(bit for bit in observed_bits if bit) or "我看到了这张图，但暂时没有提取到稳定的文字或关键物体信息。"
+        return BackendTurnResult(
+            status="answered",
+            display_text=answer,
+            speak_text=answer,
+            state="vision_processing",
+            confidence=float(result.get("confidence") or 0.0),
+            metadata={
+                "source": "vision",
+                "vision_result": result,
+                "question": question,
+            },
+        )
+    answer = "这张图片我暂时还不能稳定判断，尤其涉及酒店规则或业务时，我不能直接猜测。"
+    return BackendTurnResult(
+        status="not_found",
+        display_text=answer,
+        speak_text=answer,
+        state="vision_processing",
+        confidence=float(result.get("confidence") or 0.0),
+        metadata={
+            "source": "vision",
+            "vision_result": result,
+            "question": question,
+            "needs_fact_resolution": needs_fact_resolution,
         },
     )
 
@@ -410,6 +522,10 @@ def _decide_turn_owner(session_id: str, user_text: str) -> dict[str, object]:
             "intent": "faq",
             "confidence": 1.0,
             "reason": "dialog-ai-unconfigured-backend",
+            "chain": "hotel_fact_chain",
+            "requires_grounding": True,
+            "grounding_source": "rule",
+            "allow_freeform_answer": False,
         }
 
     pending_confirmation = lobby.get_pending_confirmation(session_id)
@@ -425,7 +541,53 @@ def _decide_turn_owner(session_id: str, user_text: str) -> dict[str, object]:
             "intent": decision.intent,
             "confidence": decision.confidence,
             "reason": decision.reason,
-            "faq_v2_result": None,
+            "chain": decision.chain,
+            "requires_grounding": decision.requires_grounding,
+            "grounding_source": decision.grounding_source,
+            "allow_freeform_answer": decision.allow_freeform_answer,
+        }
+    if decision.intent in {"vision", "external_info"}:
+        native_llm_chain_active = settings.effective_dialog_path != "unconfigured"
+        if (
+            decision.intent == "external_info"
+            and native_llm_chain_active
+            and settings.volcengine_llm_websearch_ready
+        ):
+            return {
+                "owner": "native",
+                "intent": decision.intent,
+                "confidence": decision.confidence,
+                "reason": "volcengine-native-websearch",
+                "chain": "social_chain",
+                "requires_grounding": True,
+                "grounding_source": "web",
+                "allow_freeform_answer": True,
+            }
+        if (
+            decision.intent == "vision"
+            and native_llm_chain_active
+            and settings.volcengine_llm_vision_ready
+            and settings.volcengine_enable_camera_vision
+        ):
+            return {
+                "owner": "native",
+                "intent": decision.intent,
+                "confidence": decision.confidence,
+                "reason": "volcengine-native-vision",
+                "chain": "vision_chain",
+                "requires_grounding": True,
+                "grounding_source": "vision",
+                "allow_freeform_answer": False,
+            }
+        return {
+            "owner": "backend",
+            "intent": decision.intent,
+            "confidence": decision.confidence,
+            "reason": decision.reason,
+            "chain": decision.chain,
+            "requires_grounding": decision.requires_grounding,
+            "grounding_source": decision.grounding_source,
+            "allow_freeform_answer": decision.allow_freeform_answer,
         }
     if decision.intent == "faq" or looks_like_hotel_faq_request(normalize_text(user_text)):
         return {
@@ -433,35 +595,60 @@ def _decide_turn_owner(session_id: str, user_text: str) -> dict[str, object]:
             "intent": "faq",
             "confidence": max(decision.confidence, 0.8),
             "reason": "hotel-knowledge-fastgpt-priority",
-            "faq_v2_result": None,
+            "chain": "hotel_fact_chain",
+            "requires_grounding": True,
+            "grounding_source": "faq",
+            "allow_freeform_answer": False,
         }
     if settings.pure_s2s_enabled:
         return {
-            "owner": "s2s",
+            "owner": "native",
             "intent": decision.intent,
             "confidence": max(decision.confidence, 0.99),
             "reason": "pure-s2s-test-mode",
-            "faq_v2_result": None,
+            "chain": "social_chain",
+            "requires_grounding": False,
+            "grounding_source": "none",
+            "allow_freeform_answer": True,
         }
-    if decision.owner == "s2s" and settings.effective_dialog_path == "unconfigured" and settings.volcengine_use_backend_fallback:
+    if decision.owner == "native" and settings.effective_dialog_path == "unconfigured" and settings.volcengine_use_backend_fallback:
         return {
             "owner": "backend",
             "intent": decision.intent,
             "confidence": decision.confidence,
             "reason": "dialog-ai-not-ready-fallback",
-            "faq_v2_result": None,
+            "chain": "hotel_fact_chain",
+            "requires_grounding": True,
+            "grounding_source": "rule",
+            "allow_freeform_answer": False,
         }
     return {
         "owner": decision.owner,
         "intent": decision.intent,
         "confidence": decision.confidence,
         "reason": decision.reason,
-        "faq_v2_result": None,
+        "chain": decision.chain,
+        "requires_grounding": decision.requires_grounding,
+        "grounding_source": decision.grounding_source,
+        "allow_freeform_answer": decision.allow_freeform_answer,
     }
 
 
 def _resolve_session_for_payload(payload: Any) -> str | None:
     if isinstance(payload, dict):
+        decoded_subtitle = _decode_subtitle_server_message(payload)
+        if decoded_subtitle:
+            entries = decoded_subtitle.get("data") or []
+            candidate_user_ids = {
+                str(item.get("userId"))
+                for item in entries
+                if isinstance(item, dict) and item.get("userId")
+            }
+            if candidate_user_ids:
+                with state_lock:
+                    for session in lobby.list_sessions():
+                        if session.user_id in candidate_user_ids or session.ai_user_id in candidate_user_ids:
+                            return session.session_id
         direct_keys = (
             payload.get("SessionId"),
             payload.get("session_id"),
@@ -622,6 +809,7 @@ async def _send_voice_chat_command(
 async def _process_turn(
     session_id: str,
     turn_id: int,
+    turn_token: str,
     user_text: str,
     route: dict[str, object],
 ) -> None:
@@ -630,21 +818,23 @@ async def _process_turn(
     should_send_transition = route["intent"] in {"pricing", "pricing_confirm"}
     if should_send_transition:
         transition_delay_ms = max(settings.answer_timeout_ms, 1200)
-    pricing_busy_acquired = False
 
     async def send_transition() -> None:
         await asyncio.sleep(transition_delay_ms / 1000)
         with state_lock:
             if not lobby.mark_transition_sent(session_id, turn_id):
                 return
+            session = lobby.get_session(session_id)
             lobby.publish_event(
                 session_id,
                 "subtitle",
                 {
+                    **_turn_fields(session),
                     "speaker": "ai",
                     "text": settings.transition_text,
                     "turn_id": turn_id,
                     "kind": "transition",
+                    "is_final": False,
                 },
             )
         await _send_voice_chat_command(
@@ -655,42 +845,77 @@ async def _process_turn(
         )
 
     transition_task = asyncio.create_task(send_transition()) if should_send_transition else None
+    interrupt_gate = "not_needed"
     with state_lock:
         pending_confirmation = lobby.get_pending_confirmation(session_id)
+        phase_payload = lobby.mark_turn_phase(session_id, turn_id, "backend_processing")
+        if phase_payload and route["owner"] == "backend":
+            gate_payload = lobby.begin_interrupt_gate(session_id, turn_id, "backend-owned-turn")
+            if gate_payload:
+                lobby.publish_event(session_id, "state", gate_payload)
+                phase_payload = None
+    if route["owner"] == "backend":
+        interrupt_gate = await _wait_for_interrupt_gate(session_id, turn_id, turn_token)
+        if interrupt_gate == "stale":
+            return
+        with state_lock:
+            processing_payload = lobby.mark_turn_phase(session_id, turn_id, "backend_processing")
+            if processing_payload:
+                session = lobby.get_session(session_id)
+                lobby.publish_event(
+                    session_id,
+                    "state",
+                    {
+                        **processing_payload,
+                        "state": "thinking",
+                        "detail": "后端正在生成当前轮答案。",
+                        "interrupt_gate": interrupt_gate,
+                    },
+                )
 
     try:
         if route["intent"] in {"pricing", "pricing_confirm"}:
-            with state_lock:
-                active_pricing_turn = _get_pricing_busy_turn(session_id)
-                if active_pricing_turn and active_pricing_turn != turn_id:
-                    resolved = BackendTurnResult(
-                        status="pricing_preview",
-                        display_text="上一轮收益或调价操作还在处理中，请先等这一轮完成。",
-                        speak_text="上一轮操作还在处理中，请先等这一轮完成。",
-                        state="pricing_preview",
-                        action_state="pricing_preview",
-                        metadata={"source": "pricing-busy-guard", "active_turn_id": active_pricing_turn},
-                    )
-                else:
-                    _mark_pricing_busy(session_id, turn_id)
-                    pricing_busy_acquired = True
-                    resolved = None
-            if resolved is None:
-                resolved = await revenue_mcp.resolve_query(user_text, pending_confirmation)
-        elif route["intent"] == "faq":
-            if settings.fastgpt_enabled and settings.fastgpt_ready:
-                fastgpt_result = await fastgpt.search(user_text)
-                resolved = _fastgpt_to_backend_result(fastgpt_result)
-            else:
-                resolved = BackendTurnResult(
+            resolved = _attach_chain_metadata(
+                await revenue_mcp.resolve_query(session_id, user_text, pending_confirmation),
+                str(route.get("chain") or "hotel_fact_chain"),
+                "mcp",
+                ["revenue_mcp"],
+            )
+        elif route["intent"] == "external_info":
+            resolved = _attach_chain_metadata(
+                _external_info_to_backend_result(await external_search.search(user_text)),
+                "hotel_fact_chain",
+                "web",
+                ["external_search"],
+            )
+        elif route["intent"] == "vision":
+            resolved = _attach_chain_metadata(
+                BackendTurnResult(
                     status="not_found",
-                    display_text="您可以换个更具体的说法，我再帮您查一下。",
-                    speak_text="",
-                    state="listening",
-                    metadata={"source": "fastgpt", "configured": False},
-                )
+                    display_text="如果您希望我看图识别，请先上传或抓拍一张图片，我再帮您分析。",
+                    speak_text="如果您希望我看图识别，请先上传或抓拍一张图片，我再帮您分析。",
+                    state="vision_processing",
+                    confidence=0.0,
+                ),
+                "vision_chain",
+                "vision",
+                ["vision"],
+            )
+        elif route["intent"] == "faq":
+            resolved = await _resolve_hotel_fact_result(user_text)
         else:
-            resolved = _faq_to_backend_result(await ragflow.resolve(user_text))
+            resolved = _attach_chain_metadata(
+                BackendTurnResult(
+                    status="not_found",
+                    display_text="这类内容我先保持闲聊处理，如果您是在问酒店具体信息，可以直接说得更明确一点。",
+                    speak_text="这类内容我先保持闲聊处理，如果您是在问酒店具体信息，可以直接说得更明确一点。",
+                    state="speaking",
+                    confidence=0.0,
+                ),
+                "social_chain",
+                "none",
+                [],
+            )
     except Exception as exc:
         resolved = BackendTurnResult(
             status="error",
@@ -700,9 +925,11 @@ async def _process_turn(
             metadata={"error": str(exc)},
         )
     processing_ms = round((perf_counter() - start_ts) * 1000, 2)
-    if pricing_busy_acquired:
-        with state_lock:
-            _clear_pricing_busy(session_id, turn_id)
+    resolved.metadata.setdefault("turn_token", turn_token)
+    resolved.metadata.setdefault("owner", route["owner"])
+    resolved.metadata.setdefault("final_source", "turn_result")
+    resolved.metadata.setdefault("interrupt_gate", interrupt_gate)
+    resolved.metadata.setdefault("discard_reason", "")
 
     if transition_task and not transition_task.done():
         transition_task.cancel()
@@ -727,20 +954,25 @@ async def _process_turn(
         )
         if turn_state["discarded"]:
             return
+        session = lobby.get_session(session_id)
+        lobby.mark_turn_phase(session_id, turn_id, "completed")
         lobby.publish_event(
             session_id,
             "state",
             {
+                **_turn_fields(session),
                 "state": resolved.state,
                 "detail": resolved.display_text,
                 "turn_id": turn_id,
                 "action_state": resolved.action_state,
+                "interrupt_gate": interrupt_gate,
             },
         )
         lobby.publish_event(
             session_id,
             "turn_result",
             {
+                **_turn_fields(session),
                 "turn_id": turn_id,
                 "status": resolved.status,
                 "display_text": resolved.display_text,
@@ -751,19 +983,38 @@ async def _process_turn(
                 "state": resolved.state,
                 "action_state": resolved.action_state,
                 "metadata": resolved.metadata,
+                "owner": route["owner"],
             },
         )
         lobby.publish_event(
             session_id,
             "subtitle",
             {
+                **_turn_fields(session),
                 "speaker": "ai",
                 "text": resolved.display_text,
                 "turn_id": turn_id,
                 "kind": "final",
+                "is_final": True,
             },
         )
+        lobby.mark_turn_phase(session_id, turn_id, "tts_queued")
     for chunk in chunk_speak_text(resolved.speak_text):
+        with state_lock:
+            speak_payload = lobby.mark_turn_phase(session_id, turn_id, "speaking")
+            if speak_payload:
+                session = lobby.get_session(session_id)
+                lobby.publish_event(
+                    session_id,
+                    "state",
+                    {
+                        **_turn_fields(session),
+                        "state": "speaking",
+                        "detail": resolved.display_text,
+                        "action_state": resolved.action_state,
+                        "interrupt_gate": interrupt_gate,
+                    },
+                )
         await _send_voice_chat_command(
             session_id,
             "ExternalTextToSpeech",
@@ -780,6 +1031,32 @@ async def index(request: Request) -> HTMLResponse:
             "request": request,
             "app_name": settings.app_name,
             "hotel_id": settings.hotel_id,
+        },
+    )
+
+
+@app.get("/stage", response_class=HTMLResponse)
+async def stage(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(
+        "stage.html",
+        {
+            "request": request,
+            "app_name": settings.app_name,
+            "hotel_id": settings.hotel_id,
+            "embed_mode": False,
+        },
+    )
+
+
+@app.get("/stage-panel", response_class=HTMLResponse)
+async def stage_panel(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(
+        "stage.html",
+        {
+            "request": request,
+            "app_name": settings.app_name,
+            "hotel_id": settings.hotel_id,
+            "embed_mode": True,
         },
     )
 
@@ -897,23 +1174,6 @@ async def validate_voicechat_latency() -> dict[str, object]:
     }
 
 
-@app.get("/api/validate/ragflow")
-async def validate_ragflow() -> dict[str, object]:
-    if not settings.ragflow_search_url:
-        return {
-            "ok": False,
-            "configured": False,
-            "detail": "未配置 RAGFLOW_SEARCH_URL。",
-        }
-    resolved = await ragflow._resolve_remote("酒店在什么位置")
-    return {
-        "ok": resolved is not None,
-        "configured": True,
-        "resolved": resolved is not None,
-        "sample_answer": resolved.display_text if resolved else "",
-    }
-
-
 @app.get("/api/validate/memory")
 async def validate_memory() -> dict[str, object]:
     if not settings.memory_api_ready:
@@ -958,47 +1218,32 @@ async def validate_revenue_mcp_tool(tool_name: str) -> dict[str, object]:
     return await revenue_mcp.validate_tool(tool_name)
 
 
-@app.get("/api/validate/faq-semantic/query")
-async def validate_faq_semantic_query(q: str, limit: int = 5) -> dict[str, object]:
-    return {
-        "ok": True,
-        "source": "local-faq-semantic-experiment",
-        **faq_semantic.query(q, limit=limit),
-    }
-
-
-@app.get("/api/validate/faq-semantic/benchmark")
-async def validate_faq_semantic_benchmark() -> dict[str, object]:
-    return {
-        "ok": True,
-        "source": "local-faq-semantic-experiment",
-        **faq_semantic.benchmark(),
-    }
-
-
-@app.get("/api/validate/faq-v2/query")
-async def validate_faq_v2_query(q: str, limit: int = 5) -> dict[str, object]:
-    return {
-        "ok": True,
-        "source": "faq-v2-sidecar",
-        **faq_v2.query(q, limit=limit),
-    }
-
-
-@app.get("/api/validate/faq-v2/benchmark")
-async def validate_faq_v2_benchmark() -> dict[str, object]:
-    return {
-        "ok": True,
-        "source": "faq-v2-sidecar",
-        **faq_v2.benchmark(),
-    }
-
-
 @app.get("/api/validate/fastgpt")
 async def validate_fastgpt(q: str) -> dict[str, object]:
     return {
         "source": "fastgpt-service",
         **await fastgpt.validate(q),
+    }
+
+
+@app.get("/api/validate/external-search")
+async def validate_external_search(q: str) -> dict[str, object]:
+    return {
+        "source": "external-search",
+        "native_websearch_enabled": settings.volcengine_llm_websearch_ready,
+        **await external_search.search(q),
+    }
+
+
+@app.get("/api/validate/vision-config")
+async def validate_vision_config() -> dict[str, object]:
+    return {
+        "ok": True,
+        "enabled": settings.vision_analysis_enabled,
+        "configured": bool(settings.vision_analysis_url),
+        "timeout_seconds": settings.vision_analysis_timeout_seconds,
+        "native_vision_enabled": settings.volcengine_llm_vision_ready,
+        "camera_vision_enabled": settings.volcengine_enable_camera_vision,
     }
 
 
@@ -1081,6 +1326,9 @@ async def bootstrap(request: BootstrapRequest) -> dict[str, object]:
             "greeting_text": settings.greeting_text,
             "transition_text": settings.transition_text,
             "callback_urls": settings.callback_urls(),
+            "native_websearch_enabled": settings.volcengine_llm_websearch_ready,
+            "native_vision_enabled": settings.volcengine_llm_vision_ready,
+            "camera_vision_enabled": settings.volcengine_enable_camera_vision,
         },
         "pricing": {
             "revenue_mcp_enabled": settings.revenue_mcp_enabled,
@@ -1139,16 +1387,29 @@ async def rtc_agent_command_ack(
 ) -> dict[str, object]:
     try:
         with state_lock:
-            lobby.get_session(session_id)
+            session = lobby.get_session(session_id)
+            applies_to_current_turn = False
+            if request.command == "interrupt" and request.ok:
+                ack_payload = lobby.mark_interrupt_ack(
+                    session_id,
+                    turn_id=request.turn_id,
+                    turn_token=request.turn_token,
+                )
+                if ack_payload:
+                    applies_to_current_turn = True
+                    lobby.publish_event(session_id, "state", ack_payload)
             lobby.publish_event(
                 session_id,
                 "callback",
                 {
+                    **_turn_fields(session),
                     "callback_type": "agent_command_ack",
                     "command": request.command,
                     "ok": request.ok,
                     "detail": request.detail,
                     "turn_id": request.turn_id,
+                    "turn_token": request.turn_token,
+                    "applies_to_current_turn": applies_to_current_turn,
                 },
             )
     except KeyError as exc:
@@ -1240,7 +1501,10 @@ async def rtc_utterance(session_id: str, request: QueryRequest) -> dict[str, obj
                     "intent": "faq",
                     "confidence": max(float(route.get("confidence") or 0.0), 0.8),
                     "reason": "hotel-faq-fastgpt-entry-priority",
-                    "faq_v2_result": None,
+                    "chain": "hotel_fact_chain",
+                    "requires_grounding": True,
+                    "grounding_source": "faq",
+                    "allow_freeform_answer": False,
                 }
             turn = lobby.start_turn_with_owner(
                 session_id,
@@ -1248,29 +1512,40 @@ async def rtc_utterance(session_id: str, request: QueryRequest) -> dict[str, obj
                 route["owner"],
                 route["reason"],
                 route["intent"],
+                str(route.get("chain") or "hotel_fact_chain"),
             )
+            session = lobby.get_session(session_id)
             lobby.publish_event(
                 session_id,
                 "subtitle",
                 {
+                    **_turn_fields(session),
                     "speaker": "user",
                     "text": request.user_text,
                     "turn_id": turn.turn_id,
                     "kind": request.source,
+                    "is_final": request.source in {"manual", "stage-chip", "manual-chip", "external", "rtc-paragraph", "rtc-paragraph-preempted"},
                 },
             )
             if route["owner"] == "backend":
+                interrupt_payload = lobby.mark_turn_phase(session_id, turn.turn_id, "interrupting")
                 lobby.publish_event(
                     session_id,
                     "state",
                     {
+                        **(interrupt_payload or _turn_fields(session)),
                         "state": "thinking",
                         "detail": (
                             "本轮问题已切到后端收益链。"
                             if route["intent"] in {"pricing", "pricing_confirm"}
-                            else "本轮问题已切到后端知识/规则链。"
+                            else (
+                                "本轮问题已切到后端视觉识别链。"
+                                if route.get("chain") == "vision_chain"
+                                else "本轮问题已切到后端知识/规则链。"
+                            )
                         ),
                         "turn_id": turn.turn_id,
+                        "interrupt_gate": "interrupting",
                     },
                 )
                 if request.source != "rtc-paragraph-preempted":
@@ -1288,8 +1563,9 @@ async def rtc_utterance(session_id: str, request: QueryRequest) -> dict[str, obj
                     session_id,
                     "state",
                     {
+                        **_turn_fields(session),
                         "state": "listening",
-                        "detail": "本轮问题保持在 S2S 主链。",
+                        "detail": "本轮问题保持在火山原生 VoiceChat 主链。",
                         "turn_id": turn.turn_id,
                     },
                 )
@@ -1297,13 +1573,16 @@ async def rtc_utterance(session_id: str, request: QueryRequest) -> dict[str, obj
         raise HTTPException(status_code=404, detail="RTC session not found") from exc
 
     if route["owner"] == "backend":
-        asyncio.create_task(_process_turn(session_id, turn.turn_id, request.user_text, route))
+        asyncio.create_task(_process_turn(session_id, turn.turn_id, turn.turn_token, request.user_text, route))
     return {
         "session_id": session_id,
         "turn_id": turn.turn_id,
+        "turn_token": turn.turn_token,
         "accepted": True,
         "owner": route["owner"],
         "intent": route["intent"],
+        "chain": route.get("chain"),
+        "phase": turn.phase,
         "route_reason": route["reason"],
         "confidence": route["confidence"],
         "processing_ms": round((perf_counter() - started) * 1000, 2),
@@ -1312,14 +1591,142 @@ async def rtc_utterance(session_id: str, request: QueryRequest) -> dict[str, obj
     }
 
 
+@app.post("/api/vision/analyze", response_model=VisionAnalyzeResponse)
+async def analyze_vision(
+    file: UploadFile = File(...),
+    question: str = Form(""),
+) -> VisionAnalyzeResponse:
+    content = await file.read()
+    result = await vision.analyze(
+        content=content,
+        filename=file.filename or "vision-upload",
+        content_type=file.content_type or "application/octet-stream",
+        question=question,
+    )
+    return VisionAnalyzeResponse(**{key: result.get(key) for key in VisionAnalyzeResponse.model_fields})
+
+
+@app.post("/api/rtc/sessions/{session_id}/vision-turn")
+async def rtc_vision_turn(
+    session_id: str,
+    file: UploadFile = File(...),
+    question: str = Form(""),
+) -> dict[str, object]:
+    started = perf_counter()
+    try:
+        with state_lock:
+            lobby.get_session(session_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="RTC session not found") from exc
+
+    content = await file.read()
+    vision_result = await vision.analyze(
+        content=content,
+        filename=file.filename or "vision-upload",
+        content_type=file.content_type or "application/octet-stream",
+        question=question,
+    )
+    normalized_question = normalize_text(question)
+    needs_fact_resolution = vision_requires_hotel_facts(normalized_question)
+    vision_ready_for_fact = bool(vision_result.get("ok")) and float(vision_result.get("confidence") or 0.0) >= 0.35
+    if needs_fact_resolution and vision_ready_for_fact:
+        observed_context = " ".join(
+            part
+            for part in [
+                str(vision_result.get("scene_summary") or "").strip(),
+                str(vision_result.get("detected_text") or "").strip(),
+            ]
+            if part
+        ).strip()
+        fact_query = question if not observed_context else f"{question} 图片内容：{observed_context}"
+        resolved = await _resolve_hotel_fact_result(fact_query)
+        resolved = _attach_chain_metadata(
+            resolved,
+            "vision_chain",
+            "vision",
+            ["vision", "hotel_fact_chain"],
+            vision_result=vision_result,
+        )
+    else:
+        resolved = _attach_chain_metadata(
+            _vision_to_backend_result(vision_result, question, needs_fact_resolution),
+            "vision_chain",
+            "vision",
+            ["vision"],
+            vision_result=vision_result,
+        )
+
+    for chunk in chunk_speak_text(resolved.speak_text):
+        await _send_voice_chat_command(
+            session_id,
+            "ExternalTextToSpeech",
+            chunk,
+            1,
+        )
+    return {
+        "session_id": session_id,
+        "accepted": True,
+        "question": question,
+        "chain": "vision_chain",
+        "owner": "backend",
+        "needs_fact_resolution": needs_fact_resolution,
+        "vision_result": vision_result,
+        "result": {
+            "status": resolved.status,
+            "display_text": resolved.display_text,
+            "speak_text": resolved.speak_text,
+            "metadata": resolved.metadata,
+        },
+        "processing_ms": round((perf_counter() - started) * 1000, 2),
+    }
+
+
 @app.post("/api/volcengine/callbacks/subtitles")
 async def volcengine_subtitle_callback(request: Request) -> dict[str, object]:
     payload = await request.json()
+    decoded_subtitle = _decode_subtitle_server_message(payload)
+    if decoded_subtitle:
+        payload = {
+            **payload,
+            "decoded_subtitle": decoded_subtitle,
+        }
     _record_global_voicechat_callback("subtitles", payload)
     session_id = _resolve_session_for_payload(payload)
     if session_id:
         with state_lock:
-            lobby.record_callback(session_id, "subtitles", payload)
+            session = lobby.get_session(session_id)
+            subtitle_event_payload = decoded_subtitle or payload
+            matches, turn_id, turn_token = _event_matches_current_turn(subtitle_event_payload, session)
+            lobby.record_callback(
+                session_id,
+                "subtitles",
+                payload,
+                applies_to_current_turn=matches,
+                turn_id=turn_id,
+                turn_token=turn_token,
+            )
+            if decoded_subtitle:
+                for item in decoded_subtitle.get("data") or []:
+                    if not isinstance(item, dict):
+                        continue
+                    speaker = "user"
+                    user_id = str(item.get("userId") or "")
+                    if user_id == session.ai_user_id:
+                        speaker = "ai"
+                    lobby.publish_event(
+                        session_id,
+                        "subtitle",
+                        {
+                            **_turn_fields(session),
+                            "speaker": speaker,
+                            "text": str(item.get("text") or ""),
+                            "kind": "final" if item.get("definite") else "partial",
+                            "is_final": bool(item.get("definite")),
+                            "sequence": item.get("sequence"),
+                            "round_id": item.get("roundId"),
+                            "source": "server-subtitle-callback",
+                        },
+                    )
     return {"ok": True}
 
 
@@ -1330,7 +1737,16 @@ async def volcengine_state_callback(request: Request) -> dict[str, object]:
     session_id = _resolve_session_for_payload(payload)
     if session_id:
         with state_lock:
-            lobby.record_callback(session_id, "state", payload)
+            session = lobby.get_session(session_id)
+            matches, turn_id, turn_token = _event_matches_current_turn(payload, session)
+            lobby.record_callback(
+                session_id,
+                "state",
+                payload,
+                applies_to_current_turn=matches,
+                turn_id=turn_id,
+                turn_token=turn_token,
+            )
     return {"ok": True}
 
 
@@ -1341,7 +1757,16 @@ async def volcengine_task_callback(request: Request) -> dict[str, object]:
     session_id = _resolve_session_for_payload(payload)
     if session_id:
         with state_lock:
-            lobby.record_callback(session_id, "task", payload)
+            session = lobby.get_session(session_id)
+            matches, turn_id, turn_token = _event_matches_current_turn(payload, session)
+            lobby.record_callback(
+                session_id,
+                "task",
+                payload,
+                applies_to_current_turn=matches,
+                turn_id=turn_id,
+                turn_token=turn_token,
+            )
     return {"ok": True}
 
 
@@ -1352,7 +1777,16 @@ async def volcengine_voicechat_callback(request: Request) -> dict[str, object]:
     session_id = _resolve_session_for_payload(payload)
     if session_id:
         with state_lock:
-            lobby.record_callback(session_id, "voicechat", payload)
+            session = lobby.get_session(session_id)
+            matches, turn_id, turn_token = _event_matches_current_turn(payload, session)
+            lobby.record_callback(
+                session_id,
+                "voicechat",
+                payload,
+                applies_to_current_turn=matches,
+                turn_id=turn_id,
+                turn_token=turn_token,
+            )
     return {"ok": True}
 
 
