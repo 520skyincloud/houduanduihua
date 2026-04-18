@@ -103,8 +103,15 @@ class Settings(BaseModel):
         os.getenv("EXTERNAL_SEARCH_ENABLED"), True
     )
     external_search_engine: str = os.getenv(
-        "EXTERNAL_SEARCH_ENGINE", "duckduckgo"
+        "EXTERNAL_SEARCH_ENGINE", "aliyun"
     ).strip().lower()
+    external_search_aliyun_base_url: str = os.getenv(
+        "EXTERNAL_SEARCH_ALIYUN_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    ).strip().rstrip("/")
+    external_search_aliyun_api_key: Optional[str] = os.getenv("EXTERNAL_SEARCH_ALIYUN_API_KEY")
+    external_search_aliyun_model: str = os.getenv(
+        "EXTERNAL_SEARCH_ALIYUN_MODEL", "qwen-plus"
+    ).strip()
     external_search_timeout_seconds: float = float(
         os.getenv("EXTERNAL_SEARCH_TIMEOUT_SECONDS", "8")
     )
@@ -114,10 +121,20 @@ class Settings(BaseModel):
     vision_analysis_enabled: bool = _parse_bool(
         os.getenv("VISION_ANALYSIS_ENABLED"), False
     )
+    vision_analysis_provider: str = os.getenv(
+        "VISION_ANALYSIS_PROVIDER", "custom"
+    ).strip().lower()
     vision_analysis_url: Optional[str] = _trim_trailing_slash(
         os.getenv("VISION_ANALYSIS_URL")
     )
     vision_analysis_api_key: Optional[str] = os.getenv("VISION_ANALYSIS_API_KEY")
+    vision_analysis_model: Optional[str] = os.getenv("VISION_ANALYSIS_MODEL")
+    vision_analysis_base_url: Optional[str] = _trim_trailing_slash(
+        os.getenv("VISION_ANALYSIS_BASE_URL")
+    )
+    vision_analysis_max_tokens: int = int(
+        os.getenv("VISION_ANALYSIS_MAX_TOKENS", "600")
+    )
     vision_analysis_timeout_seconds: float = float(
         os.getenv("VISION_ANALYSIS_TIMEOUT_SECONDS", "15")
     )
@@ -436,6 +453,27 @@ class Settings(BaseModel):
     @property
     def revenue_mcp_ready(self) -> bool:
         return self.revenue_mcp_enabled and bool(self.revenue_mcp_sse_url)
+
+    @property
+    def external_search_ready(self) -> bool:
+        if not self.external_search_enabled:
+            return False
+        return bool(
+            self.external_search_engine == "aliyun"
+            and self.external_search_aliyun_base_url
+            and self.external_search_aliyun_api_key
+            and self.external_search_aliyun_model
+        )
+
+    @property
+    def vision_analysis_ready(self) -> bool:
+        if not self.vision_analysis_enabled:
+            return False
+        if self.vision_analysis_provider == "custom":
+            return bool(self.vision_analysis_url)
+        if self.vision_analysis_provider == "openai_compatible":
+            return bool(self.vision_analysis_base_url and self.vision_analysis_model and self.vision_analysis_api_key)
+        return False
 
     @property
     def s2s_ready(self) -> bool:

@@ -1,54 +1,117 @@
 from __future__ import annotations
 
-import html
+from datetime import datetime
 import re
 from typing import Any
-from urllib.parse import quote
+from zoneinfo import ZoneInfo
 
 import httpx
 
 from app.config import settings
 
 
+LOCAL_TIME_KEYWORDS = [
+    "今天几号",
+    "几月几号",
+    "几月几日",
+    "星期几",
+    "礼拜几",
+    "周几",
+    "现在几点",
+    "现在时间",
+    "日期",
+    "年份",
+    "哪一年",
+    "什么年份",
+]
+
+
 class ExternalSearchFacade:
     async def search(self, query: str) -> dict[str, Any]:
         if not settings.external_search_enabled:
-            return {
-                "ok": False,
-                "configured": False,
-                "answer": "",
-                "results": [],
-                "sources": [],
-                "detail": "未启用外部动态信息搜索。",
-            }
+            return self._disabled("未启用外部动态信息搜索。")
+        if settings.external_search_engine != "aliyun":
+            return self._disabled(f"暂不支持的搜索引擎：{settings.external_search_engine}")
+        if self._looks_like_local_time_query(query):
+            return self._local_time_answer(query)
+        return await self._aliyun_search(query)
 
-        if settings.external_search_engine != "duckduckgo":
-            return {
-                "ok": False,
-                "configured": False,
-                "answer": "",
-                "results": [],
-                "sources": [],
-                "detail": f"暂不支持的搜索引擎：{settings.external_search_engine}",
-            }
+    @staticmethod
+    def _disabled(detail: str) -> dict[str, Any]:
+        return {
+            "ok": False,
+            "configured": False,
+            "answer": "",
+            "results": [],
+            "sources": [],
+            "detail": detail,
+        }
 
-        return await self._duckduckgo_search(query)
+    @staticmethod
+    def _looks_like_local_time_query(query: str) -> bool:
+        normalized = re.sub(r"\s+", "", str(query or "")).lower()
+        return any(keyword in normalized for keyword in LOCAL_TIME_KEYWORDS)
 
-    async def _duckduckgo_search(self, query: str) -> dict[str, Any]:
-        url = f"https://duckduckgo.com/html/?q={quote(query)}"
-        try:
-            async with httpx.AsyncClient(
-                timeout=settings.external_search_timeout_seconds,
-                follow_redirects=True,
-                headers={
-                    "User-Agent": (
-                        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-                    )
+    @staticmethod
+    def _local_time_answer(query: str) -> dict[str, Any]:
+        now = datetime.now(ZoneInfo("Asia/Shanghai"))
+        normalized = re.sub(r"\s+", "", str(query or "")).lower()
+        weekday_map = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
+
+        if any(token in normalized for token in ["现在几点", "现在时间"]):
+            answer = f"现在是北京时间{now.hour}点{now.minute:02d}分。以上为当前本地时间信息，仅供参考。"
+        elif any(token in normalized for token in ["星期几", "礼拜几", "周几"]):
+            answer = f"今天是{weekday_map[now.weekday()]}。以上为当前本地日期信息，仅供参考。"
+        elif any(token in normalized for token in ["年份", "哪一年", "什么年份"]):
+            answer = f"现在是{now.year}年。以上为当前本地日期信息，仅供参考。"
+        else:
+            answer = f"今天是{now.year}年{now.month}月{now.day}日，{weekday_map[now.weekday()]}。以上为当前本地日期信息，仅供参考。"
+
+        return {
+            "ok": True,
+            "configured": True,
+            "answer": answer,
+            "results": [],
+            "sources": [],
+            "detail": "",
+            "raw": {"source": "local_time"},
+        }
+
+    async def _aliyun_search(self, query: str) -> dict[str, Any]:
+        if not settings.external_search_ready:
+            return self._disabled("未完整配置阿里云官方联网搜索。")
+
+        payload = {
+            "model": settings.external_search_aliyun_model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "你是酒店数字人的联网搜索助手。请基于联网搜索结果，用中文给出适合直接播报的自然口语答案。"
+                        "要求：1）只回答外部动态公开信息；2）先说结论，再补一句提醒；"
+                        "3）必须明确这是外部公开信息，仅供参考；4）控制在两句话内；"
+                        "5）不要输出项目符号、编号、链接。"
+                    ),
                 },
-            ) as client:
-                response = await client.get(url)
+                {
+                    "role": "user",
+                    "content": query,
+                },
+            ],
+            "temperature": 0.2,
+            "max_tokens": 220,
+            "extra_body": {"enable_search": True},
+        }
+        headers = {
+            "Authorization": f"Bearer {settings.external_search_aliyun_api_key}",
+            "Content-Type": "application/json",
+        }
+        endpoint = f"{settings.external_search_aliyun_base_url}/chat/completions"
+        try:
+            async with httpx.AsyncClient(timeout=settings.external_search_timeout_seconds) as client:
+                response = await client.post(endpoint, headers=headers, json=payload)
                 response.raise_for_status()
+                raw = response.json()
         except Exception as exc:
             return {
                 "ok": False,
@@ -56,48 +119,38 @@ class ExternalSearchFacade:
                 "answer": "",
                 "results": [],
                 "sources": [],
-                "detail": f"外部搜索失败：{exc}",
+                "detail": f"阿里云联网搜索失败：{exc}",
             }
 
-        results = self._parse_results(response.text)[: settings.external_search_max_results]
-        sources = [item["url"] for item in results if item.get("url")]
-        answer = self._format_answer(query, results)
+        message = raw.get("choices", [{}])[0].get("message", {})
+        answer = self._extract_text(message.get("content", ""))
+        answer = self._normalize_answer(answer)
         return {
-            "ok": bool(results),
+            "ok": bool(answer),
             "configured": True,
             "answer": answer,
-            "results": results,
-            "sources": sources,
-            "detail": "" if results else "未检索到足够的外部公开信息。",
+            "results": [],
+            "sources": [],
+            "detail": "" if answer else "阿里云联网搜索未返回可用答案。",
+            "raw": raw,
         }
 
-    def _parse_results(self, raw_html: str) -> list[dict[str, str]]:
-        pattern = re.compile(
-            r'<a rel="nofollow" class="result__a" href="(?P<url>[^"]+)">(?P<title>.*?)</a>.*?'
-            r'<a class="result__snippet" href="[^"]+">(?P<snippet>.*?)</a>',
-            re.S,
-        )
-        results: list[dict[str, str]] = []
-        for match in pattern.finditer(raw_html):
-            title = self._clean_html(match.group("title"))
-            snippet = self._clean_html(match.group("snippet"))
-            url = html.unescape(match.group("url"))
-            if not title or not url:
-                continue
-            results.append({"title": title, "snippet": snippet, "url": url})
-        return results
+    @staticmethod
+    def _extract_text(content: Any) -> str:
+        if isinstance(content, list):
+            text = "".join(
+                str(item.get("text") or "")
+                for item in content
+                if isinstance(item, dict)
+            )
+            return text.strip()
+        return str(content or "").strip()
 
     @staticmethod
-    def _clean_html(value: str) -> str:
-        cleaned = re.sub(r"<.*?>", "", value)
-        cleaned = html.unescape(cleaned)
-        return re.sub(r"\s+", " ", cleaned).strip()
-
-    @staticmethod
-    def _format_answer(query: str, results: list[dict[str, str]]) -> str:
-        if not results:
-            return "这个问题需要依赖外部公开信息，但我暂时没有检索到稳定结果，建议以实际现场信息为准。"
-        top = results[0]
-        snippet = top.get("snippet") or top.get("title") or ""
-        snippet = snippet[:120].rstrip("，。； ")
-        return f"根据外部公开信息，{snippet}。如有变动，请以现场实际情况为准。"
+    def _normalize_answer(answer: str) -> str:
+        text = re.sub(r"\s+", " ", answer or "").strip().strip('"')
+        if not text:
+            return ""
+        if "仅供参考" not in text:
+            text = f"{text} 以上为外部公开信息，仅供参考。"
+        return text[:220]

@@ -135,6 +135,55 @@ const HARD_BACKEND_PREEMPT_KEYWORDS = [
   "前台",
 ];
 
+const VISION_CAPTURE_KEYWORDS = [
+  "看看",
+  "看下",
+  "看一下",
+  "看得见我吗",
+  "看见我吗",
+  "能看见我吗",
+  "看得到我吗",
+  "看到我吗",
+  "能看到我吗",
+  "识别",
+  "图片",
+  "照片",
+  "截图",
+  "图上",
+  "图里",
+  "手上拿的",
+  "这是什么",
+  "写了什么",
+  "看到了什么",
+  "画面里",
+  "摄像头",
+];
+
+const EXTERNAL_INFO_PREEMPT_KEYWORDS = [
+  "天气",
+  "下雨",
+  "气温",
+  "温度",
+  "空气质量",
+  "新闻",
+  "路况",
+  "实时路况",
+  "多少号",
+  "今天几号",
+  "几号",
+  "几月几号",
+  "几月几日",
+  "星期几",
+  "礼拜几",
+  "周几",
+  "现在几点",
+  "现在时间",
+  "日期",
+  "年份",
+  "哪一年",
+  "什么年份",
+];
+
 const INTERRUPT_PRIORITY = {
   NONE: 0,
   HIGH: 1,
@@ -448,6 +497,16 @@ function pureS2SEnabled() {
   return Boolean(state.bootstrap?.voice_chat?.pure_s2s_enabled);
 }
 
+function backendVisionEnabled() {
+  return Boolean(state.bootstrap?.voice_chat?.backend_vision_enabled);
+}
+
+function looksLikeVisionCaptureRequest(text) {
+  const normalized = normalizeRouteText(text);
+  if (!normalized) return false;
+  return VISION_CAPTURE_KEYWORDS.some((keyword) => normalized.includes(normalizeRouteText(keyword)));
+}
+
 function matchesPricingPreempt(normalized) {
   const stripped = PRICING_FILLER_WORDS.reduce((acc, filler) => acc.replaceAll(filler, ""), normalized);
   if (EXACT_PRICING_COMMANDS.includes(stripped)) {
@@ -483,6 +542,12 @@ function shouldPreemptToBackend(text) {
     matchesPricingPreempt(normalized)
   ) {
     return { hit: true, reason: "pricing-keyword-hit" };
+  }
+  if (looksLikeVisionCaptureRequest(text)) {
+    return { hit: true, reason: "vision-keyword-hit" };
+  }
+  if (EXTERNAL_INFO_PREEMPT_KEYWORDS.some((keyword) => normalized.includes(normalizeRouteText(keyword)))) {
+    return { hit: true, reason: "external-info-keyword-hit" };
   }
   if (
     HARD_BACKEND_PREEMPT_KEYWORDS.some((keyword) => normalized.includes(keyword)) ||
@@ -618,6 +683,61 @@ async function postJson(url, payload = {}) {
     throw new Error(`${response.status}: ${text}`);
   }
   return response.json();
+}
+
+async function postForm(url, formData) {
+  const response = await fetch(url, {
+    method: "POST",
+    body: formData,
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`${response.status}: ${text}`);
+  }
+  return response.json();
+}
+
+async function captureCameraFrameFile() {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    throw new Error("当前浏览器不支持摄像头图像采集。");
+  }
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: false,
+    video: {
+      facingMode: "user",
+      width: { ideal: 1280 },
+      height: { ideal: 720 },
+    },
+  });
+  const video = document.createElement("video");
+  video.playsInline = true;
+  video.muted = true;
+  video.srcObject = stream;
+  try {
+    await new Promise((resolve, reject) => {
+      video.onloadedmetadata = () => resolve();
+      video.onerror = () => reject(new Error("摄像头画面初始化失败。"));
+    });
+    await video.play().catch(() => {});
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+    const width = video.videoWidth || 1280;
+    const height = video.videoHeight || 720;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("摄像头画面渲染上下文不可用。");
+    }
+    context.drawImage(video, 0, 0, width, height);
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob((value) => (value ? resolve(value) : reject(new Error("摄像头图像导出失败。"))), "image/jpeg", 0.9);
+    });
+    return new File([blob], "camera-frame.jpg", { type: "image/jpeg" });
+  } finally {
+    stream.getTracks().forEach((track) => track.stop());
+    video.srcObject = null;
+  }
 }
 
 async function loadBootstrap() {
@@ -877,6 +997,38 @@ async function sendTextToAgent(text) {
     message: text,
     interrupt_mode: INTERRUPT_PRIORITY.HIGH,
   });
+}
+
+async function submitVisionTurn(question, source = "manual") {
+  dom.userSubtitleText.textContent = question;
+  clearLiveTranscript();
+  setStatus("Thinking", "正在抓取摄像头当前画面并交给视觉链分析。");
+  if (canSendInterrupt()) {
+    await postJson(`/api/rtc/sessions/${state.sessionId}/interrupt`, {
+      reason: "vision-camera-frame",
+    }).catch(() => {});
+  }
+  const frame = await captureCameraFrameFile();
+  const form = new FormData();
+  form.append("file", frame, frame.name);
+  form.append("question", question);
+  const payload = await postForm(`/api/rtc/sessions/${state.sessionId}/vision-turn`, form);
+  state.currentOwner = "backend";
+  state.activeTurnOwner = "backend";
+  state.liveAiComposite = "";
+  clearLiveTranscript();
+  const spokenText = String(payload?.result?.speak_text || payload?.result?.display_text || "").trim();
+  if (spokenText) {
+    dom.aiSubtitleText.textContent = spokenText;
+    dom.speakText.textContent = spokenText;
+  }
+  setMetric(`链路耗时：vision ${payload.processing_ms} ms`);
+  setStatus(
+    "Speaking",
+    payload?.needs_fact_resolution ? "已完成看图并补充酒店事实判断。" : "已完成摄像头画面识别。",
+    spokenText || dom.speakText.textContent
+  );
+  return payload;
 }
 
 function mapBriefCode(code) {
@@ -1148,6 +1300,16 @@ async function submitTurn(userText, source = "manual") {
   }
   const requestId = ++state.activeRequestId;
   dom.userSubtitleText.textContent = userText;
+  if (backendVisionEnabled() && looksLikeVisionCaptureRequest(userText)) {
+    try {
+      await submitVisionTurn(userText, source);
+    } catch (error) {
+      if (requestId === state.activeRequestId) {
+        setStatus("Error", "视觉识别失败。", String(error));
+      }
+    }
+    return;
+  }
   setStatus("Listening", `正在判断本轮由 S2S 还是后端接管：${userText}`, dom.speakText.textContent);
   try {
     const payload = await postJson(`/api/rtc/sessions/${state.sessionId}/utterances`, {

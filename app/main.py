@@ -33,6 +33,7 @@ from app.services.search import (
     chunk_speak_text,
     decide_turn_route,
     looks_like_hotel_faq_request,
+    looks_like_local_time_request,
     normalize_text,
     vision_requires_hotel_facts,
 )
@@ -316,10 +317,10 @@ def _config_groups() -> dict[str, object]:
         },
         "external_search": {
             "enabled": settings.external_search_enabled,
-            "configured": settings.external_search_enabled,
+            "configured": settings.external_search_ready,
             "engine": settings.external_search_engine,
             "validate_with": "GET /api/validate/external-search?q=天气怎么样",
-            "usage": "后端兜底联网搜索，仅在未启用火山官方联网问答 Agent 时处理外部动态信息。",
+            "usage": "后端联网搜索能力，当前接入阿里云官方联网搜索（qwen-plus + enable_search=true），用于天气、新闻、空气质量等动态外部信息。",
         },
         "volcengine_native_vision": {
             "enabled": settings.volcengine_llm_vision_enabled,
@@ -330,9 +331,9 @@ def _config_groups() -> dict[str, object]:
         },
         "vision": {
             "enabled": settings.vision_analysis_enabled,
-            "configured": bool(settings.vision_analysis_url),
+            "configured": settings.vision_analysis_ready,
             "validate_with": "GET /api/validate/vision-config + POST /api/vision/analyze",
-            "usage": "后端图片分析兜底，仅在未启用火山官方视觉链或上传图片场景下使用。",
+            "usage": "后端视觉理解能力，支持 OpenAI 兼容多模态模型与自定义视觉接口，仅在未启用火山官方视觉链或上传图片场景下使用。",
         },
         "asr_tts_backup": {
             "configured": settings.asr_tts_ready,
@@ -482,11 +483,13 @@ def _external_info_to_backend_result(result: dict[str, Any]) -> BackendTurnResul
 
 def _vision_to_backend_result(result: dict[str, Any], question: str, needs_fact_resolution: bool) -> BackendTurnResult:
     if result.get("ok") and not needs_fact_resolution:
-        observed_bits = [
-            str(result.get("scene_summary") or "").strip(),
-            str(result.get("detected_text") or "").strip(),
-        ]
-        answer = "；".join(bit for bit in observed_bits if bit) or "我看到了这张图，但暂时没有提取到稳定的文字或关键物体信息。"
+        scene_summary = str(result.get("scene_summary") or "").strip()
+        detected_text = str(result.get("detected_text") or "").strip()
+        normalized_question = normalize_text(question)
+        wants_text_detail = any(token in normalized_question for token in ("写了什么", "文字", "文本", "内容"))
+        answer = scene_summary or "我看到了这张图，但暂时没有提取到稳定的画面信息。"
+        if wants_text_detail and detected_text:
+            answer = f"{answer} 画面里还能看到这些文字：{detected_text}。"
         return BackendTurnResult(
             status="answered",
             display_text=answer,
@@ -548,6 +551,36 @@ def _decide_turn_owner(session_id: str, user_text: str) -> dict[str, object]:
         }
     if decision.intent in {"vision", "external_info"}:
         native_llm_chain_active = settings.effective_dialog_path != "unconfigured"
+        if (
+            decision.intent == "vision"
+            and settings.vision_analysis_enabled
+            and settings.vision_analysis_ready
+        ):
+            return {
+                "owner": "backend",
+                "intent": decision.intent,
+                "confidence": decision.confidence,
+                "reason": "backend-vision-priority",
+                "chain": "vision_chain",
+                "requires_grounding": True,
+                "grounding_source": "vision",
+                "allow_freeform_answer": False,
+            }
+        if (
+            decision.intent == "external_info"
+            and settings.external_search_enabled
+            and settings.external_search_ready
+        ):
+            return {
+                "owner": "backend",
+                "intent": decision.intent,
+                "confidence": decision.confidence,
+                "reason": decision.reason,
+                "chain": decision.chain,
+                "requires_grounding": decision.requires_grounding,
+                "grounding_source": "web",
+                "allow_freeform_answer": False,
+            }
         if (
             decision.intent == "external_info"
             and native_llm_chain_active
@@ -1231,6 +1264,8 @@ async def validate_external_search(q: str) -> dict[str, object]:
     return {
         "source": "external-search",
         "native_websearch_enabled": settings.volcengine_llm_websearch_ready,
+        "engine": settings.external_search_engine,
+        "configured": settings.external_search_ready,
         **await external_search.search(q),
     }
 
@@ -1240,7 +1275,11 @@ async def validate_vision_config() -> dict[str, object]:
     return {
         "ok": True,
         "enabled": settings.vision_analysis_enabled,
-        "configured": bool(settings.vision_analysis_url),
+        "configured": settings.vision_analysis_ready,
+        "provider": settings.vision_analysis_provider,
+        "base_url": settings.vision_analysis_base_url,
+        "model": settings.vision_analysis_model,
+        "custom_url": settings.vision_analysis_url,
         "timeout_seconds": settings.vision_analysis_timeout_seconds,
         "native_vision_enabled": settings.volcengine_llm_vision_ready,
         "camera_vision_enabled": settings.volcengine_enable_camera_vision,
@@ -1329,6 +1368,8 @@ async def bootstrap(request: BootstrapRequest) -> dict[str, object]:
             "native_websearch_enabled": settings.volcengine_llm_websearch_ready,
             "native_vision_enabled": settings.volcengine_llm_vision_ready,
             "camera_vision_enabled": settings.volcengine_enable_camera_vision,
+            "backend_vision_enabled": settings.vision_analysis_ready,
+            "backend_vision_provider": settings.vision_analysis_provider,
         },
         "pricing": {
             "revenue_mcp_enabled": settings.revenue_mcp_enabled,
@@ -1495,7 +1536,11 @@ async def rtc_utterance(session_id: str, request: QueryRequest) -> dict[str, obj
         with state_lock:
             route = _decide_turn_owner(session_id, request.user_text)
             normalized_user_text = normalize_text(request.user_text)
-            if route["intent"] not in {"pricing", "pricing_confirm"} and looks_like_hotel_faq_request(normalized_user_text):
+            if (
+                route["intent"] not in {"pricing", "pricing_confirm", "external_info"}
+                and not looks_like_local_time_request(normalized_user_text)
+                and looks_like_hotel_faq_request(normalized_user_text)
+            ):
                 route = {
                     "owner": "backend",
                     "intent": "faq",

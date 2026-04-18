@@ -65,6 +65,12 @@ VISION_KEYWORDS = [
     "看看",
     "看下",
     "看一下",
+    "看得见我吗",
+    "看见我吗",
+    "能看见我吗",
+    "看得到我吗",
+    "看到我吗",
+    "能看到我吗",
     "识别",
     "图片",
     "照片",
@@ -81,17 +87,24 @@ EXTERNAL_INFO_KEYWORDS = [
     "下雨",
     "气温",
     "温度",
-    "周边",
-    "附近",
-    "商场",
-    "地铁",
-    "公交",
-    "机场",
-    "高铁站",
-    "火车站",
-    "路线规划",
     "路况",
     "新闻",
+    "空气质量",
+    "实时路况",
+    "多少号",
+    "今天几号",
+    "几号",
+    "几月几号",
+    "几月几日",
+    "星期几",
+    "礼拜几",
+    "周几",
+    "现在几点",
+    "现在时间",
+    "日期",
+    "年份",
+    "哪一年",
+    "什么年份",
 ]
 FAQ_KEYWORDS = [
     "酒店",
@@ -329,9 +342,29 @@ def looks_like_vision_request(normalized: str) -> bool:
 def looks_like_external_info_request(normalized: str) -> bool:
     if any(keyword in normalized for keyword in EXTERNAL_INFO_KEYWORDS):
         return True
-    if "路线" in normalized and not looks_like_hotel_faq_request(normalized):
-        return True
     return False
+
+
+def looks_like_local_time_request(normalized: str) -> bool:
+    return any(
+        keyword in normalized
+        for keyword in [
+            "多少号",
+            "今天几号",
+            "几号",
+            "几月几号",
+            "几月几日",
+            "星期几",
+            "礼拜几",
+            "周几",
+            "现在几点",
+            "现在时间",
+            "日期",
+            "年份",
+            "哪一年",
+            "什么年份",
+        ]
+    )
 
 
 def vision_requires_hotel_facts(normalized: str) -> bool:
@@ -381,6 +414,8 @@ def match_pricing_command_tokens(normalized: str) -> str | None:
 
 
 def looks_like_hotel_faq_request(normalized: str) -> bool:
+    if looks_like_local_time_request(normalized):
+        return False
     if any(keyword in normalized for keyword in FAQ_KEYWORDS):
         return True
     if any(keyword in normalized for keyword in HOTEL_SUPPLY_KEYWORDS):
