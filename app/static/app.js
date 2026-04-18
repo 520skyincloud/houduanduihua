@@ -183,6 +183,18 @@ const EXTERNAL_INFO_PREEMPT_KEYWORDS = [
   "哪一年",
   "什么年份",
 ];
+const EXTERNAL_SEARCH_ACTION_HINTS = [
+  "查一下",
+  "搜一下",
+  "帮我查一下",
+  "帮我搜一下",
+  "查一查",
+  "搜一搜",
+  "查查",
+  "搜搜",
+  "搜索一下",
+  "搜索",
+];
 
 const INTERRUPT_PRIORITY = {
   NONE: 0,
@@ -546,7 +558,11 @@ function shouldPreemptToBackend(text) {
   if (looksLikeVisionCaptureRequest(text)) {
     return { hit: true, reason: "vision-keyword-hit" };
   }
-  if (EXTERNAL_INFO_PREEMPT_KEYWORDS.some((keyword) => normalized.includes(normalizeRouteText(keyword)))) {
+  if (
+    EXTERNAL_INFO_PREEMPT_KEYWORDS.some((keyword) => normalized.includes(normalizeRouteText(keyword))) ||
+    (EXTERNAL_SEARCH_ACTION_HINTS.some((hint) => normalized.includes(normalizeRouteText(hint))) &&
+      EXTERNAL_INFO_PREEMPT_KEYWORDS.some((keyword) => normalized.includes(normalizeRouteText(keyword))))
+  ) {
     return { hit: true, reason: "external-info-keyword-hit" };
   }
   if (

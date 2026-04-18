@@ -83,30 +83,40 @@ class ExternalSearchFacade:
 
         payload = {
             "model": settings.external_search_aliyun_model,
-            "messages": [
-                {
-                    "role": "system",
-                    "content": (
-                        "你是酒店数字人的联网搜索助手。请基于联网搜索结果，用中文给出适合直接播报的自然口语答案。"
-                        "要求：1）只回答外部动态公开信息；2）先说结论，再补一句提醒；"
-                        "3）必须明确这是外部公开信息，仅供参考；4）控制在两句话内；"
-                        "5）不要输出项目符号、编号、链接。"
-                    ),
+            "input": {
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "你是酒店数字人的联网搜索助手。请基于联网搜索结果，用中文给出适合直接播报的自然口语答案。"
+                            "要求：1）只回答外部动态公开信息；2）先说结论，再补一句提醒；"
+                            "3）必须明确这是外部公开信息，仅供参考；4）控制在两句话内；"
+                            "5）不要输出项目符号、编号、链接。"
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": query,
+                    },
+                ],
+            },
+            "parameters": {
+                "enable_search": True,
+                "search_options": {
+                    "forced_search": True,
+                    "enable_source": True,
+                    "search_strategy": "turbo",
                 },
-                {
-                    "role": "user",
-                    "content": query,
-                },
-            ],
-            "temperature": 0.2,
-            "max_tokens": 220,
-            "extra_body": {"enable_search": True},
+                "result_format": "message",
+                "temperature": 0.2,
+                "max_tokens": 220,
+            },
         }
         headers = {
             "Authorization": f"Bearer {settings.external_search_aliyun_api_key}",
             "Content-Type": "application/json",
         }
-        endpoint = f"{settings.external_search_aliyun_base_url}/chat/completions"
+        endpoint = self._dashscope_generation_endpoint()
         try:
             async with httpx.AsyncClient(timeout=settings.external_search_timeout_seconds) as client:
                 response = await client.post(endpoint, headers=headers, json=payload)
@@ -122,18 +132,38 @@ class ExternalSearchFacade:
                 "detail": f"阿里云联网搜索失败：{exc}",
             }
 
-        message = raw.get("choices", [{}])[0].get("message", {})
+        output = raw.get("output") or {}
+        search_info = output.get("search_info") or {}
+        results, sources = self._extract_search_evidence(search_info)
+        message = output.get("choices", [{}])[0].get("message", {})
         answer = self._extract_text(message.get("content", ""))
         answer = self._normalize_answer(answer)
+        if not results:
+            return {
+                "ok": False,
+                "configured": True,
+                "answer": "",
+                "results": [],
+                "sources": [],
+                "detail": "阿里云返回了文本，但没有可验证的联网搜索证据（search_info 为空）。",
+                "raw": raw,
+            }
         return {
             "ok": bool(answer),
             "configured": True,
             "answer": answer,
-            "results": [],
-            "sources": [],
+            "results": results,
+            "sources": sources,
             "detail": "" if answer else "阿里云联网搜索未返回可用答案。",
             "raw": raw,
         }
+
+    @staticmethod
+    def _dashscope_generation_endpoint() -> str:
+        base = settings.external_search_aliyun_base_url.rstrip("/")
+        if "/compatible-mode" in base:
+            base = base.split("/compatible-mode", 1)[0]
+        return f"{base}/api/v1/services/aigc/text-generation/generation"
 
     @staticmethod
     def _extract_text(content: Any) -> str:
@@ -154,3 +184,36 @@ class ExternalSearchFacade:
         if "仅供参考" not in text:
             text = f"{text} 以上为外部公开信息，仅供参考。"
         return text[:220]
+
+    @staticmethod
+    def _extract_search_evidence(search_info: Any) -> tuple[list[dict[str, Any]], list[str]]:
+        if not isinstance(search_info, dict):
+            return [], []
+
+        candidate_lists: list[list[Any]] = []
+        for key in ("items", "results", "sources", "source_list", "search_results"):
+            value = search_info.get(key)
+            if isinstance(value, list):
+                candidate_lists.append(value)
+
+        results: list[dict[str, Any]] = []
+        sources: list[str] = []
+        seen_sources: set[str] = set()
+        for entries in candidate_lists:
+            for item in entries:
+                if not isinstance(item, dict):
+                    continue
+                title = str(item.get("title") or item.get("name") or "").strip()
+                url = str(item.get("url") or item.get("link") or "").strip()
+                snippet = str(item.get("snippet") or item.get("content") or item.get("summary") or "").strip()
+                result = {
+                    "title": title,
+                    "url": url,
+                    "snippet": snippet,
+                }
+                if any(result.values()):
+                    results.append(result)
+                if url and url not in seen_sources:
+                    seen_sources.add(url)
+                    sources.append(url)
+        return results, sources

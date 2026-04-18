@@ -106,6 +106,18 @@ EXTERNAL_INFO_KEYWORDS = [
     "哪一年",
     "什么年份",
 ]
+EXTERNAL_SEARCH_ACTION_HINTS = [
+    "查一下",
+    "搜一下",
+    "帮我查一下",
+    "帮我搜一下",
+    "查一查",
+    "搜一搜",
+    "查查",
+    "搜搜",
+    "搜索一下",
+    "搜索",
+]
 FAQ_KEYWORDS = [
     "酒店",
     "早餐",
@@ -341,6 +353,10 @@ def looks_like_vision_request(normalized: str) -> bool:
 
 def looks_like_external_info_request(normalized: str) -> bool:
     if any(keyword in normalized for keyword in EXTERNAL_INFO_KEYWORDS):
+        return True
+    if any(hint in normalized for hint in EXTERNAL_SEARCH_ACTION_HINTS) and any(
+        keyword in normalized for keyword in EXTERNAL_INFO_KEYWORDS
+    ):
         return True
     return False
 
